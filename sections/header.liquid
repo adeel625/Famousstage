@@ -135,7 +135,7 @@
     /* Menu icon section - left */
     .menu-icon-search-form {
       flex: 0 0 auto;
-      display: none;
+      display: flex;
       align-items: center;
       gap: 10px;
     }
@@ -154,34 +154,44 @@
       gap: 12px;
       flex: 0 0 auto;
       margin-left: auto;
+      position: relative;
+      z-index: 5;
     }
-    
+
     #app-header #app-upper-header .account-session-links i {
       display: none !important;
     }
     
     /* ===== SEARCH ICON IN HEADER ===== */
     .search-icon-link {
-      display: inline-flex;
+      display: inline-flex !important;
       align-items: center;
       justify-content: center;
       text-decoration: none;
       padding: 4px;
       color: {{ section.settings.header_text_color }};
-      cursor: pointer;
+      cursor: pointer !important;
       background: none;
       border: none;
       transition: opacity 0.3s ease;
+      pointer-events: auto !important;
+      position: relative;
+      z-index: 999 !important;
+      width: auto;
+      height: auto;
+      min-width: 30px;
+      min-height: 30px;
     }
-    
+
     .search-icon-link:hover {
       opacity: 0.7;
     }
-    
+
     .search-icon-link svg {
       width: 22px;
       height: 22px;
       display: block;
+      pointer-events: none;
     }
     
     /* Wishlist icon styles - HIDDEN */
@@ -352,6 +362,16 @@
     }
     
     /* ===== END SEARCH BAR FULL WIDTH ===== */
+    
+    /* ===== DESKTOP: Hide search bar, show on toggle ===== */
+    @media screen and (min-width: 641px) {
+      #app-lower-header .search.full-width-search {
+        display: none !important;
+      }
+      #app-lower-header .search.full-width-search.active {
+        display: block !important;
+      }
+    }
     
     {% unless section.settings.show_search_bar %}
       @media screen and (max-width: 640px) {
@@ -606,7 +626,7 @@
       }
       
       .shop-identity-tagline .site-header__logo-image img {
-        max-width: 250px !important;
+        max-width: 220px !important;
         height: auto !important;
       }
       
@@ -618,17 +638,12 @@
         align-items: center !important;
         gap: 6px !important;
         margin-left: 0 !important;
+        overflow: visible !important;
       }
       
-      /* Search icon - SHOW ON MOBILE */
-      .search-icon-link {
-        display: inline-flex !important;
-      }
-      
-      .search-icon-link svg {
-        width: 22px !important;
-        height: 22px !important;
-        display:none;
+      /* Search icon - HIDE ON MOBILE */
+      #app-header #app-upper-header .account-session-links .search-icon-link {
+        display: none !important;
       }
       
       /* HIDE all wishlist icons on mobile */
@@ -935,36 +950,30 @@
           {% endif %}
         </div>
         <div class="account-session-links">
-          <!-- Search Icon - RIGHT SIDE with FULL SEARCH FUNCTIONALITY -->
-          <button class="search-icon-link" 
-                  id="searchIconBtn" 
-                  aria-label="Search"
-                  onclick="
-                    var hdr = document.getElementById('app-lower-header');
-                    var inp = hdr ? hdr.querySelector('input[type=search]') : null;
-                    if(hdr) {
-                      hdr.style.display = 'block';
-                      hdr.style.visibility = 'visible';
-                      hdr.style.opacity = '1';
-                      hdr.style.height = 'auto';
-                      hdr.style.overflow = 'visible';
-                      hdr.scrollIntoView({behavior:'smooth', block:'center'});
-                      setTimeout(function(){ 
-                        if(inp) { 
-                          inp.focus(); 
-                          inp.select();
-                          // Trigger the same search functionality as the left search bar
-                          inp.click();
-                        }
-                      }, 600);
-                    }
-                  ">
+          <!-- Search Icon - RIGHT SIDE -->
+          <a href="/search"
+             class="search-icon-link"
+             id="searchIconBtn"
+             aria-label="Search">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-          </button>
-          
+          </a>
+          <script>
+            document.getElementById('searchIconBtn').addEventListener('click', function(e) {
+              e.preventDefault();
+              var searchBar = document.querySelector('#app-lower-header .search.full-width-search');
+              if (searchBar) {
+                searchBar.classList.toggle('active');
+                if (searchBar.classList.contains('active')) {
+                  var input = searchBar.querySelector('input[name="q"]');
+                  if (input) input.focus();
+                }
+              }
+            });
+          </script>
+
           <!-- Cart Icon ONLY -->
           <a class="cart" href="{{ routes.cart_url }}">
             {% case section.settings.cart_icon %}
@@ -992,7 +1001,7 @@
       <div class="{{ section.settings.header_layout }}">
         <!-- SEARCH BAR - FULL WIDTH (only for desktop/tablet) -->
         {% if section.settings.show_search_bar %}
-          <form class="search full-width-search" name="search" action="{{ routes.search_url }}" method="get" role="search">
+          <form class="search full-width-search" id="main-search-form" name="search" action="{{ routes.search_url }}" method="get" role="search">
             <div class="typeahead__container">
               <div class="typeahead__field">
                 <div class="typeahead__query">
