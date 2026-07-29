@@ -1,0 +1,1083 @@
+{% comment %}
+  Testimonials Section - 3 Column Grid
+  No carousel, static grid layout with author images
+{% endcomment %}
+
+<div class="testimonials-section" id="shopify-section-{{ section.id }}">
+  <div class="testimonials-container">
+    
+    <!-- Section Heading -->
+    {% if section.settings.heading != blank %}
+      <div class="testimonials-header">
+        <h2 class="testimonials-heading">{{ section.settings.heading }}</h2>
+        {% if section.settings.subheading != blank %}
+          <p class="testimonials-subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <!-- Testimonials Grid - 3 Columns -->
+    <div class="testimonials-grid">
+      {% for block in section.blocks %}
+        <div class="testimonial-card" 
+             itemscope 
+             itemprop="review" 
+             itemtype="https://schema.org/Review">
+          
+          <div class="testimonial-card-inner">
+            
+            <!-- Stars Rating -->
+            {% if section.settings.show_stars %}
+              <div class="testimonial-stars">
+                {% assign rating = block.settings.rating | default: 5 %}
+                {% for i in (1..5) %}
+                  {% if i <= rating %}
+                    <span class="star filled">★</span>
+                  {% else %}
+                    <span class="star empty">★</span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+            
+            <!-- Testimonial Text -->
+            <div class="testimonial-text" itemprop="reviewBody">
+              {{ block.settings.testimonial }}
+            </div>
+            
+            <!-- Author Info with Image -->
+            <div class="testimonial-author">
+              {% if block.settings.author_image != blank %}
+                <div class="author-image">
+                  <img src="{{ block.settings.author_image | img_url: '100x100', crop: 'center' }}" 
+                       alt="{{ block.settings.author_name }}" 
+                       loading="lazy"
+                       width="60" 
+                       height="60">
+                </div>
+              {% else %}
+                <!-- Fallback placeholder if no image -->
+                <div class="author-image-placeholder">
+                  <span>{{ block.settings.author_name | slice: 0 | upcase }}</span>
+                </div>
+              {% endif %}
+              <div class="author-info">
+                <div class="author-name" itemprop="author">{{ block.settings.author_name }}</div>
+                <div class="author-title">{{ block.settings.author_title }}</div>
+              </div>
+            </div>
+            
+            <!-- Category/Tag -->
+            {% if block.settings.category != blank %}
+              <div class="testimonial-category">{{ block.settings.category }}</div>
+            {% endif %}
+            
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* ===== Testimonials Section Styles ===== */
+  #shopify-section-{{ section.id }} .testimonials-section {
+    padding: {{ section.settings.section_padding }}px 0;
+    background-color: {{ section.settings.background_color }};
+  }
+
+  #shopify-section-{{ section.id }} .testimonials-container {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ===== Header Styles ===== */
+  #shopify-section-{{ section.id }} .testimonials-header {
+    text-align: {{ section.settings.heading_alignment }};
+    margin-bottom: {{ section.settings.heading_spacing }}px;
+  }
+
+  #shopify-section-{{ section.id }} .testimonials-heading {
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: 700;
+    color: {{ section.settings.heading_color }};
+    margin: 0 0 10px 0;
+  }
+
+  #shopify-section-{{ section.id }} .testimonials-subheading {
+    font-size: {{ section.settings.subheading_size }}px;
+    color: {{ section.settings.subheading_color }};
+    margin: 0;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+
+  /* ===== Testimonials Grid - 3 Columns ===== */
+  #shopify-section-{{ section.id }} .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: {{ section.settings.card_gap }}px;
+  }
+
+  /* ===== Testimonial Card Styles ===== */
+  #shopify-section-{{ section.id }} .testimonial-card {
+    background: {{ section.settings.card_background }};
+    border-radius: {{ section.settings.card_border_radius }}px;
+    padding: {{ section.settings.card_padding }}px;
+    box-shadow: {{ section.settings.card_shadow_horizontal }}px {{ section.settings.card_shadow_vertical }}px {{ section.settings.card_shadow_blur }}px rgba(0,0,0,{{ section.settings.card_shadow_opacity }});
+    border: {{ section.settings.card_border_width }}px solid {{ section.settings.card_border_color }};
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .testimonial-card:hover {
+    transform: translateY(-4px);
+    box-shadow: {{ section.settings.card_shadow_horizontal }}px {{ section.settings.card_shadow_vertical_hover }}px {{ section.settings.card_shadow_blur_hover }}px rgba(0,0,0,{{ section.settings.card_shadow_opacity_hover }});
+    border-color: {{ section.settings.card_border_hover_color }};
+  }
+
+  #shopify-section-{{ section.id }} .testimonial-card-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  /* ===== Stars ===== */
+  #shopify-section-{{ section.id }} .testimonial-stars {
+    margin-bottom: {{ section.settings.star_margin }}px;
+    display: flex;
+    gap: 4px;
+  }
+
+  #shopify-section-{{ section.id }} .testimonial-stars .star {
+    font-size: {{ section.settings.star_size }}px;
+    color: {{ section.settings.star_color_empty }};
+  }
+
+  #shopify-section-{{ section.id }} .testimonial-stars .star.filled {
+    color: {{ section.settings.star_color_filled }};
+  }
+
+  /* ===== Testimonial Text ===== */
+  #shopify-section-{{ section.id }} .testimonial-text {
+    flex: 1;
+    font-size: {{ section.settings.text_size }}px;
+    line-height: {{ section.settings.text_line_height }};
+    color: {{ section.settings.text_color }};
+    margin-bottom: {{ section.settings.text_margin }}px;
+    font-style: {{ section.settings.text_style }};
+  }
+
+  #shopify-section-{{ section.id }} .testimonial-text p {
+    margin: 0;
+  }
+
+  /* ===== Author Section with Image ===== */
+  #shopify-section-{{ section.id }} .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: {{ section.settings.author_gap }}px;
+    margin-top: auto;
+    padding-top: {{ section.settings.author_padding_top }}px;
+    border-top: {{ section.settings.divider_width }}px solid {{ section.settings.divider_color }};
+  }
+
+  #shopify-section-{{ section.id }} .author-image {
+    flex-shrink: 0;
+    width: {{ section.settings.author_image_size }}px;
+    height: {{ section.settings.author_image_size }}px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: {{ section.settings.author_image_border_width }}px solid {{ section.settings.author_image_border_color }};
+  }
+
+  #shopify-section-{{ section.id }} .author-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ===== Author Image Placeholder ===== */
+  #shopify-section-{{ section.id }} .author-image-placeholder {
+    flex-shrink: 0;
+    width: {{ section.settings.author_image_size }}px;
+    height: {{ section.settings.author_image_size }}px;
+    border-radius: 50%;
+    background: {{ section.settings.author_image_border_color }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    border: {{ section.settings.author_image_border_width }}px solid {{ section.settings.author_image_border_color }};
+  }
+
+  #shopify-section-{{ section.id }} .author-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #shopify-section-{{ section.id }} .author-name {
+    font-size: {{ section.settings.author_name_size }}px;
+    font-weight: {{ section.settings.author_name_weight }};
+    color: {{ section.settings.author_name_color }};
+    margin: 0;
+  }
+
+  #shopify-section-{{ section.id }} .author-title {
+    font-size: {{ section.settings.author_title_size }}px;
+    color: {{ section.settings.author_title_color }};
+    margin: 0;
+  }
+
+  /* ===== Category/Tag ===== */
+  #shopify-section-{{ section.id }} .testimonial-category {
+    display: inline-block;
+    margin-top: {{ section.settings.category_margin }}px;
+    font-size: {{ section.settings.category_size }}px;
+    font-weight: {{ section.settings.category_weight }};
+    color: {{ section.settings.category_color }};
+    background: {{ section.settings.category_background }};
+    padding: 4px 12px;
+    border-radius: {{ section.settings.category_border_radius }}px;
+    align-self: flex-start;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* ===== Tablet Responsive ===== */
+  @media screen and (max-width: 1024px) {
+    #shopify-section-{{ section.id }} .testimonials-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+  }
+
+  /* ===== Mobile Responsive ===== */
+  @media screen and (max-width: 640px) {
+    #shopify-section-{{ section.id }} .testimonials-section {
+      padding: {{ section.settings.mobile_section_padding }}px 0;
+    }
+
+    #shopify-section-{{ section.id }} .testimonials-container {
+      padding: 0 15px;
+    }
+
+    #shopify-section-{{ section.id }} .testimonials-grid {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    #shopify-section-{{ section.id }} .testimonials-heading {
+      font-size: {{ section.settings.mobile_heading_size }}px;
+    }
+
+    #shopify-section-{{ section.id }} .testimonials-subheading {
+      font-size: {{ section.settings.mobile_subheading_size }}px;
+    }
+
+    #shopify-section-{{ section.id }} .testimonial-card {
+      padding: {{ section.settings.mobile_card_padding }}px;
+    }
+
+    #shopify-section-{{ section.id }} .testimonial-text {
+      font-size: {{ section.settings.mobile_text_size }}px;
+    }
+
+    #shopify-section-{{ section.id }} .author-image,
+    #shopify-section-{{ section.id }} .author-image-placeholder {
+      width: {{ section.settings.mobile_author_image_size }}px;
+      height: {{ section.settings.mobile_author_image_size }}px;
+    }
+
+    #shopify-section-{{ section.id }} .author-image-placeholder {
+      font-size: 18px;
+    }
+
+    #shopify-section-{{ section.id }} .author-name {
+      font-size: {{ section.settings.mobile_author_name_size }}px;
+    }
+
+    #shopify-section-{{ section.id }} .author-title {
+      font-size: {{ section.settings.mobile_author_title_size }}px;
+    }
+
+    #shopify-section-{{ section.id }} .testimonial-stars .star {
+      font-size: {{ section.settings.mobile_star_size }}px;
+    }
+
+    #shopify-section-{{ section.id }} .testimonial-category {
+      font-size: {{ section.settings.mobile_category_size }}px;
+      padding: 4px 12px;
+    }
+  }
+
+  /* ===== Small Mobile ===== */
+  @media screen and (max-width: 400px) {
+    #shopify-section-{{ section.id }} .testimonials-section {
+      padding: 30px 0;
+    }
+
+    #shopify-section-{{ section.id }} .testimonial-card {
+      padding: 16px;
+    }
+
+    #shopify-section-{{ section.id }} .testimonials-heading {
+      font-size: 22px;
+    }
+
+    #shopify-section-{{ section.id }} .testimonials-subheading {
+      font-size: 14px;
+    }
+
+    #shopify-section-{{ section.id }} .testimonial-text {
+      font-size: 14px;
+    }
+
+    #shopify-section-{{ section.id }} .author-image,
+    #shopify-section-{{ section.id }} .author-image-placeholder {
+      width: 40px;
+      height: 40px;
+    }
+
+    #shopify-section-{{ section.id }} .author-image-placeholder {
+      font-size: 14px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Testimonials Grid",
+  "class": "testimonials-section-wrapper",
+  "settings": [
+    {
+      "type": "header",
+      "content": "☰ Heading Settings"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "What Our Customers Say"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Real reviews from real customers who love our products",
+      "info": "Leave blank to hide"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading Alignment",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading Font Size",
+      "default": 36,
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading Font Size",
+      "default": 18,
+      "min": 14,
+      "max": 30,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "label": "Heading Bottom Spacing",
+      "default": 50,
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "🎨 Design & Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Section Background",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Testimonial Text Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider Color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "header",
+      "content": "⭐ Star Rating Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stars",
+      "label": "Show Star Ratings",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "star_color_filled",
+      "label": "Filled Star Color",
+      "default": "#FFB800"
+    },
+    {
+      "type": "color",
+      "id": "star_color_empty",
+      "label": "Empty Star Color",
+      "default": "#d1d5db"
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "label": "Star Size",
+      "default": 20,
+      "min": 14,
+      "max": 30,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "star_margin",
+      "label": "Star Bottom Margin",
+      "default": 12,
+      "min": 4,
+      "max": 30,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "📝 Testimonial Text Settings"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text Font Size",
+      "default": 16,
+      "min": 13,
+      "max": 24,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "text_style",
+      "label": "Text Style",
+      "default": "normal",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "italic", "label": "Italic" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "text_line_height",
+      "label": "Text Line Height",
+      "default": 1.6,
+      "min": 1.2,
+      "max": 2.5,
+      "step": 0.1
+    },
+    {
+      "type": "range",
+      "id": "text_margin",
+      "label": "Text Bottom Margin",
+      "default": 16,
+      "min": 6,
+      "max": 40,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "👤 Author Settings"
+    },
+    {
+      "type": "range",
+      "id": "author_image_size",
+      "label": "Author Image Size (Desktop)",
+      "default": 60,
+      "min": 40,
+      "max": 80,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "author_image_border_width",
+      "label": "Author Image Border Width",
+      "default": 3,
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "author_image_border_color",
+      "label": "Author Image Border Color",
+      "default": "#007bff"
+    },
+    {
+      "type": "range",
+      "id": "author_name_size",
+      "label": "Author Name Size",
+      "default": 16,
+      "min": 13,
+      "max": 24,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "author_name_weight",
+      "label": "Author Name Weight",
+      "default": "600",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-Bold" },
+        { "value": "700", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "author_name_color",
+      "label": "Author Name Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "author_title_size",
+      "label": "Author Title Size",
+      "default": 14,
+      "min": 11,
+      "max": 20,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "author_title_color",
+      "label": "Author Title Color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "author_gap",
+      "label": "Author Section Gap",
+      "default": 12,
+      "min": 6,
+      "max": 30,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "author_padding_top",
+      "label": "Author Section Top Padding",
+      "default": 14,
+      "min": 6,
+      "max": 30,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "divider_width",
+      "label": "Divider Width",
+      "default": 1,
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "🏷️ Category/Tag Settings"
+    },
+    {
+      "type": "range",
+      "id": "category_size",
+      "label": "Category Font Size",
+      "default": 12,
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "category_weight",
+      "label": "Category Font Weight",
+      "default": "600",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-Bold" },
+        { "value": "700", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "category_color",
+      "label": "Category Text Color",
+      "default": "#007bff"
+    },
+    {
+      "type": "color",
+      "id": "category_background",
+      "label": "Category Background",
+      "default": "#e8f0fe"
+    },
+    {
+      "type": "range",
+      "id": "category_border_radius",
+      "label": "Category Border Radius",
+      "default": 4,
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "category_margin",
+      "label": "Category Top Margin",
+      "default": 12,
+      "min": 4,
+      "max": 30,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "📐 Card Settings"
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Card Padding (Desktop)",
+      "default": 28,
+      "min": 16,
+      "max": 50,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Card Border Radius",
+      "default": 12,
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_border_width",
+      "label": "Card Border Width",
+      "default": 1,
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card Border Color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "card_border_hover_color",
+      "label": "Card Border Hover Color",
+      "default": "#007bff"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Gap Between Cards",
+      "default": 30,
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "🔲 Card Shadow"
+    },
+    {
+      "type": "range",
+      "id": "card_shadow_horizontal",
+      "label": "Shadow Horizontal Offset",
+      "default": 0,
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_shadow_vertical",
+      "label": "Shadow Vertical Offset",
+      "default": 4,
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_shadow_blur",
+      "label": "Shadow Blur",
+      "default": 14,
+      "min": 4,
+      "max": 30,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_shadow_opacity",
+      "label": "Shadow Opacity",
+      "default": 8,
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "card_shadow_vertical_hover",
+      "label": "Shadow Vertical Offset (Hover)",
+      "default": 8,
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_shadow_blur_hover",
+      "label": "Shadow Blur (Hover)",
+      "default": 24,
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_shadow_opacity_hover",
+      "label": "Shadow Opacity (Hover)",
+      "default": 14,
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "📐 Spacing & Sizing"
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section Padding (Desktop)",
+      "default": 80,
+      "min": 20,
+      "max": 150,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max Width",
+      "default": 1200,
+      "min": 800,
+      "max": 1600,
+      "step": 50,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "📱 Mobile Settings"
+    },
+    {
+      "type": "range",
+      "id": "mobile_section_padding",
+      "label": "Section Padding (Mobile)",
+      "default": 50,
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Mobile Heading Size",
+      "default": 28,
+      "min": 18,
+      "max": 40,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_subheading_size",
+      "label": "Mobile Subheading Size",
+      "default": 16,
+      "min": 12,
+      "max": 24,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_padding",
+      "label": "Mobile Card Padding",
+      "default": 20,
+      "min": 10,
+      "max": 34,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_text_size",
+      "label": "Mobile Text Size",
+      "default": 15,
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_author_image_size",
+      "label": "Mobile Author Image Size",
+      "default": 50,
+      "min": 32,
+      "max": 64,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_author_name_size",
+      "label": "Mobile Author Name Size",
+      "default": 15,
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_author_title_size",
+      "label": "Mobile Author Title Size",
+      "default": 13,
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_star_size",
+      "label": "Mobile Star Size",
+      "default": 18,
+      "min": 12,
+      "max": 26,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_category_size",
+      "label": "Mobile Category Size",
+      "default": 11,
+      "min": 9,
+      "max": 16,
+      "step": 1,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "author_image",
+          "label": "Author Image",
+          "info": "Recommended size: 100x100px"
+        },
+        {
+          "type": "richtext",
+          "id": "testimonial",
+          "label": "Testimonial Text",
+          "default": "<p>The AI chatbot they built handles lead qualification around the clock. We saved a lot on sales staff and the quality of leads actually improved.</p>"
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Author Name",
+          "default": "Mark Thompson"
+        },
+        {
+          "type": "text",
+          "id": "author_title",
+          "label": "Author Title",
+          "default": "VP Sales, Real Estate Co."
+        },
+        {
+          "type": "text",
+          "id": "category",
+          "label": "Category/Tag",
+          "default": "AI Automation",
+          "info": "Optional - shows as a tag below the testimonial"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Star Rating",
+          "default": 5,
+          "min": 1,
+          "max": 5,
+          "step": 1
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials Grid",
+      "category": "Social Proof",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "author_name": "Sarah Johnson",
+            "author_title": "Marketing Director",
+            "testimonial": "<p>Absolutely love this product! The quality is amazing and the customer support team was incredibly helpful throughout the entire process.</p>",
+            "category": "Customer Review",
+            "rating": 5
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "author_name": "Michael Chen",
+            "author_title": "Product Manager",
+            "testimonial": "<p>I've been using this for over a year now and it has completely transformed how we work. The features are exactly what we needed.</p>",
+            "category": "Product Testimonial",
+            "rating": 5
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "author_name": "Emily Rodriguez",
+            "author_title": "Small Business Owner",
+            "testimonial": "<p>Incredible value for money. I've tried similar products before, but none come close to this level of quality and performance.</p>",
+            "category": "Business Owner",
+            "rating": 4
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "author_name": "David Thompson",
+            "author_title": "Creative Director",
+            "testimonial": "<p>This product has saved us countless hours. The intuitive design makes it indispensable for our daily operations.</p>",
+            "category": "Design Team",
+            "rating": 5
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "author_name": "Lisa Park",
+            "author_title": "Operations Manager",
+            "testimonial": "<p>One of the best investments we've made. The product is reliable, easy to use, and the team behind it genuinely cares.</p>",
+            "category": "Operations",
+            "rating": 5
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "author_name": "James Wilson",
+            "author_title": "Consultant",
+            "testimonial": "<p>I've recommended this to all my clients. The features are comprehensive, the support is excellent, and it just works flawlessly.</p>",
+            "category": "Consultant",
+            "rating": 4
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,195 @@
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+#app-header #app-upper-header .shop-identity-tagline .name {
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+#app-header #app-lower-header .menu {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+}
+
+#app-header #app-lower-header .menu ul.level-1 li.level-1 .submenu {
+  font-size: 14px;
+}
+
+#slide-side-menu .menu {
+  font-family: Arial, sans-serif;
+}
+
+
+
+
+
+
+
+
+
+@font-face {
+  font-family: Oswald;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("//famousstages.com/cdn/fonts/oswald/oswald_n4.7760ed7a63e536050f64bb0607ff70ce07a480bd.woff2") format("woff2"),
+       url("//famousstages.com/cdn/fonts/oswald/oswald_n4.ae5e497f60fc686568afe76e9ff1872693c533e9.woff") format("woff");
+}
+
+
+
+  @font-face {
+  font-family: Oswald;
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("//famousstages.com/cdn/fonts/oswald/oswald_n7.b3ba3d6f1b341d51018e3cfba146932b55221727.woff2") format("woff2"),
+       url("//famousstages.com/cdn/fonts/oswald/oswald_n7.6cec6bed2bb070310ad90e19ea7a56b65fd83c0b.woff") format("woff");
+}
+
+
+
+
+
+
+
+h1, h2, h3, h4, h5, h6, .heading {
+  font-family: Oswald, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+
+
+
+
+
+
+
+@font-face {
+  font-family: Montserrat;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("//famousstages.com/cdn/fonts/montserrat/montserrat_n4.81949fa0ac9fd2021e16436151e8eaa539321637.woff2") format("woff2"),
+       url("//famousstages.com/cdn/fonts/montserrat/montserrat_n4.a6c632ca7b62da89c3594789ba828388aac693fe.woff") format("woff");
+}
+
+
+
+  @font-face {
+  font-family: Montserrat;
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("//famousstages.com/cdn/fonts/montserrat/montserrat_n7.3c434e22befd5c18a6b4afadb1e3d77c128c7939.woff2") format("woff2"),
+       url("//famousstages.com/cdn/fonts/montserrat/montserrat_n7.5d9fa6e2cae713c8fb539a9876489d86207fe957.woff") format("woff");
+}
+
+
+
+
+  @font-face {
+  font-family: Montserrat;
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  src: url("//famousstages.com/cdn/fonts/montserrat/montserrat_i4.5a4ea298b4789e064f62a29aafc18d41f09ae59b.woff2") format("woff2"),
+       url("//famousstages.com/cdn/fonts/montserrat/montserrat_i4.072b5869c5e0ed5b9d2021e4c2af132e16681ad2.woff") format("woff");
+}
+
+
+
+
+  @font-face {
+  font-family: Montserrat;
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  src: url("//famousstages.com/cdn/fonts/montserrat/montserrat_i7.a0d4a463df4f146567d871890ffb3c80408e7732.woff2") format("woff2"),
+       url("//famousstages.com/cdn/fonts/montserrat/montserrat_i7.f6ec9f2a0681acc6f8152c40921d2a4d2e1a2c78.woff") format("woff");
+}
+
+
+
+body, #app-body {
+  font-family: Montserrat, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+}
+
+#announcement-bar, #top-bar {
+  font-family: Montserrat, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+input[type="email"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="file"],
+input[type="text"],
+input[type="url"],
+input[type="color"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+select,
+select[multiple="multiple"],
+textarea {
+  font-family: Montserrat, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}

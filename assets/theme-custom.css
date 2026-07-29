@@ -1,0 +1,176 @@
+/*  Add custom styles here
+/*-------------------------------------------------- */
+
+
+/* ALL
+/*------------------------ */
+
+  /* Set sizes for logo in header */
+  
+#app-upper-header > div > div.shop-identity-tagline > a > img {
+  height: auto;
+  width: 100%;
+  aspect-ratio: 6 / 1;
+}
+
+
+/* ALL - END
+/*------------------------ */
+
+
+/* Contact Page
+/*------------------------ */
+
+  /* Warehouse Icons
+  /*---------------- */
+
+
+  /* Email icon */
+#section-block-text-1655745671bd5c46ca-0 > span > p:nth-child(2) > a:before {
+  content: "\f0e0";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  padding-right: 10px;
+}
+  /* Phone icon */
+#section-block-text-1655745671bd5c46ca-0 > span > p:nth-child(3) > a:before {
+  content: "\f3cd";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  padding-right: 10px;
+}
+  /* Map icon */
+#section-block-text-1655745671bd5c46ca-0 > span > p:nth-child(4) > a:before {
+  content: "\f3c5";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  padding-right: 10px;
+}
+  /* Hours icon */
+#section-block-text-1655745671bd5c46ca-0 > span > p:nth-child(5):before {
+  content: "\f017";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  padding-right: 10px;
+}
+
+
+  /* Showroom Icons
+  /*---------------- */
+
+  /* Email icon */
+#section-block-text-1655745671bd5c46ca-0 > span > p:nth-child(8) > a:before {
+  content: "\f0e0";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  padding-right: 10px;
+}
+  /* Phone icon */
+#section-block-text-1655745671bd5c46ca-0 > span > p:nth-child(9) > a:before {
+  content: "\f3cd";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  padding-right: 10px;
+}
+  /* Map icon */
+#section-block-text-1655745671bd5c46ca-0 > span > p:nth-child(10) > a:before {
+  content: "\f3c5";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  padding-right: 10px;
+}
+  /* Hour icon */
+#section-block-text-1655745671bd5c46ca-0 > span > p:nth-child(11):before {
+  content: "\f017";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  padding-right: 10px;
+}
+
+
+
+/* Contact Page - END
+/*------------------------ */
+
+
+/*  Locations Page
+/*------------------------*/
+
+
+  /* Makes top image use full width of the screen */
+#content-wrap > section > main > img {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  max-width: 100vw;
+  width: 100vw;
+}
+
+
+/*  Locations Page - END
+/*------------------------*/
+
+
+/*  Financing Page
+/*------------------------*/
+
+
+  /* Positions and scales the cit button along with the other elements */
+#shopify-section-template--16415644254428__1657304707b6a41fb3 {
+  padding-right: 20px;
+  padding-left: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+
+/*  Financing Page - END
+/*------------------------*/
+
+
+
+
+
+
+
+
+/*  Add custom responsive styles here
+/*-------------------------------------------------- */
+
+/* Small screens (phones) only */
+@media screen and (max-width: 640px) {
+
+}
+
+
+/* Medium screens (tablets) only */
+@media screen and (min-width: 640px) and (max-width: 1024px) {
+
+}
+
+
+/* Medium screens (tablets) and up */
+@media screen and (min-width: 640px) {
+
+  /*
+  #shopify-section-template--16415644221660__main {
+  width: 50%;
+  display: inline-block;
+  padding: 0 10px;
+  }
+#shopify-section-template--16415644221660__1655745671ef63d39d {
+  width: 50%;
+  display: inline-block;
+  padding: 0 10px;
+  }
+  */
+
+}
+
+
+/* Large screens (desktops) */
+@media screen and (min-width: 1024px) {
+
+}

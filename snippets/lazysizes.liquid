@@ -1,0 +1,17 @@
+<script>
+  window.lazySizesConfig = window.lazySizesConfig || {};
+  lazySizesConfig.loadMode = 1;
+  lazySizesConfig.loadHidden = false;
+  {% comment %}
+    Config changes
+  {% endcomment %}
+  lazySizesConfig.expFactor = 3;
+</script>
+
+<style>.lazyload,.lazyloading{opacity:0}.lazyloaded{opacity:1;transition:opacity.3s}</style>
+
+<script src="{{ 'lazysizes/4.0.1/plugins/respimg/ls.respimg.min.js' | prepend: cdn }}" async="async"></script>
+<script src="{{ 'lazysizes/4.0.1/plugins/rias/ls.rias.min.js' | prepend: cdn }}" async="async"></script>
+<script src="{{ 'lazysizes/4.0.1/plugins/parent-fit/ls.parent-fit.min.js' | prepend: cdn }}" async="async"></script>
+<script src="{{ 'lazysizes/4.0.1/plugins/bgset/ls.bgset.min.js' | prepend: cdn }}" async="async"></script>
+<script src="{{ 'lazysizes/4.0.1/lazysizes.min.js' | prepend: cdn }}" async="async"></script>

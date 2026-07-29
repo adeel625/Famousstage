@@ -1,0 +1,50 @@
+<div id="section-button">
+  <h3> {{ section.settings.text-box }} </h3>
+  {% if section.settings.new-tab %}
+  	<a href="{{ section.settings.link }}" target="_blank" class="button">{{ section.settings.linktext }}</a>
+  {% else %}
+  	<a href="{{ section.settings.link }}" class="button">{{ section.settings.linktext }}</a>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Button",
+  "settings": [
+    {
+      "id": "text-box",
+      "type": "text",
+      "label": "Heading",
+      "default": "Title"
+    },
+    {
+      "id": "link",
+      "type": "url",
+      "label": "Button link"
+    },
+    {
+      "id": "linktext",
+      "type": "text",
+      "label": "Button text",
+      "default": "Clicky Click"
+    },
+	{
+	  "id": "new-tab",
+	  "type": "checkbox",
+	  "label": "Open in new tab"
+	}
+  ],
+  "presets": [
+	{
+		"name": "Button",
+		"category": "ADVANCED LAYOUT"
+	}
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

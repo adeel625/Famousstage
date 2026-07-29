@@ -1,0 +1,444 @@
+{% assign collection = collections[section.settings.collection] %}
+
+{% if section.settings.title == blank %}
+  {% assign title = collection.title %}
+{% else %}
+  {% assign title = section.settings.title %}
+{% endif %}
+
+{% assign product_limit = section.settings.products_per_row | times: section.settings.product_rows %}
+
+<!-- Start section without using section-open -->
+<div class="index-section" id="shopify-section-{{ section.id }}">
+  <div class="section-header">
+    <div class="section-header-inner">
+      <div class="section-header-inner-content">
+        
+        <!-- Custom Heading -->
+        {% if title != blank %}
+          <h2 class="custom-collection-heading">{{ title }}</h2>
+        {% endif %}
+        
+        <!-- Custom Description -->
+        {% if section.settings.description != blank %}
+          <div class="collection-description">
+            {{ section.settings.description }}
+          </div>
+        {% endif %}
+        
+        <!-- View All Button -->
+        {% if section.settings.button_label != blank and section.settings.button_link != blank %}
+          <div class="collection-button-wrapper">
+            <a href="{{ section.settings.button_link }}" class="collection-button">
+              {{ section.settings.button_label }}
+            </a>
+          </div>
+        {% endif %}
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <style>
+    /* Heading styles */
+    #shopify-section-{{ section.id }} .custom-collection-heading {
+      text-align: center !important;
+      font-weight: 700 !important;
+      font-size: 3rem !important;
+      margin: 0 0 0.5rem 0 !important;
+      color: {{ section.settings.heading_color | default: '#000000' }};
+    }
+    
+    /* Description styles */
+    #shopify-section-{{ section.id }} .collection-description {
+      text-align: center !important;
+      font-size: 1.1rem !important;
+      line-height: 1.6 !important;
+      color: {{ section.settings.description_color | default: '#666666' }};
+      max-width: 900px !important;
+      margin: 0 auto 1.5rem auto !important;
+      padding: 0 20px !important;
+    }
+    
+    /* Button styles */
+    #shopify-section-{{ section.id }} .collection-button-wrapper {
+      text-align: center !important;
+      margin-bottom: 2rem !important;
+    }
+    
+    #shopify-section-{{ section.id }} .collection-button {
+      display: inline-block;
+      padding: {{ section.settings.button_padding }}px {{ section.settings.button_padding | times: 2 }}px;
+      background-color: {{ section.settings.button_background_color | default: '#000000' }};
+      color: {{ section.settings.button_text_color | default: '#ffffff' }};
+      font-size: {{ section.settings.button_font_size }}px;
+      font-weight: {{ section.settings.button_font_weight }};
+      text-decoration: none;
+      border-radius: {{ section.settings.button_border_radius }}px;
+      border: {{ section.settings.button_border_width }}px solid {{ section.settings.button_border_color | default: 'transparent' }};
+      transition: all 0.3s ease;
+      text-transform: {{ section.settings.button_text_transform }};
+      letter-spacing: {{ section.settings.button_letter_spacing }}px;
+    }
+    
+    #shopify-section-{{ section.id }} .collection-button:hover {
+      background-color: {{ section.settings.button_hover_background_color | default: '#333333' }};
+      color: {{ section.settings.button_hover_text_color | default: '#ffffff' }};
+      border-color: {{ section.settings.button_hover_border_color | default: 'transparent' }};
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    
+    /* Section header container */
+    #shopify-section-{{ section.id }} .section-header {
+      text-align: center !important;
+      padding-top: 20px !important;
+      padding-bottom: 0px !important;
+    }
+    
+    #shopify-section-{{ section.id }} .section-header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Mobile responsive */
+    @media screen and (max-width: 640px) {
+      #shopify-section-{{ section.id }} .custom-collection-heading {
+        font-size: 2rem !important;
+      }
+      
+      #shopify-section-{{ section.id }} .collection-description {
+        font-size: 1rem !important;
+        padding: 0 15px !important;
+        margin: 0 auto 1rem auto !important;
+      }
+      
+      #shopify-section-{{ section.id }} .collection-button {
+        padding: {{ section.settings.mobile_button_padding }}px {{ section.settings.mobile_button_padding | times: 2 }}px;
+        font-size: {{ section.settings.mobile_button_font_size }}px;
+        border-radius: {{ section.settings.mobile_button_border_radius }}px;
+      }
+      
+      #shopify-section-{{ section.id }} .collection-button-wrapper {
+        margin-bottom: 1.5rem !important;
+      }
+    }
+  </style>
+
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+    {% render 'products', section: section, collection: collection, products: collection.products, product_limit: product_limit, class: 'row-spacing-150' %}
+  </div>
+
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.featured-collection.name",
+  "class": "index-section section-collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.featured-collection.settings.title.label",
+      "default": "Featured Collection"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Collection Description",
+      "default": "<p>Explore our curated collection of premium products designed to elevate your style.</p>",
+      "info": "This description will appear below the heading"
+    },
+    {
+      "type": "header",
+      "content": "Heading & Description Colors"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description Color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Button Settings"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "View All"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link",
+      "info": "Link to the collection page or any other URL"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Button Border Radius",
+      "default": 30,
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_padding",
+      "label": "Button Padding",
+      "default": 12,
+      "min": 6,
+      "max": 30,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "Button Font Size",
+      "default": 16,
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "label": "Button Font Weight",
+      "default": "600",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-Bold" },
+        { "value": "700", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "button_text_transform",
+      "label": "Button Text Transform",
+      "default": "uppercase",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "button_letter_spacing",
+      "label": "Button Letter Spacing",
+      "default": 1,
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button Background Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "transparent"
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "label": "Button Border Width",
+      "default": 0,
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background_color",
+      "label": "Button Hover Background Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button Hover Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_border_color",
+      "label": "Button Hover Border Color",
+      "default": "transparent"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Button Settings"
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_border_radius",
+      "label": "Mobile Button Border Radius",
+      "default": 24,
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_padding",
+      "label": "Mobile Button Padding",
+      "default": 10,
+      "min": 6,
+      "max": 28,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_font_size",
+      "label": "Mobile Button Font Size",
+      "default": 14,
+      "min": 11,
+      "max": 20,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "id": "width",
+      "type": "select",
+      "label": "t:sections.featured-collection.settings.width.label",
+      "options": [
+        {
+          "value": "column-max",
+          "label": "t:sections.featured-collection.settings.width.option__1.label"
+        },
+        {
+          "value": "width-100",
+          "label": "t:sections.featured-collection.settings.width.option__2.label"
+        }
+      ],
+      "default": "column-max"
+    },
+    {
+      "id": "collection",
+      "type": "collection",
+      "label": "t:sections.featured-collection.settings.collection.label"
+    },
+    {
+      "type": "range",
+      "id": "products_per_row",
+      "label": "t:sections.featured-collection.settings.products_per_row.label",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "product_rows",
+      "label": "t:sections.featured-collection.settings.product_rows.label",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "t:sections.featured-collection.settings.header__1.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "t:sections.featured-collection.settings.show_vendor.label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_from",
+      "label": "t:sections.featured-collection.settings.show_from.label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "t:sections.featured-collection.settings.show_price.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_compare_at_price",
+      "label": "t:sections.featured-collection.settings.show_compare_at_price.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_unit_price",
+      "label": "t:sections.featured-collection.settings.show_unit_price.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_add_to_cart_button",
+      "label": "t:sections.featured-collection.settings.show_add_to_cart_button.label",
+      "info": "t:sections.featured-collection.settings.show_add_to_cart_button.info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "view_options_mode",
+      "label": "t:sections.featured-collection.settings.view_options_mode.label",
+      "info": "t:sections.featured-collection.settings.view_options_mode.info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_sticker",
+      "label": "t:sections.featured-collection.settings.show_sale_sticker.label",
+      "info": "t:sections.featured-collection.settings.show_sale_sticker.info",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.featured-collection.presets.name",
+      "category": "Collection",
+      "settings": {
+        "width": "column-max",
+        "products_per_row": 4,
+        "product_rows": 1,
+        "show_vendor": false,
+        "show_from": false,
+        "show_price": true,
+        "show_compare_at_price": true,
+        "show_unit_price": true,
+        "show_add_to_cart_button": true,
+        "show_sale_sticker": true
+      }
+    }
+  ]
+}
+{% endschema %}

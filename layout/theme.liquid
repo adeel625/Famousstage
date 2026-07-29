@@ -1,0 +1,190 @@
+<!doctype html>
+{% assign html_class = 'no-js' | append: ' ' | append: template %}
+{% assign cdn = 'https://cdnjs.cloudflare.com/ajax/libs/' %}
+
+
+{% if template contains '.' %}
+  {% assign template_classes = template | split: '.' %}
+  {% assign template_classes_handled = template | replace: '.', '-' %}
+  {% assign html_class = template_classes[0] | append: ' ' | append: template_classes_handled %}
+{% endif %}
+
+{% if template contains '/' %}
+  {% assign template_classes = template | split: '/' %}
+  {% assign template_classes_handled = template | replace: '/', '-' %}
+  {% assign html_class = template_classes[0] | append: ' ' | append: template_classes_handled %}
+{% endif %}
+
+{% assign page_title_handle = page_title | handle %}
+{% assign html_class = html_class | append: ' ' | append: page_title_handle %}
+{% assign template_type = template %}
+
+{% if template contains '.' %}
+  {% assign template_parts = template | split: '.' %}
+  {% assign template_type = template_parts[0] %}
+{% endif %}
+
+<!-- Proudly powered by Shopify - https://shopify.com -->
+
+<html class="{{ html_class }}" lang="{{ request.locale.iso_code }}">
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "l4sxv8t2w2");
+</script>
+
+  <head>
+
+  <!--- Google Optimize --->
+    <!--
+  <script src="https://www.googleoptimize.com/optimize.js?id=GTM-KT8BHRJ" async></script>
+    -->
+
+    
+{%- capture default_template_description %}{{ page_description }}{% endcapture -%}
+{%- capture default_template_title %}{{ page_title }}{% if current_tags %}{% capture meta_tags %}{% assign current_tags_str = current_tags | join: ', ' | append: ',' %}{% assign tag_translation_namespace = 'ta' | append: language %}{% for tag_translation in shop.metafields[tag_translation_namespace] %}{% assign srcToReplace = tag_translation | first %}{% assign srcToCheckFor = tag_translation | first | append: ',' %}{% assign translated = tag_translation | last %}{% if current_tags_str contains srcToCheckFor %}{% assign current_tags_str = current_tags_str | replace: srcToReplace, translated %}{% endif %}{% endfor %}{{ current_tags_str | append: '$#' | replace: ',$#', '' | replace: '$#', '' | strip }}{% endcapture %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags }}{% endif %}{% if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}{% assign lowercase_page_title = page_title | downcase %}{% endcapture %}{% capture smartseo_description %}{{ default_template_description | replace: 'null', '' | newline_to_br | replace: '<br />', ' ' | strip_newlines | replace: '   ', ' ' | replace: '  ', ' ' | replace: ', , ,', ',' | replace: ',,,', ',' | replace: ', ,', ',' | replace: ',,', ',' | replace: '| | |', '|' | replace: '|||', '|' | replace: '| |', '|' | replace: '||', '|' | replace: ': : :', ':' | replace: ':::', ':' | replace: ': :', ':' | replace: '::', ':' | strip | prepend: '$#' | append: '$#' | replace: '$# ,', '' | replace: '$#,', '' | replace: ', $#', '' | replace: ',$#', '' | replace: '$# |', '' | replace: '$#|', '' | replace: '| $#', '' | replace: '|$#', '' | replace: '$# :', '' | replace: '$#:', '' | replace: ': $#', '' | replace: ':$#', '' | replace: '$#', ''| replace: '\', '\\\\' | strip | strip_html | escape_once }}{% endcapture %}{% capture smartseo_full_description %}{{ default_template_description | replace: 'null', '' | newline_to_br | replace: '<br />', ' ' | strip_newlines | replace: '   ', ' ' | replace: '  ', ' ' | replace: ', , ,', ',' | replace: ',,,', ',' | replace: ', ,', ',' | replace: ',,', ',' | replace: '| | |', '|' | replace: '|||', '|' | replace: '| |', '|' | replace: '||', '|' | replace: ': : :', ':' | replace: ':::', ':' | replace: ': :', ':' | replace: '::', ':' | strip | prepend: '$#' | append: '$#' | replace: '$# ,', '' | replace: '$#,', '' | replace: ', $#', '' | replace: ',$#', '' | replace: '$# |', '' | replace: '$#|', '' | replace: '| $#', '' | replace: '|$#', '' | replace: '$# :', '' | replace: '$#:', '' | replace: ': $#', '' | replace: ':$#', '' | replace: '$#', ''| replace: '\', '\\\\' | strip | strip_html | escape_once }}{% endcapture %}{% capture smartseo_title %}{{ default_template_title | replace: 'null', '' | newline_to_br | replace: '<br />', ' ' | strip_newlines | replace: '   ', ' ' | replace: '  ', ' ' | replace: ', , ,', ',' | replace: ',,,', ',' | replace: ', ,', ',' | replace: ',,', ',' | replace: '| | |', '|' | replace: '|||', '|' | replace: '| |', '|' | replace: '||', '|' | replace: ': : :', ':' | replace: ':::', ':' | replace: ': :', ':' | replace: '::', ':' | strip | prepend: '$#' | append: '$#' | replace: '$# ,', '' | replace: '$#,', '' | replace: ', $#', '' | replace: ',$#', '' | replace: '$# |', '' | replace: '$#|', '' | replace: '| $#', '' | replace: '|$#', '' | replace: '$# :', '' | replace: '$#:', '' | replace: ': $#', '' | replace: ':$#', '' | replace: '$#', ''| replace: '\', '\\\\' | strip | strip_html | escape_once }}{% endcapture -%}
+
+{%- assign page_seo_metafield_namespace = 'page_seo' -%}
+{%- assign page_seo_metafield_key = 'seo_tags' -%}
+{%- assign metafield_parts_separator = '=||=' -%}
+{%- assign template_value_parts_separator = ':||:' -%}
+
+{%- assign smartseo_keywords = blank -%}
+{%- assign active_seo_template = blank -%}
+{%- assign active_seo_template_timestamp = 0 -%}
+
+{%- assign page_seo_template_metafield = page.metafields[page_seo_metafield_namespace][page_seo_metafield_key] -%}
+
+{%- if page_seo_template_metafield -%}
+    {%- assign seo_template_metafield_parts = page_seo_template_metafield | split: metafield_parts_separator -%}
+    {%- assign active_seo_template = seo_template_metafield_parts[0] -%}
+    {%- assign active_seo_template_timestamp = seo_template_metafield_parts | last | times: 1 -%}
+{%- endif -%}
+
+{%- if active_seo_template != blank -%}
+
+    {%- assign template_value_parts = active_seo_template | split: template_value_parts_separator -%}
+
+    {%- assign smartseo_title = template_value_parts[0] | replace: 'null', '' | newline_to_br | replace: '<br />', ' ' | strip_newlines | replace: '   ', ' ' | replace: '  ', ' ' | replace: ', , ,', ',' | replace: ',,,', ',' | replace: ', ,', ',' | replace: ',,', ',' | replace: '| | |', '|' | replace: '|||', '|' | replace: '| |', '|' | replace: '||', '|' | replace: ': : :', ':' | replace: ':::', ':' | replace: ': :', ':' | replace: '::', ':' | strip | prepend: '$#' | append: '$#' | replace: '$# ,', '' | replace: '$#,', '' | replace: ', $#', '' | replace: ',$#', '' | replace: '$# |', '' | replace: '$#|', '' | replace: '| $#', '' | replace: '|$#', '' | replace: '$# :', '' | replace: '$#:', '' | replace: ': $#', '' | replace: ':$#', '' | replace: '$#', ''| replace: '\', '\\\\' | strip | strip_html | escape_once -%}
+    {%- assign smartseo_full_description = template_value_parts[1] | replace: 'null', '' | newline_to_br | replace: '<br />', ' ' | strip_newlines | replace: '   ', ' ' | replace: '  ', ' ' | replace: ', , ,', ',' | replace: ',,,', ',' | replace: ', ,', ',' | replace: ',,', ',' | replace: '| | |', '|' | replace: '|||', '|' | replace: '| |', '|' | replace: '||', '|' | replace: ': : :', ':' | replace: ':::', ':' | replace: ': :', ':' | replace: '::', ':' | strip | prepend: '$#' | append: '$#' | replace: '$# ,', '' | replace: '$#,', '' | replace: ', $#', '' | replace: ',$#', '' | replace: '$# |', '' | replace: '$#|', '' | replace: '| $#', '' | replace: '|$#', '' | replace: '$# :', '' | replace: '$#:', '' | replace: ': $#', '' | replace: ':$#', '' | replace: '$#', ''| replace: '\', '\\\\' | strip | strip_html | escape_once -%}
+    {%- assign smartseo_description = smartseo_full_description | truncate: 300 -%}
+    {%- if template_value_parts.size == 3 -%}
+        {%- assign keywords_template_value = template_value_parts[2] | replace: 'null', '' | newline_to_br | replace: '<br />', ' ' | strip_newlines | replace: '   ', ' ' | replace: '  ', ' ' | replace: ', , ,', ',' | replace: ',,,', ',' | replace: ', ,', ',' | replace: ',,', ',' | replace: '| | |', '|' | replace: '|||', '|' | replace: '| |', '|' | replace: '||', '|' | replace: ': : :', ':' | replace: ':::', ':' | replace: ': :', ':' | replace: '::', ':' | strip | prepend: '$#' | append: '$#' | replace: '$# ,', '' | replace: '$#,', '' | replace: ', $#', '' | replace: ',$#', '' | replace: '$# |', '' | replace: '$#|', '' | replace: '| $#', '' | replace: '|$#', '' | replace: '$# :', '' | replace: '$#:', '' | replace: ': $#', '' | replace: ':$#', '' | replace: '$#', ''| replace: '\', '\\\\' | strip | strip_html | escape_once -%}
+        {%- if keywords_template_value != '' or keywords_template_value != blank or keywords_template_value != nil -%}
+            {%- assign smartseo_keywords = keywords_template_value -%}
+        {%- endif -%}
+    {%- endif -%}
+{%- endif -%}
+
+{%- comment smartseo_integration_begin_meta_data -%}<title>{{ smartseo_title }}</title>{%- endcomment smartseo_integration_end_meta_data -%}
+{%- comment smartseo_integration_begin_meta_data -%}<meta name="description" content="{{ smartseo_description }}" />{%- endcomment smartseo_integration_end_meta_data -%}
+<meta name="smartseo-keyword" content="{{ smartseo_keywords }}" />
+<meta name="smartseo-timestamp" content="{{ active_seo_template_timestamp }}" />
+
+{%- assign stop_template_processing = true -%}
+
+    {% render 'meta', template_type: template_type %}
+    {% render 'meta-social', template_type: template_type %}
+
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+
+    
+    <link rel="preconnect" href="https://fonts.shopify.com" crossorigin>
+    
+
+    {% render 'preload-fonts' %}
+    {% render 'css-variables' %}
+
+    {% render 'initial-css' %}
+
+    <link rel="stylesheet" href="{{ 'theme-vendor.css' | asset_url }}" type="text/css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}" type="text/css" media="all" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ 'theme-custom.css' | asset_url }}" type="text/css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ 'fonts.css' | asset_url }}" type="text/css" media="print" onload="this.media='all'">
+
+    <noscript>
+      <link rel="stylesheet" href="{{ 'theme-vendor.css' | asset_url }}" type="text/css" media="all">
+      <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}" type="text/css" media="all">
+      <link rel="stylesheet" href="{{ 'fonts.css' | asset_url }}" type="text/css" media="all">
+    </noscript>
+
+    {% render 'initial-js' %}
+    {% render 'lazysizes', cdn: cdn %}
+    {% render 'theme-js-config', template_type: template_type %}
+
+    <script type="text/javascript" src="{{ 'theme-vendor.js' | asset_url }}" defer="defer"></script>
+    {%- if request.page_type contains 'customers/' -%}
+      <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer="defer"></script>
+    {%- endif -%}
+
+    {% if template contains 'customers' %}
+      <script src="{{ 'customer_area.js' | shopify_asset_url }}" defer="defer"></script>
+    {% endif %}
+
+    <script type="text/javascript" src="/services/javascripts/currencies.js" defer="defer"></script>
+    <script type="text/javascript" src="{{ 'jquery.currencies.min.js' | asset_url }}" defer="defer"></script>
+    <script type="text/javascript" src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+    <script type="text/javascript" src="{{ 'theme-custom.js' | asset_url }}" defer="defer"></script>
+
+    {{ content_for_header }}
+    
+  
+  
+
+
+  
+  {% render 'vitals-loader' %}
+  
+</head>
+
+  <body>
+
+    <!-- Google Tag Manager (noscript) -->
+    {% comment %}
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K94275R"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    {% endcomment %}
+    <!-- End Google Tag Manager (noscript) -->
+
+    
+    <div id="loading">
+      <div class="spinner"></div>
+    </div>
+    
+
+    {% comment %}
+    {% render 'facebook-sdk' %}
+    {% endcomment %}
+    
+    {% section 'header' %}
+
+
+    
+    <div id="app-body">
+      <div id="app-body-inner">
+        {{ content_for_layout }}
+      </div>
+    </div>
+
+    
+    {% section 'footer' %}
+
+    <div id="overlay-background"></div>
+
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K94275R"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    {% render 'facebook-sdk' %}
+
+    <script async data-src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+    <!-- CUSTOM SNIPPET -->
+    {% render 'font-awesome' %}
+    
+    
+  </body>
+</html>

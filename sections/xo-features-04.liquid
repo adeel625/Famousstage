@@ -1,0 +1,165 @@
+<section class="xo-section xo-section--qOMDSE xo-section--dark">
+  <style>
+    .xo-section--qOMDSE {background-color: #197bbd;}
+    
+    .xo-custom-1647746564924 { text-align: left !important; }.xo-custom-1647746564924 { text-align: left !important; }.xo-custom-1647748341571 { margin: 0px !important; }.xo-custom-1647748341571 { margin: 0px !important; }.xo-custom-1647748081917 { text-align: left !important; }.xo-custom-1650367391147 { font-size: 22px !important; }.xo-custom-1647748081917 { text-align: left !important; }.xo-custom-1650367391147 { font-size: 22px !important; }.xo-custom-1647748081917 { text-align: left !important; }.xo-custom-1650367391147 { font-size: 22px !important; }.xo-custom-1647748081917 { text-align: left !important; }
+  </style>
+  <div class="xo-container">
+    <div class="xo-row">
+      <div class="xo-col-12">
+        <div class="xo-m-item xo-m-heading xo-m-heading--01 xo-custom-1647746564924 xo-m-item--left" style="--max-width: 80%;">
+          <h2 class="xo-m-heading__title xo-styles-h2-default">{{ section.settings.heading00 }}</h2>
+          <div class="xo-m-heading__text xo-styles-text-default">{{ section.settings.text00 }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="xo-row">
+      <div class="xo-col">
+        <div class=" xo-row xo-repeat xo-row-cols-1 xo-row-cols-lg-2 xo-row-cols-xl-3 xo-custom-1647748341571" style="--xo-repeat-ver-space: 20px;">
+          {%- assign defaultBlockClass = "" -%}
+          {%- assign customBlockClasses = ",," | split: ',' -%}
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'iconbox02' -%}
+              <div class="xo-repeat__item xo-col" {{ block.shopify_attributes }}>
+                <div class="xo-m-item xo-m-iconbox xo-m-iconbox-02 {% if customBlockClasses[forloop.index0] -%}{{ customBlockClasses[forloop.index0] }}{%- else -%}{{ defaultBlockClass }}{%- endif %} xo-custom-1647748081917">
+                  <div class="xo-m-iconbox__icon xo-styles-icon-default">
+                    <i class="{{ block.settings.icon0 }}">
+                    </i>
+                  </div>
+                  <h3 class="xo-m-iconbox__heading xo-styles-h3-default xo-custom-1650367391147">{{ block.settings.heading0 }}</h3>
+                  <div class="xo-m-iconbox__text xo-styles-text-default">{{ block.settings.text0 }}</div>
+                </div>
+              </div>
+              {%- when 'iconbox03' -%}
+              <div class="xo-repeat__item xo-col" {{ block.shopify_attributes }}>
+                <div class="xo-m-item xo-m-iconbox xo-m-box--left xo-m-iconbox-03 {% if customBlockClasses[forloop.index0] -%}{{ customBlockClasses[forloop.index0] }}{%- else -%}{{ defaultBlockClass }}{%- endif %} xo-custom-1647748341571">
+                  <div class="xo-m-box__left">
+                    <div class="xo-m-iconbox__icon">
+                      <i class="{{ block.settings.icon1 }}">
+                      </i>
+                    </div>
+                  </div>
+                  <div class="xo-m-box__right">
+                    <h3 class="xo-m-iconbox__heading">{{ block.settings.heading1 }}</h3>
+                    <div class="xo-m-iconbox__text">{{ block.settings.text1 }}</div>
+                  </div>
+                </div>
+              </div>
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% stylesheet %}
+  /*CSTYLES*/
+  .xo-section--qOMDSE .xo-repeat{padding:0 1px 1px 0}.xo-section--qOMDSE .xo-repeat__item{padding:35px 25px;margin:0 -1px -1px 0;border:1px solid #fff}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Features 04",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading00",
+      "label": "Heading",
+      "default": "Your heading here"
+    },
+    {
+      "type": "text",
+      "id": "text00",
+      "label": "Text",
+      "default": "Your text here"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "iconbox02",
+      "name": "IconBox02",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon0",
+          "label": "Icon",
+          "info": "Get your icon code [here](https://sections.xopify.com/settings/icons)"
+        },
+        {
+          "type": "text",
+          "id": "heading0",
+          "label": "Heading",
+          "default": "Heading title"
+        },
+        {
+          "type": "text",
+          "id": "text0",
+          "label": "Text",
+          "default": "Pair text with an image to focus on your chosen product, collection, or blog post."
+        }
+      ]
+    },
+    {
+      "type": "iconbox03",
+      "name": "IconBox03",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon1",
+          "label": "Icon",
+          "info": "Get your icon code [here](https://sections.xopify.com/settings/icons)"
+        },
+        {
+          "type": "text",
+          "id": "heading1",
+          "label": "Heading",
+          "default": "Heading title"
+        },
+        {
+          "type": "text",
+          "id": "text1",
+          "label": "Text",
+          "default": "Pair text with an image to focus on your chosen product, collection, or blog post."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Features 04",
+      "settings": {
+        "heading00": "Explore our outstanding features",
+        "text00": "Describe a product, make announcements, or welcome customers to your store."
+      },
+      "blocks": [
+        {
+          "type": "iconbox02",
+          "settings": {
+            "icon0": "icon-xodf-gift",
+            "heading0": "High Quality Design",
+            "text0": "Pair text with an icon to focus on your chosen product, collection, or blog post."
+          }
+        },
+        {
+          "type": "iconbox02",
+          "settings": {
+            "icon0": "icon-xodf-headphones",
+            "heading0": "Latest Modern Technology",
+            "text0": "Pair text with an icon to focus on your chosen product, collection, or blog post."
+          }
+        },
+        {
+          "type": "iconbox02",
+          "settings": {
+            "icon0": "icon-xodf-star",
+            "heading0": "Excellent Customer Service",
+            "text0": "Pair text with an icon to focus on your chosen product, collection, or blog post."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
