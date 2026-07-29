@@ -108,7 +108,7 @@
           "logo_height": 50,
           "show_tagline": false,
           "tagline": "",
-          "show_search_bar": false,
+          "show_search_bar": true,
           "show_customer_links": true,
           "show_checkout_link": true,
           "cart_icon": "version_1",
