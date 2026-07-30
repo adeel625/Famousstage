@@ -201,7 +201,7 @@
     "image-with-text-1": {
       "type": "image-with-text",
       "settings": {
-        "image": "shopify://shop_images/f34-convention-booth-truss_6d937d16-a7af-4d39-9cc3-365f3fe50d5c.jpg",
+        "image": "shopify://shop_images/1_5.jpg",
         "width": "column-max",
         "layout": "left",
         "image_first": true,
