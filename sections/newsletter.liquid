@@ -6,6 +6,7 @@
       color: {{ section.settings.color_text }};
       padding-left: 2rem;
       padding-right: 2rem;
+      font-family: 'Montserrat', sans-serif;
     }
     #shopify-section-{{ section.id }} .newsletter-heading {
       color: {{ section.settings.color_text }};
@@ -14,15 +15,32 @@
       {% else %}
         margin-top: 0;
       {% endif %}
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
     }
     #shopify-section-{{ section.id }} .newsletter-subheading {
       margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 400;
+      line-height: 1.6;
     }
     #shopify-section-{{ section.id }} .newsletter-form input[type="email"] {
       border-right: none;
       border-right-width: 0;
       border-bottom-right-radius: 0;
       border-top-right-radius: 0;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      padding: 12px 15px;
+      height: 48px;
+      border: 1px solid #ddd;
+      border-radius: 4px 0 0 4px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #shopify-section-{{ section.id }} .newsletter-form input[type="email"]:focus {
+      outline: none;
+      border-color: {{ section.settings.color_text }};
     }
     #shopify-section-{{ section.id }} .newsletter-form button {
       border-left: none;
@@ -31,6 +49,98 @@
       padding-right: 0.9375rem;
       padding-left: 0.9375rem;
       width: 100%;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      height: 48px;
+      background-color: {{ section.settings.color_text }};
+      color: {{ section.settings.bg_color }};
+      border: 1px solid {{ section.settings.color_text }};
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+    #shopify-section-{{ section.id }} .newsletter-form button:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    #shopify-section-{{ section.id }} .newsletter-form button:active {
+      transform: translateY(0);
+    }
+    #shopify-section-{{ section.id }} .newsletter-form .table {
+      display: table;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    #shopify-section-{{ section.id }} .newsletter-form .cell {
+      display: table-cell;
+      vertical-align: middle;
+    }
+    #shopify-section-{{ section.id }} .newsletter-form .cell:first-child {
+      width: 70%;
+    }
+    #shopify-section-{{ section.id }} .newsletter-form .cell:last-child {
+      width: 30%;
+    }
+    #shopify-section-{{ section.id }} .form-success {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 500;
+      padding: 15px;
+      border-radius: 4px;
+    }
+    #shopify-section-{{ section.id }} .form-errors {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      color: #d9534f;
+    }
+    /* Mobile Responsive */
+    @media screen and (max-width: 640px) {
+      #shopify-section-{{ section.id }} .newsletter-form .table {
+        display: block;
+        width: 100%;
+      }
+      #shopify-section-{{ section.id }} .newsletter-form .cell {
+        display: block;
+        width: 100% !important;
+      }
+      #shopify-section-{{ section.id }} .newsletter-form input[type="email"] {
+        border-radius: 4px 4px 0 0;
+        border-right: 1px solid #ddd;
+        margin-bottom: 5px;
+      }
+      #shopify-section-{{ section.id }} .newsletter-form button {
+        border-radius: 0 0 4px 4px;
+        border-left: 1px solid {{ section.settings.color_text }};
+        width: 100%;
+      }
+      #shopify-section-{{ section.id }} .newsletter-heading {
+        font-size: 24px;
+      }
+      #shopify-section-{{ section.id }} .newsletter-subheading {
+        font-size: 15px;
+      }
+    }
+    @media screen and (max-width: 480px) {
+      #shopify-section-{{ section.id }} .newsletter-heading {
+        font-size: 20px;
+      }
+      #shopify-section-{{ section.id }} .newsletter-subheading {
+        font-size: 14px;
+      }
+      #shopify-section-{{ section.id }} .newsletter-form input[type="email"] {
+        font-size: 13px;
+        padding: 10px 12px;
+        height: 44px;
+      }
+      #shopify-section-{{ section.id }} .newsletter-form button {
+        font-size: 13px;
+        height: 44px;
+      }
     }
   </style>
 
