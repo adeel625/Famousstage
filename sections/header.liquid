@@ -937,9 +937,10 @@
 
           <a href="{{ routes.root_url }}" class="site-header__logo-image{% if section.settings.align_logo == 'center' %} site-header__logo-image--centered{% endif %}">
             {% capture image_size %}{{ section.settings.logo_max_width | escape }}{% endcapture %}
-            <img src="{{ 'FS-Logo-Vector.svg' | asset_url }}" 
+            <!-- NEW LOGO - UPDATED WITH NEW FILE NAME -->
+            <img src="{{ 'FS-Logo-Vector(2)-bg0066CC.svg' | asset_url }}" 
             alt="{{ shop.name }}"
-            style="max-width: 95%;"
+            style="max-width: 95%; max-height: 100px; width: auto; height: auto;"
             loading="eager">
           </a>
     
