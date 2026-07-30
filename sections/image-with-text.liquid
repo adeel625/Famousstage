@@ -1,217 +1,131 @@
 {% render 'section-open', section: section, type: 'image-with-text', title: false %}
 
   <style>
-    /* ===== MAIN CONTAINER ===== */
-    #shopify-section-{{ section.id }} {
-      padding: 20px 0;
-    }
-    
-    #shopify-section-{{ section.id }} .image-with-text-section-inner {
-      display: flex;
-      align-items: center;
-      gap: 40px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    
     #shopify-section-{{ section.id }} .image-with-text-section-inner .cell {
-      flex: 1;
       width: 50%;
-      padding: 40px 0;
+      padding-top: 50px;
+      padding-bottom: 50px;
     }
     
-    /* ===== IMAGE STYLES ===== */
-    #shopify-section-{{ section.id }} .image-with-text-section-inner-image {
-      position: relative;
-      overflow: hidden;
-      border-radius: {{ section.settings.image_border_radius | default: 20 }}px;
-      height: {{ section.settings.image_height | default: 400 }}px;
-    }
-    
-    #shopify-section-{{ section.id }} .image-with-text-section-inner-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.3s ease;
-    }
-    
-    #shopify-section-{{ section.id }} .image-with-text-section-inner-image:hover img {
-      transform: scale(1.02);
-    }
-    
-    /* ===== TEXT STYLES ===== */
     #shopify-section-{{ section.id }} .image-with-text-section-inner-text {
-      text-align: {{ section.settings.text_alignment | default: 'left' }};
-      padding: 20px {{ section.settings.desktop_padding_right | default: 40 }}px 20px {{ section.settings.desktop_padding_left | default: 40 }}px;
-      color: {{ section.settings.text_color | default: '#666666' }};
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      height: 100%;
+      text-align: {{ section.settings.text_alignment }};
+      font-size: 18px;
+      padding-left: {{ section.settings.desktop_padding_left }}px;
+      padding-right: {{ section.settings.desktop_padding_right }}px;
+      color:#666666;
+    }
+    
+    #shopify-section-{{ section.id }} .image-with-text-section-inner-text-text > *:last-child {
+      margin-bottom: 0;
     }
     
     #shopify-section-{{ section.id }} .image-with-text-section-inner-text-heading {
       font-weight: 700;
-      font-size: {{ section.settings.heading_size | default: 2.5 }}rem;
-      color: {{ section.settings.heading_color | default: '#1a1a2e' }};
-      margin: 0 0 {{ section.settings.heading_bottom_margin | default: 15 }}px 0;
-      line-height: 1.3;
-      font-family: 'Montserrat', sans-serif;
+      font-size: {{ section.settings.heading_size }}rem;
+      color: {{ section.settings.color_text }};
+      {% if section.settings.heading != blank and section.settings.text == blank %}
+        margin: 0;
+      {% else %}
+        margin-top: 0;
+        margin-bottom: {{ section.settings.heading_bottom_margin }}px;
+      {% endif %}
     }
     
-    #shopify-section-{{ section.id }} .image-with-text-section-inner-text-text {
-      font-size: 18px;
-      line-height: 1.8;
-      color: {{ section.settings.text_color | default: '#666666' }};
-      font-family: 'Montserrat', sans-serif;
+    #shopify-section-{{ section.id }} .image-with-text-section-inner.mod-layout-image-left .image-with-text-section-inner-text {
+      padding-left: {{ section.settings.desktop_padding_left }}px;
     }
     
-    #shopify-section-{{ section.id }} .image-with-text-section-inner-text-text p {
-      margin-bottom: 15px;
+    #shopify-section-{{ section.id }} .image-with-text-section-inner.mod-layout-image-right .image-with-text-section-inner-text {
+      padding-right: {{ section.settings.desktop_padding_right }}px;
     }
     
-    #shopify-section-{{ section.id }} .image-with-text-section-inner-text-text p:last-child {
-      margin-bottom: 0;
+    #shopify-section-{{ section.id }} .image-with-text-section-inner-image img {
+      border-radius: {{ section.settings.image_border_radius }}px;
+      overflow: hidden;
     }
     
-    /* ===== BUTTON STYLES ===== */
-    #shopify-section-{{ section.id }} .image-with-text-section-inner-text .button {
-      display: inline-block;
-      margin-top: 25px;
-      padding: 14px 35px;
-      background-color: {{ section.settings.button_bg_color | default: '#0066CC' }};
-      color: #ffffff;
-      border-radius: 50px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      font-family: 'Montserrat', sans-serif;
-      text-align: center;
-      align-self: {{ section.settings.text_alignment | default: 'left' }};
-      border: 2px solid {{ section.settings.button_bg_color | default: '#0066CC' }};
-    }
-    
-    #shopify-section-{{ section.id }} .image-with-text-section-inner-text .button:hover {
-      background-color: transparent;
-      color: {{ section.settings.button_bg_color | default: '#0066CC' }};
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    }
-    
-    /* ===== LAYOUT SPECIFIC ===== */
-    #shopify-section-{{ section.id }} .image-with-text-section-inner.mod-layout-image-left {
-      flex-direction: row;
-    }
-    
-    #shopify-section-{{ section.id }} .image-with-text-section-inner.mod-layout-image-right {
-      flex-direction: row-reverse;
-    }
-    
-    /* ===== TABLET RESPONSIVE ===== */
+    /* ===== Desktop Responsive ===== */
     @media screen and (max-width: 1024px) {
-      #shopify-section-{{ section.id }} .image-with-text-section-inner {
-        gap: 30px;
-        padding: 0 20px;
-      }
-      
-      #shopify-section-{{ section.id }} .image-with-text-section-inner .cell {
-        padding: 30px 0;
-      }
-      
       #shopify-section-{{ section.id }} .image-with-text-section-inner-text {
-        padding: 15px {{ section.settings.tablet_padding_right | default: 30 }}px 15px {{ section.settings.tablet_padding_left | default: 30 }}px;
+        padding-left: {{ section.settings.tablet_padding_left }}px;
+        padding-right: {{ section.settings.tablet_padding_right }}px;
+
+      }
+      
+      #shopify-section-{{ section.id }} .image-with-text-section-inner.mod-layout-image-left .image-with-text-section-inner-text {
+        padding-left: {{ section.settings.tablet_padding_left }}px;
+      }
+      
+      #shopify-section-{{ section.id }} .image-with-text-section-inner.mod-layout-image-right .image-with-text-section-inner-text {
+        padding-right: {{ section.settings.tablet_padding_right }}px;
       }
       
       #shopify-section-{{ section.id }} .image-with-text-section-inner-text-heading {
-        font-size: {{ section.settings.tablet_heading_size | default: 2.2 }}rem;
-      }
-      
-      #shopify-section-{{ section.id }} .image-with-text-section-inner-image {
-        height: {{ section.settings.tablet_image_height | default: 350 }}px;
+        font-size: {{ section.settings.tablet_heading_size }}rem;
       }
     }
     
-    /* ===== MOBILE RESPONSIVE ===== */
-    @media screen and (max-width: 768px) {
+    /* ===== Mobile Responsive ===== */
+    @media screen and (max-width: 640px) {
       #shopify-section-{{ section.id }} .image-with-text-section-inner {
-        flex-direction: column !important;
-        gap: 0;
-        padding: 0;
+        {% if section.settings.image_first and section.settings.layout == 'right' %}
+          display: flex;
+          flex-direction: column-reverse;
+        {% endif %}
       }
       
       #shopify-section-{{ section.id }} .image-with-text-section-inner .cell {
-        width: 100% !important;
-        padding: 0 !important;
+        display: block;
+        width: auto;
+        height: auto;
+        padding-top: {{ section.settings.mobile_padding_top }}px;
+        padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+        {% if section.settings.image_first and section.settings.layout == 'right' %}
+          padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+        {% endif %}
       }
       
-      #shopify-section-{{ section.id }} .image-with-text-section-inner-image {
-        height: {{ section.settings.mobile_image_height | default: 280 }}px;
-        border-radius: {{ section.settings.mobile_image_border_radius | default: 15 }}px {{ section.settings.mobile_image_border_radius | default: 15 }}px 0 0;
-        width: 100%;
+      #shopify-section-{{ section.id }} .image-with-text-section-inner-text {
+        padding-left: {{ section.settings.mobile_padding_left }}px !important;
+        padding-right: {{ section.settings.mobile_padding_right }}px !important;
+        font-size: {{ section.settings.mobile_text_size }}px;
+      }
+      
+      #shopify-section-{{ section.id }} .image-with-text-section-inner.mod-layout-image-left .image-with-text-section-inner-text {
+        padding: {{ section.settings.mobile_padding_top_mobile }}px {{ section.settings.mobile_padding_right }}px {{ section.settings.mobile_padding_bottom }}px {{ section.settings.mobile_padding_left }}px !important;
+      }
+      
+      #shopify-section-{{ section.id }} .image-with-text-section-inner.mod-layout-image-right .image-with-text-section-inner-text {
+        padding: {{ section.settings.mobile_padding_top_mobile }}px {{ section.settings.mobile_padding_right }}px {{ section.settings.mobile_padding_bottom }}px {{ section.settings.mobile_padding_left }}px !important;
+      }
+      
+      #shopify-section-{{ section.id }} .image-with-text-section-inner-text-heading {
+        font-size: {{ section.settings.mobile_heading_size }}rem !important;
+        margin-bottom: {{ section.settings.mobile_heading_bottom_margin }}px !important;
       }
       
       #shopify-section-{{ section.id }} .image-with-text-section-inner-image img {
-        border-radius: {{ section.settings.mobile_image_border_radius | default: 15 }}px {{ section.settings.mobile_image_border_radius | default: 15 }}px 0 0;
-      }
-      
-      #shopify-section-{{ section.id }} .image-with-text-section-inner-text {
-        padding: {{ section.settings.mobile_padding_top | default: 25 }}px {{ section.settings.mobile_padding_right | default: 20 }}px {{ section.settings.mobile_padding_bottom | default: 30 }}px {{ section.settings.mobile_padding_left | default: 20 }}px !important;
-        text-align: {{ section.settings.mobile_text_alignment | default: 'center' }};
-      }
-      
-      #shopify-section-{{ section.id }} .image-with-text-section-inner-text-heading {
-        font-size: {{ section.settings.mobile_heading_size | default: 1.8 }}rem !important;
-        margin-bottom: {{ section.settings.mobile_heading_bottom_margin | default: 10 }}px !important;
-        text-align: {{ section.settings.mobile_text_alignment | default: 'center' }};
-      }
-      
-      #shopify-section-{{ section.id }} .image-with-text-section-inner-text-text {
-        font-size: {{ section.settings.mobile_text_size | default: 16 }}px;
-        text-align: {{ section.settings.mobile_text_alignment | default: 'center' }};
-      }
-      
-      #shopify-section-{{ section.id }} .image-with-text-section-inner-text .button {
-        font-size: 15px;
-        padding: 12px 30px;
-        align-self: center;
-        width: auto;
-        display: inline-block;
-      }
-      
-      #shopify-section-{{ section.id }} .image-with-text-section-inner.mod-layout-image-right {
-        flex-direction: column !important;
-      }
-      
-      #shopify-section-{{ section.id }} .image-with-text-section-inner.mod-layout-image-right .image-with-text-section-inner-image {
-        order: -1;
+        border-radius: {{ section.settings.mobile_image_border_radius }}px;
       }
     }
     
-    /* ===== SMALL MOBILE ===== */
+    /* ===== Small Mobile ===== */
     @media screen and (max-width: 400px) {
-      #shopify-section-{{ section.id }} .image-with-text-section-inner-image {
-        height: {{ section.settings.small_mobile_image_height | default: 220 }}px;
+      #shopify-section-{{ section.id }} .image-with-text-section-inner-text {
+        padding-left: {{ section.settings.small_mobile_padding_left }}px !important;
+        padding-right: {{ section.settings.small_mobile_padding_right }}px !important;
       }
       
-      #shopify-section-{{ section.id }} .image-with-text-section-inner-text {
-        padding: 20px {{ section.settings.small_mobile_padding_right | default: 15 }}px 25px {{ section.settings.small_mobile_padding_left | default: 15 }}px !important;
+      #shopify-section-{{ section.id }} .image-with-text-section-inner.mod-layout-image-left .image-with-text-section-inner-text {
+        padding: {{ section.settings.mobile_padding_top_mobile }}px {{ section.settings.small_mobile_padding_right }}px {{ section.settings.mobile_padding_bottom }}px {{ section.settings.small_mobile_padding_left }}px !important;
+      }
+      
+      #shopify-section-{{ section.id }} .image-with-text-section-inner.mod-layout-image-right .image-with-text-section-inner-text {
+        padding: {{ section.settings.mobile_padding_top_mobile }}px {{ section.settings.small_mobile_padding_right }}px {{ section.settings.mobile_padding_bottom }}px {{ section.settings.small_mobile_padding_left }}px !important;
       }
       
       #shopify-section-{{ section.id }} .image-with-text-section-inner-text-heading {
-        font-size: {{ section.settings.small_mobile_heading_size | default: 1.5 }}rem !important;
-      }
-      
-      #shopify-section-{{ section.id }} .image-with-text-section-inner-text-text {
-        font-size: 15px;
-      }
-      
-      #shopify-section-{{ section.id }} .image-with-text-section-inner-text .button {
-        font-size: 14px;
-        padding: 10px 25px;
-        width: 100%;
-        text-align: center;
+        font-size: {{ section.settings.small_mobile_heading_size }}rem !important;
       }
     }
   </style>
@@ -224,7 +138,7 @@
     {% endif %}
   {% endcapture %}
 
-  <div class="image-with-text-section-inner mod-layout-image-{{ section.settings.layout | default: 'left' }}">
+  <div class="image-with-text-section-inner mod-layout-image-{{ section.settings.layout }} table">
 
     {% if section.settings.layout == 'left' %}
       <div class="image-with-text-section-inner-image cell">
@@ -245,11 +159,14 @@
       {% endunless %}
 
       {% if section.settings.button_label != blank and section.settings.button_link != blank %}
-        <a href="{{ section.settings.button_link }}" class="button">
+
+        {% render 'separator', class: 'margin-top-40 margin-bottom-50' %}
+
+        <a href="{{ section.settings.button_link }}" target="" class="button">
           {{ section.settings.button_label | escape }}
         </a>
+
       {% endif %}
-      
     </div>
 
     {% if section.settings.layout == 'right' %}
@@ -306,72 +223,14 @@
       ]
     },
     {
-      "type": "header",
-      "content": "🖼️ Image Settings"
-    },
-    {
-      "type": "range",
-      "id": "image_height",
-      "label": "Image Height (Desktop)",
-      "default": 400,
-      "min": 200,
-      "max": 700,
-      "step": 50,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "tablet_image_height",
-      "label": "Image Height (Tablet)",
-      "default": 350,
-      "min": 150,
-      "max": 600,
-      "step": 50,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "mobile_image_height",
-      "label": "Image Height (Mobile)",
-      "default": 300,
-      "min": 150,
-      "max": 500,
-      "step": 50,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "small_mobile_image_height",
-      "label": "Image Height (Small Mobile)",
-      "default": 250,
-      "min": 100,
-      "max": 400,
-      "step": 50,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "image_border_radius",
-      "label": "Image Border Radius (Desktop)",
-      "default": 20,
-      "min": 0,
-      "max": 50,
-      "step": 5,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "mobile_image_border_radius",
-      "label": "Image Border Radius (Mobile)",
-      "default": 15,
-      "min": 0,
-      "max": 40,
-      "step": 5,
-      "unit": "px"
+      "type": "checkbox",
+      "id": "image_first",
+      "label": "Image First on Mobile",
+      "default": true
     },
     {
       "type": "header",
-      "content": "📝 Content Settings"
+      "content": "Content Settings"
     },
     {
       "type": "text",
@@ -388,8 +247,7 @@
     {
       "type": "text",
       "id": "button_label",
-      "label": "Button Label",
-      "default": "Learn More"
+      "label": "Button Label"
     },
     {
       "type": "url",
@@ -397,35 +255,9 @@
       "label": "Button Link"
     },
     {
-      "type": "header",
-      "content": "🎨 Colors"
-    },
-    {
-      "type": "color",
-      "id": "heading_color",
-      "label": "Heading Color",
-      "default": "#1a1a2e"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Text Color",
-      "default": "#666666"
-    },
-    {
-      "type": "color",
-      "id": "button_bg_color",
-      "label": "Button Background Color",
-      "default": "#0066CC"
-    },
-    {
-      "type": "header",
-      "content": "📐 Alignment"
-    },
-    {
       "type": "select",
       "id": "text_alignment",
-      "label": "Text Alignment (Desktop)",
+      "label": "Text Alignment",
       "default": "left",
       "options": [
         {
@@ -443,28 +275,8 @@
       ]
     },
     {
-      "type": "select",
-      "id": "mobile_text_alignment",
-      "label": "Text Alignment (Mobile)",
-      "default": "center",
-      "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
-      ]
-    },
-    {
       "type": "header",
-      "content": "📐 Typography"
+      "content": "Typography"
     },
     {
       "type": "range",
@@ -487,6 +299,68 @@
       "unit": "px"
     },
     {
+      "type": "header",
+      "content": "Image Settings"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Image Border Radius",
+      "default": 20,
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "💻 Desktop Padding (1024px+)"
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_left",
+      "label": "Text Padding Left",
+      "default": 60,
+      "min": 0,
+      "max": 120,
+      "step": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_right",
+      "label": "Text Padding Right",
+      "default": 60,
+      "min": 0,
+      "max": 120,
+      "step": 10,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "📱 Tablet Padding (768-1024px)"
+    },
+    {
+      "type": "range",
+      "id": "tablet_padding_left",
+      "label": "Text Padding Left",
+      "default": 40,
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "tablet_padding_right",
+      "label": "Text Padding Right",
+      "default": 40,
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "px"
+    },
+    {
       "type": "range",
       "id": "tablet_heading_size",
       "label": "Heading Size (Tablet)",
@@ -495,6 +369,60 @@
       "max": 4.5,
       "step": 0.1,
       "unit": "rem"
+    },
+    {
+      "type": "header",
+      "content": "📱 Mobile Padding (Below 640px)"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_left",
+      "label": "Text Padding Left",
+      "default": 20,
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_right",
+      "label": "Text Padding Right",
+      "default": 20,
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Section Top Padding",
+      "default": 30,
+      "min": 0,
+      "max": 80,
+      "step": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Section Bottom Padding",
+      "default": 30,
+      "min": 0,
+      "max": 80,
+      "step": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top_mobile",
+      "label": "Text Top Padding",
+      "default": 20,
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px"
     },
     {
       "type": "range",
@@ -518,16 +446,6 @@
     },
     {
       "type": "range",
-      "id": "small_mobile_heading_size",
-      "label": "Heading Size (Small Mobile)",
-      "default": 1.5,
-      "min": 1,
-      "max": 3,
-      "step": 0.1,
-      "unit": "rem"
-    },
-    {
-      "type": "range",
       "id": "mobile_text_size",
       "label": "Text Size (Mobile)",
       "default": 16,
@@ -537,120 +455,48 @@
       "unit": "px"
     },
     {
-      "type": "header",
-      "content": "📱 Desktop Padding"
-    },
-    {
       "type": "range",
-      "id": "desktop_padding_left",
-      "label": "Text Padding Left",
-      "default": 40,
+      "id": "mobile_image_border_radius",
+      "label": "Image Border Radius (Mobile)",
+      "default": 15,
       "min": 0,
-      "max": 100,
-      "step": 10,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "desktop_padding_right",
-      "label": "Text Padding Right",
-      "default": 40,
-      "min": 0,
-      "max": 100,
-      "step": 10,
-      "unit": "px"
-    },
-    {
-      "type": "header",
-      "content": "📱 Tablet Padding"
-    },
-    {
-      "type": "range",
-      "id": "tablet_padding_left",
-      "label": "Text Padding Left",
-      "default": 30,
-      "min": 0,
-      "max": 80,
-      "step": 10,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "tablet_padding_right",
-      "label": "Text Padding Right",
-      "default": 30,
-      "min": 0,
-      "max": 80,
-      "step": 10,
-      "unit": "px"
-    },
-    {
-      "type": "header",
-      "content": "📱 Mobile Padding"
-    },
-    {
-      "type": "range",
-      "id": "mobile_padding_left",
-      "label": "Text Padding Left",
-      "default": 20,
-      "min": 0,
-      "max": 50,
-      "step": 5,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "mobile_padding_right",
-      "label": "Text Padding Right",
-      "default": 20,
-      "min": 0,
-      "max": 50,
-      "step": 5,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "mobile_padding_top",
-      "label": "Text Top Padding",
-      "default": 25,
-      "min": 0,
-      "max": 60,
-      "step": 5,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "mobile_padding_bottom",
-      "label": "Text Bottom Padding",
-      "default": 30,
-      "min": 0,
-      "max": 60,
+      "max": 40,
       "step": 5,
       "unit": "px"
     },
     {
       "type": "header",
-      "content": "📱 Small Mobile Padding"
+      "content": "📱 Small Mobile Padding (Below 400px)"
     },
     {
       "type": "range",
       "id": "small_mobile_padding_left",
       "label": "Text Padding Left",
-      "default": 15,
+      "default": 12,
       "min": 0,
-      "max": 35,
-      "step": 5,
+      "max": 40,
+      "step": 4,
       "unit": "px"
     },
     {
       "type": "range",
       "id": "small_mobile_padding_right",
       "label": "Text Padding Right",
-      "default": 15,
+      "default": 12,
       "min": 0,
-      "max": 35,
-      "step": 5,
+      "max": 40,
+      "step": 4,
       "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "small_mobile_heading_size",
+      "label": "Heading Size (Small Mobile)",
+      "default": 1.5,
+      "min": 1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "rem"
     }
   ],
   "presets": [
