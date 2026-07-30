@@ -39,37 +39,9 @@
       padding-right: {{ section.settings.desktop_padding_right }}px;
     }
     
-    /* ===== IMAGE HEIGHT CONTROL ===== */
-    #shopify-section-{{ section.id }} .image-with-text-section-inner-image {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      height: {{ section.settings.image_height }}px;
-    }
-    
     #shopify-section-{{ section.id }} .image-with-text-section-inner-image img {
       border-radius: {{ section.settings.image_border_radius }}px;
       overflow: hidden;
-      width: 100%;
-      height: 100%;
-      object-fit: {{ section.settings.image_object_fit }};
-      display: block;
-    }
-    
-    /* Image container ke liye */
-    #shopify-section-{{ section.id }} .image-with-text-section-inner-image .image-container {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    #shopify-section-{{ section.id }} .image-with-text-section-inner-image .image-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: {{ section.settings.image_object_fit }};
     }
     
     /* ===== Desktop Responsive ===== */
@@ -91,10 +63,6 @@
       #shopify-section-{{ section.id }} .image-with-text-section-inner-text-heading {
         font-size: {{ section.settings.tablet_heading_size }}rem;
       }
-      
-      #shopify-section-{{ section.id }} .image-with-text-section-inner-image {
-        height: {{ section.settings.tablet_image_height }}px;
-      }
     }
     
     /* ===== Mobile Responsive ===== */
@@ -108,7 +76,7 @@
       
       #shopify-section-{{ section.id }} .image-with-text-section-inner .cell {
         display: block;
-        width: 100% !important;
+        width: auto;
         height: auto;
         padding-top: {{ section.settings.mobile_padding_top }}px;
         padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
@@ -136,19 +104,8 @@
         margin-bottom: {{ section.settings.mobile_heading_bottom_margin }}px !important;
       }
       
-      #shopify-section-{{ section.id }} .image-with-text-section-inner-image {
-        height: {{ section.settings.mobile_image_height }}px !important;
-        width: 100% !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-      }
-      
       #shopify-section-{{ section.id }} .image-with-text-section-inner-image img {
         border-radius: {{ section.settings.mobile_image_border_radius }}px;
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: {{ section.settings.mobile_image_object_fit }};
       }
     }
     
@@ -169,10 +126,6 @@
       
       #shopify-section-{{ section.id }} .image-with-text-section-inner-text-heading {
         font-size: {{ section.settings.small_mobile_heading_size }}rem !important;
-      }
-      
-      #shopify-section-{{ section.id }} .image-with-text-section-inner-image {
-        height: {{ section.settings.small_mobile_image_height }}px !important;
       }
     }
   </style>
@@ -274,90 +227,6 @@
       "id": "image_first",
       "label": "Image First on Mobile",
       "default": true
-    },
-    {
-      "type": "header",
-      "content": "🖼️ Image Height Settings"
-    },
-    {
-      "type": "range",
-      "id": "image_height",
-      "label": "Image Height (Desktop)",
-      "default": 450,
-      "min": 200,
-      "max": 800,
-      "step": 50,
-      "unit": "px"
-    },
-    {
-      "type": "select",
-      "id": "image_object_fit",
-      "label": "Image Fit (Desktop)",
-      "default": "cover",
-      "options": [
-        {
-          "value": "cover",
-          "label": "Cover (Crop)"
-        },
-        {
-          "value": "contain",
-          "label": "Contain (Fit)"
-        },
-        {
-          "value": "fill",
-          "label": "Fill (Stretch)"
-        }
-      ]
-    },
-    {
-      "type": "range",
-      "id": "tablet_image_height",
-      "label": "Image Height (Tablet)",
-      "default": 350,
-      "min": 150,
-      "max": 700,
-      "step": 50,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "mobile_image_height",
-      "label": "Image Height (Mobile)",
-      "default": 300,
-      "min": 150,
-      "max": 600,
-      "step": 50,
-      "unit": "px"
-    },
-    {
-      "type": "select",
-      "id": "mobile_image_object_fit",
-      "label": "Image Fit (Mobile)",
-      "default": "cover",
-      "options": [
-        {
-          "value": "cover",
-          "label": "Cover (Crop)"
-        },
-        {
-          "value": "contain",
-          "label": "Contain (Fit)"
-        },
-        {
-          "value": "fill",
-          "label": "Fill (Stretch)"
-        }
-      ]
-    },
-    {
-      "type": "range",
-      "id": "small_mobile_image_height",
-      "label": "Image Height (Small Mobile)",
-      "default": 250,
-      "min": 100,
-      "max": 500,
-      "step": 50,
-      "unit": "px"
     },
     {
       "type": "header",
