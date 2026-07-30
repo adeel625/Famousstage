@@ -451,7 +451,7 @@
         "heading_size": 36,
         "subheading_size": 18,
         "heading_spacing": 50,
-        "heading_color": "#000000",
+        "heading_color": "#666666",
         "subheading_color": "#666666",
         "background_color": "#ffffff",
         "item_background": "#f8f9fa",
