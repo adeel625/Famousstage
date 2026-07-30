@@ -214,7 +214,7 @@
         "heading_bottom_margin": 15,
         "image_border_radius": 20,
         "desktop_padding_left": 60,
-        "desktop_padding_right": 60,
+        "desktop_padding_right": 0,
         "tablet_padding_left": 40,
         "tablet_padding_right": 40,
         "tablet_heading_size": 2.2,
