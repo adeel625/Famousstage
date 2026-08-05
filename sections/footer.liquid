@@ -199,6 +199,7 @@
 {% render 'section-close' %}
 
 <script src="https://cdn.shopify.com/s/files/1/0245/4798/3420/files/currency.js?v=1649709437" defer="defer"></script>
+
 {% schema %}
 {
   "name": "t:sections.footer.name",
@@ -645,7 +646,8 @@
         {
           "type": "text",
           "id": "title",
-          "label": "t:sections.footer.blocks.social-icons.settings.title.label"
+          "label": "t:sections.footer.blocks.social-icons.settings.title.label",
+          "default": "Follow Us"
         },
         {
           "type": "range",
@@ -656,6 +658,82 @@
           "step": 2,
           "unit": "t:sections.footer.blocks.social-icons.settings.icon_size.unit",
           "default": 24
+        },
+        {
+          "type": "header",
+          "content": "SOCIAL MEDIA LINKS"
+        },
+        {
+          "type": "url",
+          "id": "facebook_url",
+          "label": "Facebook URL",
+          "info": "e.g., https://www.facebook.com/yourpage"
+        },
+        {
+          "type": "url",
+          "id": "instagram_url",
+          "label": "Instagram URL",
+          "info": "e.g., https://www.instagram.com/yourhandle"
+        },
+        {
+          "type": "url",
+          "id": "twitter_url",
+          "label": "Twitter / X URL",
+          "info": "e.g., https://twitter.com/yourhandle"
+        },
+        {
+          "type": "url",
+          "id": "youtube_url",
+          "label": "YouTube URL",
+          "info": "e.g., https://www.youtube.com/c/yourchannel"
+        },
+        {
+          "type": "url",
+          "id": "pinterest_url",
+          "label": "Pinterest URL",
+          "info": "e.g., https://www.pinterest.com/yourhandle"
+        },
+        {
+          "type": "url",
+          "id": "tiktok_url",
+          "label": "TikTok URL",
+          "info": "e.g., https://www.tiktok.com/@yourhandle"
+        },
+        {
+          "type": "url",
+          "id": "linkedin_url",
+          "label": "LinkedIn URL",
+          "info": "e.g., https://www.linkedin.com/company/yourcompany"
+        },
+        {
+          "type": "url",
+          "id": "snapchat_url",
+          "label": "Snapchat URL",
+          "info": "e.g., https://www.snapchat.com/add/yourhandle"
+        },
+        {
+          "type": "url",
+          "id": "whatsapp_url",
+          "label": "WhatsApp URL",
+          "info": "e.g., https://wa.me/yournumber"
+        },
+        {
+          "type": "url",
+          "id": "tumblr_url",
+          "label": "Tumblr URL",
+          "info": "e.g., https://yourhandle.tumblr.com"
+        },
+        {
+          "type": "url",
+          "id": "vimeo_url",
+          "label": "Vimeo URL",
+          "info": "e.g., https://vimeo.com/yourhandle"
+        },
+        {
+          "type": "url",
+          "id": "github_url",
+          "label": "GitHub URL",
+          "info": "e.g., https://github.com/yourhandle"
         }
       ]
     },
