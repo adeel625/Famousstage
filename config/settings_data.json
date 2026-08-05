@@ -154,8 +154,20 @@
           "1482276648998": {
             "type": "social-icons",
             "settings": {
-              "title": "Social Media",
-              "icon_size": 24
+              "title": "social media",
+              "icon_size": 20,
+              "facebook_url": "https://www.facebook.com/famousstages01",
+              "instagram_url": "https://www.instagram.com/famousstages",
+              "twitter_url": "https://x.com/famousstages",
+              "youtube_url": "",
+              "pinterest_url": "",
+              "tiktok_url": "",
+              "linkedin_url": "",
+              "snapchat_url": "",
+              "whatsapp_url": "",
+              "tumblr_url": "",
+              "vimeo_url": "",
+              "github_url": ""
             }
           }
         },
