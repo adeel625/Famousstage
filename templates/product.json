@@ -108,6 +108,7 @@
         "faq_item_FdW6XK",
         "faq_item_eRThDk"
       ],
+      "disabled": true,
       "name": "Product Tabs Section",
       "settings": {
         "tab_1_label": "Additional Information",
