@@ -19,39 +19,28 @@
         
         <div class="tabs-content">
           
-          <!-- ========================================== -->
-          <!-- TAB 1: ADDITIONAL INFORMATION               -->
-          <!-- ========================================== -->
+          <!-- TAB 1: ADDITIONAL INFORMATION -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
             <div class="additional-info-content">
-              
-              <!-- User se edit hone wala TITLE -->
               {% if section.settings.info_title != blank %}
                 <h3 class="info-title">{{ section.settings.info_title }}</h3>
               {% endif %}
               
-              <!-- User se edit hone wala DESCRIPTION -->
               {% if section.settings.info_description != blank %}
                 <div class="info-description">
                   {{ section.settings.info_description }}
                 </div>
               {% else %}
-                <!-- Agar user ne description nahi dali toh product description show ho -->
                 <div class="info-description">
                   {{ product.description }}
                 </div>
               {% endif %}
-              
             </div>
           </div>
           
-          <!-- ========================================== -->
-          <!-- TAB 2: FAQ                                  -->
-          <!-- ========================================== -->
+          <!-- TAB 2: FAQ -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
-              
-              <!-- FAQ Blocks - User unlimited add/delete kar sakta hai -->
               {% if section.blocks.size > 0 %}
                 {% for block in section.blocks %}
                   <div class="faq-item" {{ block.shopify_attributes }}>
@@ -67,7 +56,6 @@
               {% else %}
                 <p class="faq-placeholder">{{ section.settings.empty_message | default: 'No FAQ items added yet. Click "Add block" to add FAQ items.' }}</p>
               {% endif %}
-              
             </div>
           </div>
           
@@ -125,8 +113,6 @@
     .tab-panel.active {
       display: block;
     }
-    
-    /* Additional Information Styles */
     .additional-info-content .info-title {
       font-size: 20px;
       font-weight: 600;
@@ -140,8 +126,6 @@
     .additional-info-content .info-description p {
       margin: 0 0 15px 0;
     }
-    
-    /* FAQ Styles */
     .faq-item {
       border-bottom: 1px solid #eaeaea;
       padding: 12px 0;
@@ -180,12 +164,10 @@
       padding: 20px 0;
       text-align: center;
     }
-    
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
     @media (max-width: 768px) {
       .tab-item {
         padding: 10px 16px;
@@ -212,7 +194,6 @@
       const container = document.querySelector(`[data-section-id="${sectionId}"]`);
       if (!container) return;
       
-      // Tab switching
       const tabs = container.querySelectorAll('.tab-item');
       const panels = {
         'additional-info': container.querySelector('#additional-info'),
@@ -233,7 +214,6 @@
         });
       });
       
-      // FAQ toggle - click to expand/collapse
       const faqQuestions = container.querySelectorAll('.faq-question');
       faqQuestions.forEach(question => {
         question.addEventListener('click', function() {
@@ -286,25 +266,23 @@
     },
     {
       "type": "header",
-      "content": "📝 Additional Information Content"
+      "content": "Additional Information Content"
     },
     {
       "type": "text",
       "id": "info_title",
       "label": "Custom Title",
-      "default": "Product Details",
-      "info": "User is title edit kar sakta hai"
+      "default": "Product Details"
     },
     {
       "type": "richtext",
       "id": "info_description",
       "label": "Custom Description",
-      "default": "<p>Add your custom product information here. This will override the product description.</p>",
-      "info": "User is description edit kar sakta hai. Agar khali chhoda toh product description show hogi."
+      "default": "<p>Add your custom product information here.</p>"
     },
     {
       "type": "header",
-      "content": "❓ FAQ Settings"
+      "content": "FAQ Settings"
     },
     {
       "type": "text",
@@ -336,30 +314,7 @@
   "presets": [
     {
       "name": "Product Tabs Section",
-      "category": "Product",
-      "blocks": [
-        {
-          "type": "faq_item",
-          "settings": {
-            "question": "What is your return policy?",
-            "answer": "<p>We offer a 30-day return policy for all products.</p>"
-          }
-        },
-        {
-          "type": "faq_item",
-          "settings": {
-            "question": "How long does shipping take?",
-            "answer": "<p>Shipping typically takes 3-5 business days.</p>"
-          }
-        },
-        {
-          "type": "faq_item",
-          "settings": {
-            "question": "Do you offer international shipping?",
-            "answer": "<p>Yes, we ship worldwide. Shipping costs vary by location.</p>"
-          }
-        }
-      ]
+      "category": "Product"
     }
   ]
 }
