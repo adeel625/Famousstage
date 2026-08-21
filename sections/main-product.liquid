@@ -287,8 +287,6 @@
 
         <div class="columns medium-{{ col_two_size_medium }} large-{{ col_two_size_large }}" style="margin-right:0;">
 
-          {% section 'product-tabs-section' %}
-
           {% if col_two_size_medium == 12 %}
             {% render 'separator', class: 'margin-top-150 no-margin-bottom' %}
           {% else %}
@@ -679,6 +677,9 @@
 
             {%- endcase -%}
           {%- endfor -%}
+
+          <!-- ✅ SAHI JAGAH - YAHAN ADD KIYA -->
+          {% section 'product-tabs-section' %}
 
           {% render 'separator' %}
         </div>
