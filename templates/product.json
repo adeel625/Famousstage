@@ -80,6 +80,18 @@
     },
     "product_tabs_section_9ytWDC": {
       "type": "product-tabs-section",
+      "blocks": {
+        "faq_item_eRThDk": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>We offer a 30-day return policy for all products.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_item_eRThDk"
+      ],
       "name": "Product Tabs Section",
       "settings": {
         "tab_1_label": "Additional Information",
