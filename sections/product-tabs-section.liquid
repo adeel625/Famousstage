@@ -1,106 +1,201 @@
 {% if product %}
-  <div class="product-tabs-section" data-section-id="{{ section.id }}" data-section-type="product-tabs">
+  <div
+    class="product-tabs-section"
+    data-section-id="{{ section.id }}"
+    data-section-type="product-tabs"
+  >
     <div class="page-width">
-      
-      <!-- Section Title -->
+
       {% if section.settings.section_title != blank %}
-        <h2 class="section-title">{{ section.settings.section_title }}</h2>
+        <h2 class="section-title">
+          {{ section.settings.section_title }}
+        </h2>
       {% endif %}
-      
+
       <div class="tabs-wrapper">
+
+        <!-- TABS -->
         <ul class="tabs-nav" role="tablist">
-          <li class="tab-item active" role="tab" data-tab="additional-info">
+
+          <li
+            class="tab-item active"
+            role="tab"
+            data-tab="additional-info-{{ section.id }}"
+          >
             {{ section.settings.tab_1_label | default: 'Additional Information' }}
           </li>
-          <li class="tab-item" role="tab" data-tab="faq">
+
+          <li
+            class="tab-item"
+            role="tab"
+            data-tab="faq-{{ section.id }}"
+          >
             {{ section.settings.tab_2_label | default: 'FAQ' }}
           </li>
+
         </ul>
-        
+
+
         <div class="tabs-content">
-          
-          <!-- ========================================== -->
-          <!-- TAB 1: ADDITIONAL INFORMATION               -->
-          <!-- ========================================== -->
-          <div class="tab-panel active" id="additional-info" role="tabpanel">
+
+          <!-- ================================= -->
+          <!-- ADDITIONAL INFORMATION TAB -->
+          <!-- ================================= -->
+
+          <div
+            class="tab-panel active"
+            id="additional-info-{{ section.id }}"
+            role="tabpanel"
+          >
+
             <div class="additional-info-content">
-              
-              <!-- User se edit hone wala TITLE -->
+
+              <!-- EDITABLE TITLE -->
               {% if section.settings.info_title != blank %}
-                <h3 class="info-title">{{ section.settings.info_title }}</h3>
+                <h3 class="info-title">
+                  {{ section.settings.info_title }}
+                </h3>
               {% endif %}
-              
-              <!-- User se edit hone wala DESCRIPTION -->
+
+
+              <!-- EDITABLE DESCRIPTION -->
               {% if section.settings.info_description != blank %}
+
                 <div class="info-description">
                   {{ section.settings.info_description }}
                 </div>
+
               {% else %}
-                <!-- Agar user ne description nahi dali toh product description show ho -->
+
+                <!-- PRODUCT DESCRIPTION FALLBACK -->
                 <div class="info-description">
                   {{ product.description }}
                 </div>
+
               {% endif %}
-              
+
             </div>
+
           </div>
-          
-          <!-- ========================================== -->
-          <!-- TAB 2: FAQ                                  -->
-          <!-- ========================================== -->
-          <div class="tab-panel" id="faq" role="tabpanel">
+
+
+          <!-- ================================= -->
+          <!-- FAQ TAB -->
+          <!-- ================================= -->
+
+          <div
+            class="tab-panel"
+            id="faq-{{ section.id }}"
+            role="tabpanel"
+          >
+
             <div class="faq-content">
-              
-              <!-- FAQ Blocks - User unlimited add/delete kar sakta hai -->
+
               {% if section.blocks.size > 0 %}
+
                 {% for block in section.blocks %}
-                  <div class="faq-item" {{ block.shopify_attributes }}>
-                    <div class="faq-question" data-toggle="collapse">
-                      <span>{{ block.settings.question }}</span>
-                      <span class="faq-toggle">+</span>
-                    </div>
-                    <div class="faq-answer" style="display: none;">
+
+                  <div
+                    class="faq-item"
+                    {{ block.shopify_attributes }}
+                  >
+
+                    <!-- QUESTION -->
+                    <button
+                      type="button"
+                      class="faq-question"
+                      aria-expanded="false"
+                    >
+
+                      <span class="faq-question-text">
+                        {{ block.settings.question }}
+                      </span>
+
+                      <span class="faq-toggle">
+                        +
+                      </span>
+
+                    </button>
+
+
+                    <!-- ANSWER -->
+                    <div
+                      class="faq-answer"
+                      hidden
+                    >
+
                       {{ block.settings.answer }}
+
                     </div>
+
                   </div>
+
                 {% endfor %}
+
               {% else %}
-                <p class="faq-placeholder">{{ section.settings.empty_message | default: 'No FAQ items added yet. Click "Add block" to add FAQ items.' }}</p>
+
+                <p class="faq-placeholder">
+                  {{ section.settings.empty_message | default: 'No FAQ items added yet. Click "Add block" to add an FAQ.' }}
+                </p>
+
               {% endif %}
-              
+
             </div>
+
           </div>
-          
+
         </div>
+
       </div>
+
     </div>
   </div>
 
+
   <style>
+
+    /* ================================
+       MAIN SECTION
+    ================================= */
+
     .product-tabs-section {
       margin: 40px 0;
       padding: 0 20px;
     }
+
     .product-tabs-section .page-width {
       max-width: 1200px;
       margin: 0 auto;
     }
-    .section-title {
+
+
+    /* ================================
+       SECTION TITLE
+    ================================= */
+
+    .product-tabs-section .section-title {
       text-align: center;
       font-size: 28px;
       font-weight: 700;
-      margin-bottom: 30px;
+      margin: 0 0 30px;
       color: #000;
     }
-    .tabs-nav {
+
+
+    /* ================================
+       TABS
+    ================================= */
+
+    .product-tabs-section .tabs-nav {
       display: flex;
       list-style: none;
       padding: 0;
-      margin: 0 0 20px 0;
+      margin: 0 0 20px;
       border-bottom: 2px solid #eaeaea;
       flex-wrap: wrap;
     }
-    .tab-item {
+
+    .product-tabs-section .tab-item {
       padding: 12px 24px;
       cursor: pointer;
       font-weight: 600;
@@ -110,157 +205,377 @@
       transition: all 0.3s ease;
       user-select: none;
     }
-    .tab-item.active {
+
+    .product-tabs-section .tab-item:hover {
+      color: #000;
+    }
+
+    .product-tabs-section .tab-item.active {
       color: #000;
       border-bottom-color: #000;
     }
-    .tab-item:hover {
-      color: #000;
-    }
-    .tab-panel {
+
+
+    /* ================================
+       TAB PANELS
+    ================================= */
+
+    .product-tabs-section .tab-panel {
       display: none;
       padding: 20px 0;
-      animation: fadeIn 0.3s ease;
+      animation: productTabsFadeIn 0.3s ease;
     }
-    .tab-panel.active {
+
+    .product-tabs-section .tab-panel.active {
       display: block;
     }
-    
-    /* Additional Information Styles */
-    .additional-info-content .info-title {
-      font-size: 20px;
+
+
+    /* ================================
+       ADDITIONAL INFORMATION
+    ================================= */
+
+    .product-tabs-section .info-title {
+      font-size: 22px;
       font-weight: 600;
-      margin-bottom: 15px;
+      margin: 0 0 15px;
       color: #000;
     }
-    .additional-info-content .info-description {
+
+    .product-tabs-section .info-description {
       color: #333;
       line-height: 1.8;
+      font-size: 16px;
     }
-    .additional-info-content .info-description p {
-      margin: 0 0 15px 0;
+
+    .product-tabs-section .info-description p {
+      margin: 0 0 15px;
     }
-    
-    /* FAQ Styles */
-    .faq-item {
+
+    .product-tabs-section .info-description ul,
+    .product-tabs-section .info-description ol {
+      margin-bottom: 15px;
+      padding-left: 25px;
+    }
+
+    .product-tabs-section .info-description img {
+      max-width: 100%;
+      height: auto;
+    }
+
+
+    /* ================================
+       FAQ
+    ================================= */
+
+    .product-tabs-section .faq-item {
       border-bottom: 1px solid #eaeaea;
-      padding: 12px 0;
     }
-    .faq-item:last-child {
+
+    .product-tabs-section .faq-item:last-child {
       border-bottom: none;
     }
-    .faq-question {
+
+
+    /* FAQ QUESTION */
+
+    .product-tabs-section .faq-question {
+      width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 20px;
+
+      padding: 18px 0;
+
+      background: transparent;
+      border: 0;
+      outline: none;
+
       cursor: pointer;
-      font-weight: 500;
+
+      text-align: left;
+
+      font-family: inherit;
       font-size: 16px;
-      padding: 4px 0;
+      font-weight: 600;
+
+      color: #000;
     }
-    .faq-question .faq-toggle {
-      font-size: 22px;
-      transition: transform 0.3s ease;
+
+    .product-tabs-section .faq-question:hover {
       color: #333;
     }
-    .faq-question.active .faq-toggle {
+
+
+    /* QUESTION TEXT */
+
+    .product-tabs-section .faq-question-text {
+      flex: 1;
+    }
+
+
+    /* PLUS ICON */
+
+    .product-tabs-section .faq-toggle {
+      flex: 0 0 auto;
+
+      width: 28px;
+      height: 28px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 24px;
+      font-weight: 400;
+
+      line-height: 1;
+
+      color: #333;
+
+      transition: transform 0.3s ease;
+    }
+
+
+    /* OPEN ICON */
+
+    .product-tabs-section .faq-question.active .faq-toggle {
       transform: rotate(45deg);
     }
-    .faq-answer {
-      padding-top: 12px;
+
+
+    /* FAQ ANSWER */
+
+    .product-tabs-section .faq-answer {
+      padding: 0 40px 18px 0;
+
       color: #555;
+
+      font-size: 15px;
       line-height: 1.8;
+
+      animation: faqAnswerFadeIn 0.25s ease;
     }
-    .faq-answer p {
-      margin: 5px 0;
+
+    .product-tabs-section .faq-answer p {
+      margin: 0 0 10px;
     }
-    .faq-placeholder {
+
+    .product-tabs-section .faq-answer p:last-child {
+      margin-bottom: 0;
+    }
+
+
+    /* EMPTY MESSAGE */
+
+    .product-tabs-section .faq-placeholder {
       color: #999;
       font-style: italic;
       padding: 20px 0;
       text-align: center;
     }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+
+
+    /* ================================
+       ANIMATIONS
+    ================================= */
+
+    @keyframes productTabsFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    
+
+    @keyframes faqAnswerFadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+
+    /* ================================
+       MOBILE
+    ================================= */
+
     @media (max-width: 768px) {
-      .tab-item {
+
+      .product-tabs-section {
+        margin: 20px 0;
+        padding: 0 12px;
+      }
+
+      .product-tabs-section .section-title {
+        font-size: 22px;
+        margin-bottom: 20px;
+      }
+
+      .product-tabs-section .tab-item {
         padding: 10px 16px;
         font-size: 14px;
         flex: 1;
         text-align: center;
       }
-      .product-tabs-section {
-        margin: 20px 0;
-        padding: 0 12px;
+
+      .product-tabs-section .info-title {
+        font-size: 20px;
       }
-      .faq-question {
+
+      .product-tabs-section .info-description {
+        font-size: 15px;
+      }
+
+      .product-tabs-section .faq-question {
         font-size: 14px;
+        padding: 15px 0;
       }
-      .section-title {
-        font-size: 22px;
+
+      .product-tabs-section .faq-answer {
+        font-size: 14px;
+        padding-right: 25px;
       }
+
     }
+
   </style>
 
+
   <script>
+
     (function() {
-      const sectionId = {{ section.id | json }};
-      const container = document.querySelector(`[data-section-id="${sectionId}"]`);
+
+      const container = document.querySelector(
+        '[data-section-id="{{ section.id }}"]'
+      );
+
       if (!container) return;
-      
-      // Tab switching
+
+
+      /* =================================
+         TAB SWITCHING
+      ================================= */
+
       const tabs = container.querySelectorAll('.tab-item');
-      const panels = {
-        'additional-info': container.querySelector('#additional-info'),
-        'faq': container.querySelector('#faq')
-      };
-      
-      tabs.forEach(tab => {
+
+      const panels = container.querySelectorAll('.tab-panel');
+
+
+      tabs.forEach(function(tab) {
+
         tab.addEventListener('click', function() {
-          tabs.forEach(t => t.classList.remove('active'));
-          this.classList.add('active');
-          
-          const tabId = this.dataset.tab;
-          Object.keys(panels).forEach(key => {
-            if (panels[key]) {
-              panels[key].classList.toggle('active', key === tabId);
-            }
+
+          const targetId = this.getAttribute('data-tab');
+
+
+          /* Remove active from all tabs */
+
+          tabs.forEach(function(item) {
+            item.classList.remove('active');
           });
-        });
-      });
-      
-      // FAQ toggle - click to expand/collapse
-      const faqQuestions = container.querySelectorAll('.faq-question');
-      faqQuestions.forEach(question => {
-        question.addEventListener('click', function() {
-          this.classList.toggle('active');
-          const answer = this.nextElementSibling;
-          if (answer && answer.classList.contains('faq-answer')) {
-            if (answer.style.display === 'none' || answer.style.display === '') {
-              answer.style.display = 'block';
+
+
+          /* Add active to clicked tab */
+
+          this.classList.add('active');
+
+
+          /* Switch panels */
+
+          panels.forEach(function(panel) {
+
+            if (panel.id === targetId) {
+
+              panel.classList.add('active');
+
             } else {
-              answer.style.display = 'none';
+
+              panel.classList.remove('active');
+
             }
-          }
+
+          });
+
         });
+
       });
+
+
+      /* =================================
+         FAQ ACCORDION
+      ================================= */
+
+      const faqQuestions = container.querySelectorAll(
+        '.faq-question'
+      );
+
+
+      faqQuestions.forEach(function(question) {
+
+        question.addEventListener('click', function() {
+
+          const answer = this.nextElementSibling;
+
+          if (!answer) return;
+
+
+          const isOpen = this.getAttribute('aria-expanded') === 'true';
+
+
+          /* Toggle */
+
+          if (isOpen) {
+
+            this.setAttribute('aria-expanded', 'false');
+
+            this.classList.remove('active');
+
+            answer.hidden = true;
+
+          } else {
+
+            this.setAttribute('aria-expanded', 'true');
+
+            this.classList.add('active');
+
+            answer.hidden = false;
+
+          }
+
+        });
+
+      });
+
     })();
+
   </script>
+
 {% endif %}
 
+
 {% schema %}
+
 {
   "name": "Product Tabs Section",
+
   "class": "shopify-section-product-tabs",
+
   "settings": [
+
     {
       "type": "header",
       "content": "Section Settings"
     },
+
     {
       "type": "text",
       "id": "section_title",
@@ -268,76 +583,103 @@
       "default": "Product Information",
       "info": "Leave empty to hide"
     },
+
+
     {
       "type": "header",
       "content": "Tab Labels"
     },
+
     {
       "type": "text",
       "id": "tab_1_label",
       "label": "Tab 1 Label",
       "default": "Additional Information"
     },
+
     {
       "type": "text",
       "id": "tab_2_label",
       "label": "Tab 2 Label",
       "default": "FAQ"
     },
+
+
     {
       "type": "header",
-      "content": "📝 Additional Information Content"
+      "content": "Additional Information"
     },
+
     {
       "type": "text",
       "id": "info_title",
-      "label": "Custom Title",
+      "label": "Additional Information Title",
       "default": "Product Details",
-      "info": "User is title edit kar sakta hai"
+      "info": "This title can be edited from the Theme Editor."
     },
+
     {
       "type": "richtext",
       "id": "info_description",
-      "label": "Custom Description",
-      "default": "<p>Add your custom product information here. This will override the product description.</p>",
-      "info": "User is description edit kar sakta hai. Agar khali chhoda toh product description show hogi."
+      "label": "Additional Information Description",
+      "default": "<p>Add your product information here.</p>",
+      "info": "This description can be edited from the Theme Editor. If empty, the product description will be displayed."
     },
+
+
     {
       "type": "header",
-      "content": "❓ FAQ Settings"
+      "content": "FAQ Settings"
     },
+
     {
       "type": "text",
       "id": "empty_message",
       "label": "Empty FAQ Message",
-      "default": "No FAQ items added yet. Click \"Add block\" to add FAQ items."
+      "default": "No FAQ items added yet. Click Add block to add an FAQ."
     }
+
   ],
+
+
   "blocks": [
+
     {
       "type": "faq_item",
+
       "name": "FAQ Item",
+
       "settings": [
+
         {
           "type": "text",
           "id": "question",
           "label": "Question",
           "default": "What is your return policy?"
         },
+
         {
           "type": "richtext",
           "id": "answer",
           "label": "Answer",
           "default": "<p>We offer a 30-day return policy for all products.</p>"
         }
+
       ]
     }
+
   ],
+
+
   "presets": [
+
     {
       "name": "Product Tabs Section",
+
       "category": "Product",
+
       "blocks": [
+
         {
           "type": "faq_item",
           "settings": {
@@ -345,6 +687,7 @@
             "answer": "<p>We offer a 30-day return policy for all products.</p>"
           }
         },
+
         {
           "type": "faq_item",
           "settings": {
@@ -352,6 +695,7 @@
             "answer": "<p>Shipping typically takes 3-5 business days.</p>"
           }
         },
+
         {
           "type": "faq_item",
           "settings": {
@@ -359,8 +703,12 @@
             "answer": "<p>Yes, we ship worldwide. Shipping costs vary by location.</p>"
           }
         }
+
       ]
     }
+
   ]
+
 }
+
 {% endschema %}
