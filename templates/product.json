@@ -81,6 +81,20 @@
     "product_tabs_section_9ytWDC": {
       "type": "product-tabs-section",
       "blocks": {
+        "info_block_BE6zCg": {
+          "type": "info_block",
+          "settings": {
+            "info_title": "Product Details",
+            "info_description": "<p>Add your custom product information here.</p>"
+          }
+        },
+        "faq_item_FdW6XK": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>We offer a 30-day return policy for all products.</p>"
+          }
+        },
         "faq_item_eRThDk": {
           "type": "faq_item",
           "settings": {
@@ -90,13 +104,17 @@
         }
       },
       "block_order": [
+        "info_block_BE6zCg",
+        "faq_item_FdW6XK",
         "faq_item_eRThDk"
       ],
       "name": "Product Tabs Section",
       "settings": {
         "tab_1_label": "Additional Information",
         "tab_2_label": "FAQ",
-        "empty_message": "Add your FAQ items in the theme customizer."
+        "default_info_title": "Product Details",
+        "empty_info_message": "No additional information added yet. Click \"Add block\" to add information blocks.",
+        "empty_faq_message": "No FAQ items added yet. Click \"Add block\" to add FAQ items."
       }
     },
     "product-recommendations": {
