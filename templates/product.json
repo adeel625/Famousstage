@@ -1,1 +1,117 @@
-{"sections":{"breadcrumbs":{"type":"breadcrumbs","settings":{"width":"column-max","margin_top":"margin-top-50","margin_bottom":"no-margin-bottom","text_color":"#747474","font_size":11,"separator":"›"}},"main-product":{"type":"main-product","blocks":{"title":{"type":"title","settings":{}},"vendor":{"type":"vendor","settings":{"vendor":"{{ product.vendor }}"}},"sale-sticker":{"type":"sale-sticker","settings":{}},"36f20eb5-9345-450f-81dc-6010fac91b40":{"type":"shopify:\/\/apps\/product-reviews\/blocks\/star_rating\/bae150af-8da8-48b2-9867-398188115e5f","settings":{"stars_fill_color":"#000000","star_size":15,"text_align":"center","product":"{{product}}","stars_text_empty":"No reviews"}},"price":{"type":"price","settings":{"show_compare_at_price":true}},"variants":{"type":"variants","settings":{"show_variant_selectors":true,"show_qty_selector":true,"show_add_to_cart_button":true,"enable_payment_button":true}},"description":{"type":"description","settings":{}},"f6fdc537-ec5d-4a3f-ba94-9c398b68286b":{"type":"shopify:\/\/apps\/product-reviews\/blocks\/reviews\/bae150af-8da8-48b2-9867-398188115e5f","settings":{}}},"block_order":["title","vendor","sale-sticker","36f20eb5-9345-450f-81dc-6010fac91b40","price","variants","description","f6fdc537-ec5d-4a3f-ba94-9c398b68286b"],"settings":{"col_one_size_large":"6","enable_image_zoom":true,"enable_video_looping":true,"enable_sticky_cart_mobile":false,"enable_sticky_cart_desktop":false,"sticky_cart_position":"top"}},"1675349566811667cc":{"type":"apps","settings":{}},"product-recommendations":{"type":"product-recommendations","settings":{"show_product_recommendations":true,"width":"column-max","heading":"You may also like","align_heading":"left","products_per_row":4,"product_rows":1,"show_vendor":false,"show_from":false,"show_price":true,"show_compare_at_price":true,"show_unit_price":true,"show_add_to_cart_button":true,"view_options_mode":true,"show_sale_sticker":true}}},"order":["breadcrumbs","main-product","1675349566811667cc","product-recommendations"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "breadcrumbs": {
+      "type": "breadcrumbs",
+      "settings": {
+        "width": "column-max",
+        "margin_top": "margin-top-50",
+        "margin_bottom": "no-margin-bottom",
+        "text_color": "#747474",
+        "font_size": 11,
+        "separator": "›"
+      }
+    },
+    "main-product": {
+      "type": "main-product",
+      "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "vendor": {
+          "type": "vendor",
+          "settings": {
+            "vendor": "{{ product.vendor }}"
+          }
+        },
+        "sale-sticker": {
+          "type": "sale-sticker",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {
+            "show_compare_at_price": true
+          }
+        },
+        "variants": {
+          "type": "variants",
+          "settings": {
+            "show_variant_selectors": true,
+            "show_qty_selector": true,
+            "show_add_to_cart_button": true,
+            "enable_payment_button": true
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "title",
+        "vendor",
+        "sale-sticker",
+        "price",
+        "variants",
+        "description"
+      ],
+      "settings": {
+        "col_one_size_large": "6",
+        "enable_image_zoom": true,
+        "enable_video_looping": true,
+        "enable_sticky_cart_mobile": false,
+        "enable_sticky_cart_desktop": false,
+        "sticky_cart_position": "top"
+      }
+    },
+    "1675349566811667cc": {
+      "type": "apps",
+      "settings": {}
+    },
+    "product_tabs_section_9ytWDC": {
+      "type": "product-tabs-section",
+      "name": "Product Tabs Section",
+      "settings": {
+        "tab_1_label": "Additional Information",
+        "tab_2_label": "FAQ",
+        "empty_message": "Add your FAQ items in the theme customizer."
+      }
+    },
+    "product-recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "show_product_recommendations": true,
+        "width": "column-max",
+        "heading": "You may also like",
+        "align_heading": "left",
+        "products_per_row": 4,
+        "product_rows": 1,
+        "show_vendor": false,
+        "show_from": false,
+        "show_price": true,
+        "show_compare_at_price": true,
+        "show_unit_price": true,
+        "show_add_to_cart_button": true,
+        "view_options_mode": true,
+        "show_sale_sticker": true
+      }
+    }
+  },
+  "order": [
+    "breadcrumbs",
+    "main-product",
+    "1675349566811667cc",
+    "product_tabs_section_9ytWDC",
+    "product-recommendations"
+  ]
+}
