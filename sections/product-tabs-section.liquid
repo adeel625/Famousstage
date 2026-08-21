@@ -1,20 +1,26 @@
 {% if product %}
+
   <div
     class="product-tabs-section"
     data-section-id="{{ section.id }}"
-    data-section-type="product-tabs"
   >
+
     <div class="page-width">
 
+      <!-- SECTION TITLE -->
       {% if section.settings.section_title != blank %}
         <h2 class="section-title">
           {{ section.settings.section_title }}
         </h2>
       {% endif %}
 
+
+      <!-- =========================
+           TABS NAVIGATION
+      ========================== -->
+
       <div class="tabs-wrapper">
 
-        <!-- TABS -->
         <ul class="tabs-nav" role="tablist">
 
           <li
@@ -36,11 +42,16 @@
         </ul>
 
 
+        <!-- =========================
+             TABS CONTENT
+        ========================== -->
+
         <div class="tabs-content">
 
-          <!-- ================================= -->
-          <!-- ADDITIONAL INFORMATION TAB -->
-          <!-- ================================= -->
+
+          <!-- =====================================
+               ADDITIONAL INFORMATION TAB
+          ====================================== -->
 
           <div
             class="tab-panel active"
@@ -48,40 +59,73 @@
             role="tabpanel"
           >
 
-            <div class="additional-info-content">
+            <div class="product-information-content">
 
-              <!-- EDITABLE TITLE -->
-              {% if section.settings.info_title != blank %}
-                <h3 class="info-title">
-                  {{ section.settings.info_title }}
-                </h3>
-              {% endif %}
+              {% assign has_product_information = false %}
+
+              {% for block in section.blocks %}
+
+                {% if block.type == 'product_information' %}
+
+                  {% assign has_product_information = true %}
+
+                  <div
+                    class="product-information-block"
+                    {{ block.shopify_attributes }}
+                  >
+
+                    <!-- PRODUCT INFORMATION TITLE -->
+
+                    {% if block.settings.title != blank %}
+
+                      <h3 class="product-information-title">
+                        {{ block.settings.title }}
+                      </h3>
+
+                    {% endif %}
 
 
-              <!-- EDITABLE DESCRIPTION -->
-              {% if section.settings.info_description != blank %}
+                    <!-- PRODUCT INFORMATION DESCRIPTION -->
 
-                <div class="info-description">
-                  {{ section.settings.info_description }}
+                    {% if block.settings.description != blank %}
+
+                      <div class="product-information-description">
+                        {{ block.settings.description }}
+                      </div>
+
+                    {% endif %}
+
+                  </div>
+
+                {% endif %}
+
+              {% endfor %}
+
+
+              <!-- FALLBACK -->
+
+              {% unless has_product_information %}
+
+                <div class="product-information-empty">
+
+                  <p>
+                    Add a <strong>Product Information</strong> block
+                    from the Theme Editor.
+                  </p>
+
                 </div>
 
-              {% else %}
-
-                <!-- PRODUCT DESCRIPTION FALLBACK -->
-                <div class="info-description">
-                  {{ product.description }}
-                </div>
-
-              {% endif %}
+              {% endunless %}
 
             </div>
 
           </div>
 
 
-          <!-- ================================= -->
-          <!-- FAQ TAB -->
-          <!-- ================================= -->
+
+          <!-- =====================================
+               FAQ TAB
+          ====================================== -->
 
           <div
             class="tab-panel"
@@ -91,9 +135,14 @@
 
             <div class="faq-content">
 
-              {% if section.blocks.size > 0 %}
+              {% assign has_faq = false %}
 
-                {% for block in section.blocks %}
+
+              {% for block in section.blocks %}
+
+                {% if block.type == 'faq_item' %}
+
+                  {% assign has_faq = true %}
 
                   <div
                     class="faq-item"
@@ -101,6 +150,7 @@
                   >
 
                     <!-- QUESTION -->
+
                     <button
                       type="button"
                       class="faq-question"
@@ -119,6 +169,7 @@
 
 
                     <!-- ANSWER -->
+
                     <div
                       class="faq-answer"
                       hidden
@@ -130,15 +181,20 @@
 
                   </div>
 
-                {% endfor %}
+                {% endif %}
 
-              {% else %}
+              {% endfor %}
+
+
+              <!-- NO FAQ MESSAGE -->
+
+              {% unless has_faq %}
 
                 <p class="faq-placeholder">
-                  {{ section.settings.empty_message | default: 'No FAQ items added yet. Click "Add block" to add an FAQ.' }}
+                  {{ section.settings.empty_message }}
                 </p>
 
-              {% endif %}
+              {% endunless %}
 
             </div>
 
@@ -149,19 +205,22 @@
       </div>
 
     </div>
+
   </div>
+
 
 
   <style>
 
-    /* ================================
+    /* =========================================
        MAIN SECTION
-    ================================= */
+    ========================================= */
 
     .product-tabs-section {
       margin: 40px 0;
       padding: 0 20px;
     }
+
 
     .product-tabs-section .page-width {
       max-width: 1200px;
@@ -169,9 +228,9 @@
     }
 
 
-    /* ================================
+    /* =========================================
        SECTION TITLE
-    ================================= */
+    ========================================= */
 
     .product-tabs-section .section-title {
       text-align: center;
@@ -182,9 +241,9 @@
     }
 
 
-    /* ================================
+    /* =========================================
        TABS
-    ================================= */
+    ========================================= */
 
     .product-tabs-section .tabs-nav {
       display: flex;
@@ -194,6 +253,7 @@
       border-bottom: 2px solid #eaeaea;
       flex-wrap: wrap;
     }
+
 
     .product-tabs-section .tab-item {
       padding: 12px 24px;
@@ -206,9 +266,11 @@
       user-select: none;
     }
 
+
     .product-tabs-section .tab-item:hover {
       color: #000;
     }
+
 
     .product-tabs-section .tab-item.active {
       color: #000;
@@ -216,9 +278,9 @@
     }
 
 
-    /* ================================
+    /* =========================================
        TAB PANELS
-    ================================= */
+    ========================================= */
 
     .product-tabs-section .tab-panel {
       display: none;
@@ -226,64 +288,101 @@
       animation: productTabsFadeIn 0.3s ease;
     }
 
+
     .product-tabs-section .tab-panel.active {
       display: block;
     }
 
 
-    /* ================================
-       ADDITIONAL INFORMATION
-    ================================= */
+    /* =========================================
+       PRODUCT INFORMATION
+    ========================================= */
 
-    .product-tabs-section .info-title {
-      font-size: 22px;
-      font-weight: 600;
+    .product-information-block {
+      margin-bottom: 30px;
+    }
+
+
+    .product-information-block:last-child {
+      margin-bottom: 0;
+    }
+
+
+    .product-information-title {
       margin: 0 0 15px;
+      font-size: 22px;
+      line-height: 1.3;
+      font-weight: 600;
       color: #000;
     }
 
-    .product-tabs-section .info-description {
-      color: #333;
-      line-height: 1.8;
+
+    .product-information-description {
       font-size: 16px;
+      line-height: 1.8;
+      color: #333;
     }
 
-    .product-tabs-section .info-description p {
+
+    .product-information-description p {
       margin: 0 0 15px;
     }
 
-    .product-tabs-section .info-description ul,
-    .product-tabs-section .info-description ol {
-      margin-bottom: 15px;
-      padding-left: 25px;
+
+    .product-information-description p:last-child {
+      margin-bottom: 0;
     }
 
-    .product-tabs-section .info-description img {
+
+    .product-information-description ul,
+    .product-information-description ol {
+      padding-left: 25px;
+      margin-bottom: 15px;
+    }
+
+
+    .product-information-description img {
       max-width: 100%;
       height: auto;
     }
 
 
-    /* ================================
-       FAQ
-    ================================= */
+    /* =========================================
+       EMPTY PRODUCT INFORMATION
+    ========================================= */
 
-    .product-tabs-section .faq-item {
+    .product-information-empty {
+      padding: 20px 0;
+      color: #999;
+      font-style: italic;
+    }
+
+
+    /* =========================================
+       FAQ
+    ========================================= */
+
+    .faq-item {
       border-bottom: 1px solid #eaeaea;
     }
 
-    .product-tabs-section .faq-item:last-child {
+
+    .faq-item:last-child {
       border-bottom: none;
     }
 
 
-    /* FAQ QUESTION */
+    /* =========================================
+       FAQ QUESTION
+    ========================================= */
 
-    .product-tabs-section .faq-question {
+    .faq-question {
       width: 100%;
+
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+
       gap: 20px;
 
       padding: 18px 0;
@@ -303,21 +402,22 @@
       color: #000;
     }
 
-    .product-tabs-section .faq-question:hover {
+
+    .faq-question:hover {
       color: #333;
     }
 
 
-    /* QUESTION TEXT */
-
-    .product-tabs-section .faq-question-text {
+    .faq-question-text {
       flex: 1;
     }
 
 
-    /* PLUS ICON */
+    /* =========================================
+       FAQ PLUS ICON
+    ========================================= */
 
-    .product-tabs-section .faq-toggle {
+    .faq-toggle {
       flex: 0 0 auto;
 
       width: 28px;
@@ -338,50 +438,56 @@
     }
 
 
-    /* OPEN ICON */
-
-    .product-tabs-section .faq-question.active .faq-toggle {
+    .faq-question.active .faq-toggle {
       transform: rotate(45deg);
     }
 
 
-    /* FAQ ANSWER */
+    /* =========================================
+       FAQ ANSWER
+    ========================================= */
 
-    .product-tabs-section .faq-answer {
+    .faq-answer {
       padding: 0 40px 18px 0;
-
-      color: #555;
 
       font-size: 15px;
       line-height: 1.8;
 
-      animation: faqAnswerFadeIn 0.25s ease;
+      color: #555;
+
+      animation: faqFadeIn 0.25s ease;
     }
 
-    .product-tabs-section .faq-answer p {
+
+    .faq-answer p {
       margin: 0 0 10px;
     }
 
-    .product-tabs-section .faq-answer p:last-child {
+
+    .faq-answer p:last-child {
       margin-bottom: 0;
     }
 
 
-    /* EMPTY MESSAGE */
+    /* =========================================
+       EMPTY FAQ
+    ========================================= */
 
-    .product-tabs-section .faq-placeholder {
-      color: #999;
-      font-style: italic;
+    .faq-placeholder {
       padding: 20px 0;
       text-align: center;
+
+      color: #999;
+      font-style: italic;
     }
 
 
-    /* ================================
+    /* =========================================
        ANIMATIONS
-    ================================= */
+    ========================================= */
 
     @keyframes productTabsFadeIn {
+
       from {
         opacity: 0;
         transform: translateY(10px);
@@ -391,9 +497,12 @@
         opacity: 1;
         transform: translateY(0);
       }
+
     }
 
-    @keyframes faqAnswerFadeIn {
+
+    @keyframes faqFadeIn {
+
       from {
         opacity: 0;
       }
@@ -401,12 +510,13 @@
       to {
         opacity: 1;
       }
+
     }
 
 
-    /* ================================
+    /* =========================================
        MOBILE
-    ================================= */
+    ========================================= */
 
     @media (max-width: 768px) {
 
@@ -415,32 +525,38 @@
         padding: 0 12px;
       }
 
+
       .product-tabs-section .section-title {
         font-size: 22px;
         margin-bottom: 20px;
       }
 
+
       .product-tabs-section .tab-item {
-        padding: 10px 16px;
-        font-size: 14px;
         flex: 1;
         text-align: center;
+        padding: 10px 16px;
+        font-size: 14px;
       }
 
-      .product-tabs-section .info-title {
+
+      .product-information-title {
         font-size: 20px;
       }
 
-      .product-tabs-section .info-description {
+
+      .product-information-description {
         font-size: 15px;
       }
 
-      .product-tabs-section .faq-question {
+
+      .faq-question {
         font-size: 14px;
         padding: 15px 0;
       }
 
-      .product-tabs-section .faq-answer {
+
+      .faq-answer {
         font-size: 14px;
         padding-right: 25px;
       }
@@ -448,6 +564,7 @@
     }
 
   </style>
+
 
 
   <script>
@@ -461,9 +578,9 @@
       if (!container) return;
 
 
-      /* =================================
+      /* =====================================
          TAB SWITCHING
-      ================================= */
+      ====================================== */
 
       const tabs = container.querySelectorAll('.tab-item');
 
@@ -480,7 +597,9 @@
           /* Remove active from all tabs */
 
           tabs.forEach(function(item) {
+
             item.classList.remove('active');
+
           });
 
 
@@ -489,7 +608,7 @@
           this.classList.add('active');
 
 
-          /* Switch panels */
+          /* Switch panel */
 
           panels.forEach(function(panel) {
 
@@ -510,9 +629,10 @@
       });
 
 
-      /* =================================
+
+      /* =====================================
          FAQ ACCORDION
-      ================================= */
+      ====================================== */
 
       const faqQuestions = container.querySelectorAll(
         '.faq-question'
@@ -528,14 +648,18 @@
           if (!answer) return;
 
 
-          const isOpen = this.getAttribute('aria-expanded') === 'true';
+          const isOpen =
+            this.getAttribute('aria-expanded') === 'true';
 
-
-          /* Toggle */
 
           if (isOpen) {
 
-            this.setAttribute('aria-expanded', 'false');
+            /* CLOSE */
+
+            this.setAttribute(
+              'aria-expanded',
+              'false'
+            );
 
             this.classList.remove('active');
 
@@ -543,7 +667,12 @@
 
           } else {
 
-            this.setAttribute('aria-expanded', 'true');
+            /* OPEN */
+
+            this.setAttribute(
+              'aria-expanded',
+              'true'
+            );
 
             this.classList.add('active');
 
@@ -560,6 +689,7 @@
   </script>
 
 {% endif %}
+
 
 
 {% schema %}
@@ -607,28 +737,6 @@
 
     {
       "type": "header",
-      "content": "Additional Information"
-    },
-
-    {
-      "type": "text",
-      "id": "info_title",
-      "label": "Additional Information Title",
-      "default": "Product Details",
-      "info": "This title can be edited from the Theme Editor."
-    },
-
-    {
-      "type": "richtext",
-      "id": "info_description",
-      "label": "Additional Information Description",
-      "default": "<p>Add your product information here.</p>",
-      "info": "This description can be edited from the Theme Editor. If empty, the product description will be displayed."
-    },
-
-
-    {
-      "type": "header",
       "content": "FAQ Settings"
     },
 
@@ -643,6 +751,31 @@
 
 
   "blocks": [
+
+    {
+      "type": "product_information",
+
+      "name": "Product Information",
+
+      "settings": [
+
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Product Details"
+        },
+
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Add your product information here.</p>"
+        }
+
+      ]
+    },
+
 
     {
       "type": "faq_item",
@@ -681,26 +814,50 @@
       "blocks": [
 
         {
-          "type": "faq_item",
+          "type": "product_information",
+
           "settings": {
+
+            "title": "Product Details",
+
+            "description": "<p>Add your product details and information here.</p>"
+
+          }
+        },
+
+        {
+          "type": "faq_item",
+
+          "settings": {
+
             "question": "What is your return policy?",
+
             "answer": "<p>We offer a 30-day return policy for all products.</p>"
+
           }
         },
 
         {
           "type": "faq_item",
+
           "settings": {
+
             "question": "How long does shipping take?",
+
             "answer": "<p>Shipping typically takes 3-5 business days.</p>"
+
           }
         },
 
         {
           "type": "faq_item",
+
           "settings": {
+
             "question": "Do you offer international shipping?",
+
             "answer": "<p>Yes, we ship worldwide. Shipping costs vary by location.</p>"
+
           }
         }
 
