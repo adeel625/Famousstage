@@ -18,25 +18,40 @@
         </ul>
         
         <div class="tabs-content">
-          <!-- Tab 1: Additional Information -->
+          
+          <!-- ========================================== -->
+          <!-- TAB 1: ADDITIONAL INFORMATION               -->
+          <!-- ========================================== -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
             <div class="additional-info-content">
-              {% if section.settings.custom_title != blank %}
-                <h3 class="info-title">{{ section.settings.custom_title }}</h3>
+              
+              <!-- User se edit hone wala TITLE -->
+              {% if section.settings.info_title != blank %}
+                <h3 class="info-title">{{ section.settings.info_title }}</h3>
               {% endif %}
-              <div class="info-description">
-                {% if section.settings.custom_description != blank %}
-                  {{ section.settings.custom_description }}
-                {% else %}
+              
+              <!-- User se edit hone wala DESCRIPTION -->
+              {% if section.settings.info_description != blank %}
+                <div class="info-description">
+                  {{ section.settings.info_description }}
+                </div>
+              {% else %}
+                <!-- Agar user ne description nahi dali toh product description show ho -->
+                <div class="info-description">
                   {{ product.description }}
-                {% endif %}
-              </div>
+                </div>
+              {% endif %}
+              
             </div>
           </div>
           
-          <!-- Tab 2: FAQ -->
+          <!-- ========================================== -->
+          <!-- TAB 2: FAQ                                  -->
+          <!-- ========================================== -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
+              
+              <!-- FAQ Blocks - User unlimited add/delete kar sakta hai -->
               {% if section.blocks.size > 0 %}
                 {% for block in section.blocks %}
                   <div class="faq-item" {{ block.shopify_attributes }}>
@@ -52,8 +67,10 @@
               {% else %}
                 <p class="faq-placeholder">{{ section.settings.empty_message | default: 'No FAQ items added yet. Click "Add block" to add FAQ items.' }}</p>
               {% endif %}
+              
             </div>
           </div>
+          
         </div>
       </div>
     </div>
@@ -108,6 +125,8 @@
     .tab-panel.active {
       display: block;
     }
+    
+    /* Additional Information Styles */
     .additional-info-content .info-title {
       font-size: 20px;
       font-weight: 600;
@@ -121,6 +140,8 @@
     .additional-info-content .info-description p {
       margin: 0 0 15px 0;
     }
+    
+    /* FAQ Styles */
     .faq-item {
       border-bottom: 1px solid #eaeaea;
       padding: 12px 0;
@@ -159,10 +180,12 @@
       padding: 20px 0;
       text-align: center;
     }
+    
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    
     @media (max-width: 768px) {
       .tab-item {
         padding: 10px 16px;
@@ -210,7 +233,7 @@
         });
       });
       
-      // FAQ toggle
+      // FAQ toggle - click to expand/collapse
       const faqQuestions = container.querySelectorAll('.faq-question');
       faqQuestions.forEach(question => {
         question.addEventListener('click', function() {
@@ -263,25 +286,25 @@
     },
     {
       "type": "header",
-      "content": "Additional Information Content"
+      "content": "📝 Additional Information Content"
     },
     {
       "type": "text",
-      "id": "custom_title",
+      "id": "info_title",
       "label": "Custom Title",
       "default": "Product Details",
-      "info": "Leave empty to hide"
+      "info": "User is title edit kar sakta hai"
     },
     {
       "type": "richtext",
-      "id": "custom_description",
+      "id": "info_description",
       "label": "Custom Description",
       "default": "<p>Add your custom product information here. This will override the product description.</p>",
-      "info": "Leave empty to show product description instead"
+      "info": "User is description edit kar sakta hai. Agar khali chhoda toh product description show hogi."
     },
     {
       "type": "header",
-      "content": "FAQ Settings"
+      "content": "❓ FAQ Settings"
     },
     {
       "type": "text",
