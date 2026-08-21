@@ -1,6 +1,12 @@
 {% if product %}
   <div class="product-tabs-section" data-section-id="{{ section.id }}" data-section-type="product-tabs">
     <div class="page-width">
+      
+      <!-- Section Title -->
+      {% if section.settings.section_title != blank %}
+        <h2 class="section-title">{{ section.settings.section_title }}</h2>
+      {% endif %}
+      
       <div class="tabs-wrapper">
         <ul class="tabs-nav" role="tablist">
           <li class="tab-item active" role="tab" data-tab="additional-info">
@@ -14,76 +20,37 @@
         <div class="tabs-content">
           <!-- Tab 1: Additional Information -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
-            <div class="description-content">
-              {{ product.description }}
+            <div class="additional-info-content">
+              {% if section.settings.custom_title != blank %}
+                <h3 class="info-title">{{ section.settings.custom_title }}</h3>
+              {% endif %}
+              <div class="info-description">
+                {% if section.settings.custom_description != blank %}
+                  {{ section.settings.custom_description }}
+                {% else %}
+                  {{ product.description }}
+                {% endif %}
+              </div>
             </div>
           </div>
           
           <!-- Tab 2: FAQ -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
-              {% if section.settings.faq_question_1 != blank %}
-                <div class="faq-item">
-                  <div class="faq-question">
-                    <span>{{ section.settings.faq_question_1 }}</span>
-                    <span class="faq-toggle">+</span>
+              {% if section.blocks.size > 0 %}
+                {% for block in section.blocks %}
+                  <div class="faq-item" {{ block.shopify_attributes }}>
+                    <div class="faq-question" data-toggle="collapse">
+                      <span>{{ block.settings.question }}</span>
+                      <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer" style="display: none;">
+                      {{ block.settings.answer }}
+                    </div>
                   </div>
-                  <div class="faq-answer" style="display: none;">
-                    {{ section.settings.faq_answer_1 }}
-                  </div>
-                </div>
-              {% endif %}
-              
-              {% if section.settings.faq_question_2 != blank %}
-                <div class="faq-item">
-                  <div class="faq-question">
-                    <span>{{ section.settings.faq_question_2 }}</span>
-                    <span class="faq-toggle">+</span>
-                  </div>
-                  <div class="faq-answer" style="display: none;">
-                    {{ section.settings.faq_answer_2 }}
-                  </div>
-                </div>
-              {% endif %}
-              
-              {% if section.settings.faq_question_3 != blank %}
-                <div class="faq-item">
-                  <div class="faq-question">
-                    <span>{{ section.settings.faq_question_3 }}</span>
-                    <span class="faq-toggle">+</span>
-                  </div>
-                  <div class="faq-answer" style="display: none;">
-                    {{ section.settings.faq_answer_3 }}
-                  </div>
-                </div>
-              {% endif %}
-              
-              {% if section.settings.faq_question_4 != blank %}
-                <div class="faq-item">
-                  <div class="faq-question">
-                    <span>{{ section.settings.faq_question_4 }}</span>
-                    <span class="faq-toggle">+</span>
-                  </div>
-                  <div class="faq-answer" style="display: none;">
-                    {{ section.settings.faq_answer_4 }}
-                  </div>
-                </div>
-              {% endif %}
-              
-              {% if section.settings.faq_question_5 != blank %}
-                <div class="faq-item">
-                  <div class="faq-question">
-                    <span>{{ section.settings.faq_question_5 }}</span>
-                    <span class="faq-toggle">+</span>
-                  </div>
-                  <div class="faq-answer" style="display: none;">
-                    {{ section.settings.faq_answer_5 }}
-                  </div>
-                </div>
-              {% endif %}
-              
-              {% if section.settings.faq_question_1 == blank and section.settings.faq_question_2 == blank and section.settings.faq_question_3 == blank and section.settings.faq_question_4 == blank and section.settings.faq_question_5 == blank %}
-                <p class="faq-placeholder">{{ section.settings.empty_message | default: 'Add your FAQ items in the theme customizer.' }}</p>
+                {% endfor %}
+              {% else %}
+                <p class="faq-placeholder">{{ section.settings.empty_message | default: 'No FAQ items added yet. Click "Add block" to add FAQ items.' }}</p>
               {% endif %}
             </div>
           </div>
@@ -100,6 +67,13 @@
     .product-tabs-section .page-width {
       max-width: 1200px;
       margin: 0 auto;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: #000;
     }
     .tabs-nav {
       display: flex;
@@ -133,6 +107,19 @@
     }
     .tab-panel.active {
       display: block;
+    }
+    .additional-info-content .info-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #000;
+    }
+    .additional-info-content .info-description {
+      color: #333;
+      line-height: 1.8;
+    }
+    .additional-info-content .info-description p {
+      margin: 0 0 15px 0;
     }
     .faq-item {
       border-bottom: 1px solid #eaeaea;
@@ -169,6 +156,8 @@
     .faq-placeholder {
       color: #999;
       font-style: italic;
+      padding: 20px 0;
+      text-align: center;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
@@ -187,6 +176,9 @@
       }
       .faq-question {
         font-size: 14px;
+      }
+      .section-title {
+        font-size: 22px;
       }
     }
   </style>
@@ -243,6 +235,21 @@
   "class": "shopify-section-product-tabs",
   "settings": [
     {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Product Information",
+      "info": "Leave empty to hide"
+    },
+    {
+      "type": "header",
+      "content": "Tab Labels"
+    },
+    {
       "type": "text",
       "id": "tab_1_label",
       "label": "Tab 1 Label",
@@ -256,89 +263,80 @@
     },
     {
       "type": "header",
+      "content": "Additional Information Content"
+    },
+    {
+      "type": "text",
+      "id": "custom_title",
+      "label": "Custom Title",
+      "default": "Product Details",
+      "info": "Leave empty to hide"
+    },
+    {
+      "type": "richtext",
+      "id": "custom_description",
+      "label": "Custom Description",
+      "default": "<p>Add your custom product information here. This will override the product description.</p>",
+      "info": "Leave empty to show product description instead"
+    },
+    {
+      "type": "header",
       "content": "FAQ Settings"
     },
     {
       "type": "text",
       "id": "empty_message",
       "label": "Empty FAQ Message",
-      "default": "Add your FAQ items in the theme customizer."
-    },
+      "default": "No FAQ items added yet. Click \"Add block\" to add FAQ items."
+    }
+  ],
+  "blocks": [
     {
-      "type": "header",
-      "content": "FAQ Question 1"
-    },
-    {
-      "type": "text",
-      "id": "faq_question_1",
-      "label": "Question 1"
-    },
-    {
-      "type": "richtext",
-      "id": "faq_answer_1",
-      "label": "Answer 1"
-    },
-    {
-      "type": "header",
-      "content": "FAQ Question 2"
-    },
-    {
-      "type": "text",
-      "id": "faq_question_2",
-      "label": "Question 2"
-    },
-    {
-      "type": "richtext",
-      "id": "faq_answer_2",
-      "label": "Answer 2"
-    },
-    {
-      "type": "header",
-      "content": "FAQ Question 3"
-    },
-    {
-      "type": "text",
-      "id": "faq_question_3",
-      "label": "Question 3"
-    },
-    {
-      "type": "richtext",
-      "id": "faq_answer_3",
-      "label": "Answer 3"
-    },
-    {
-      "type": "header",
-      "content": "FAQ Question 4"
-    },
-    {
-      "type": "text",
-      "id": "faq_question_4",
-      "label": "Question 4"
-    },
-    {
-      "type": "richtext",
-      "id": "faq_answer_4",
-      "label": "Answer 4"
-    },
-    {
-      "type": "header",
-      "content": "FAQ Question 5"
-    },
-    {
-      "type": "text",
-      "id": "faq_question_5",
-      "label": "Question 5"
-    },
-    {
-      "type": "richtext",
-      "id": "faq_answer_5",
-      "label": "Answer 5"
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "What is your return policy?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>We offer a 30-day return policy for all products.</p>"
+        }
+      ]
     }
   ],
   "presets": [
     {
       "name": "Product Tabs Section",
-      "category": "Product"
+      "category": "Product",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>We offer a 30-day return policy for all products.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>Shipping typically takes 3-5 business days.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Do you offer international shipping?",
+            "answer": "<p>Yes, we ship worldwide. Shipping costs vary by location.</p>"
+          }
+        }
+      ]
     }
   ]
 }
