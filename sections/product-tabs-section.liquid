@@ -13,49 +13,73 @@
             {{ section.settings.tab_1_label | default: 'Additional Information' }}
           </li>
           <li class="tab-item" role="tab" data-tab="faq">
-            {{ section.settings.tab_2_label | default: 'FAQ' }}
+            {{ section.settings.tab_2_label | default: 'Frequently Asked Questions' }}
           </li>
         </ul>
         
         <div class="tabs-content">
           
-          <!-- TAB 1: ADDITIONAL INFORMATION -->
+          <!-- ========================================== -->
+          <!-- TAB 1: ADDITIONAL INFORMATION               -->
+          <!-- ========================================== -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
             <div class="additional-info-content">
-              {% if section.settings.info_title != blank %}
-                <h3 class="info-title">{{ section.settings.info_title }}</h3>
+              
+              <!-- Additional Information BLOCKS -->
+              {% if section.blocks.size > 0 %}
+                {% for block in section.blocks %}
+                  {% if block.type == 'info_block' %}
+                    <div class="info-block" {{ block.shopify_attributes }}>
+                      {% if block.settings.info_title != blank %}
+                        <h3 class="info-title">{{ block.settings.info_title }}</h3>
+                      {% endif %}
+                      {% if block.settings.info_description != blank %}
+                        <div class="info-description">
+                          {{ block.settings.info_description }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                <!-- Fallback: Agar koi block nahi hai toh product description show ho -->
+                <div class="info-block">
+                  <h3 class="info-title">{{ section.settings.default_info_title | default: 'Product Details' }}</h3>
+                  <div class="info-description">
+                    {{ product.description }}
+                  </div>
+                </div>
+                <p class="info-placeholder">{{ section.settings.empty_info_message | default: 'No additional information added yet. Click "Add block" to add information blocks.' }}</p>
               {% endif %}
               
-              {% if section.settings.info_description != blank %}
-                <div class="info-description">
-                  {{ section.settings.info_description }}
-                </div>
-              {% else %}
-                <div class="info-description">
-                  {{ product.description }}
-                </div>
-              {% endif %}
             </div>
           </div>
           
-          <!-- TAB 2: FAQ -->
+          <!-- ========================================== -->
+          <!-- TAB 2: FAQ                                  -->
+          <!-- ========================================== -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
+              
+              <!-- FAQ BLOCKS -->
               {% if section.blocks.size > 0 %}
                 {% for block in section.blocks %}
-                  <div class="faq-item" {{ block.shopify_attributes }}>
-                    <div class="faq-question" data-toggle="collapse">
-                      <span>{{ block.settings.question }}</span>
-                      <span class="faq-toggle">+</span>
+                  {% if block.type == 'faq_item' %}
+                    <div class="faq-item" {{ block.shopify_attributes }}>
+                      <div class="faq-question" data-toggle="collapse">
+                        <span>{{ block.settings.question }}</span>
+                        <span class="faq-toggle">+</span>
+                      </div>
+                      <div class="faq-answer" style="display: none;">
+                        {{ block.settings.answer }}
+                      </div>
                     </div>
-                    <div class="faq-answer" style="display: none;">
-                      {{ block.settings.answer }}
-                    </div>
-                  </div>
+                  {% endif %}
                 {% endfor %}
               {% else %}
-                <p class="faq-placeholder">{{ section.settings.empty_message | default: 'No FAQ items added yet. Click "Add block" to add FAQ items.' }}</p>
+                <p class="faq-placeholder">{{ section.settings.empty_faq_message | default: 'No FAQ items added yet. Click "Add block" to add FAQ items.' }}</p>
               {% endif %}
+              
             </div>
           </div>
           
@@ -113,6 +137,18 @@
     .tab-panel.active {
       display: block;
     }
+    
+    /* Additional Information Styles */
+    .additional-info-content .info-block {
+      margin-bottom: 30px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .additional-info-content .info-block:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
     .additional-info-content .info-title {
       font-size: 20px;
       font-weight: 600;
@@ -126,6 +162,14 @@
     .additional-info-content .info-description p {
       margin: 0 0 15px 0;
     }
+    .info-placeholder {
+      color: #999;
+      font-style: italic;
+      padding: 20px 0;
+      text-align: center;
+    }
+    
+    /* FAQ Styles */
     .faq-item {
       border-bottom: 1px solid #eaeaea;
       padding: 12px 0;
@@ -164,10 +208,12 @@
       padding: 20px 0;
       text-align: center;
     }
+    
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    
     @media (max-width: 768px) {
       .tab-item {
         padding: 10px 16px;
@@ -185,6 +231,9 @@
       .section-title {
         font-size: 22px;
       }
+      .additional-info-content .info-title {
+        font-size: 17px;
+      }
     }
   </style>
 
@@ -194,6 +243,7 @@
       const container = document.querySelector(`[data-section-id="${sectionId}"]`);
       if (!container) return;
       
+      // Tab switching
       const tabs = container.querySelectorAll('.tab-item');
       const panels = {
         'additional-info': container.querySelector('#additional-info'),
@@ -214,6 +264,7 @@
         });
       });
       
+      // FAQ toggle
       const faqQuestions = container.querySelectorAll('.faq-question');
       faqQuestions.forEach(question => {
         question.addEventListener('click', function() {
@@ -239,7 +290,7 @@
   "settings": [
     {
       "type": "header",
-      "content": "Section Settings"
+      "content": "📋 Section Settings"
     },
     {
       "type": "text",
@@ -250,7 +301,7 @@
     },
     {
       "type": "header",
-      "content": "Tab Labels"
+      "content": "📑 Tab Labels"
     },
     {
       "type": "text",
@@ -262,36 +313,53 @@
       "type": "text",
       "id": "tab_2_label",
       "label": "Tab 2 Label",
-      "default": "FAQ"
+      "default": "Frequently Asked Questions"
     },
     {
       "type": "header",
-      "content": "Additional Information Content"
+      "content": "📝 Default Content (Fallback)"
     },
     {
       "type": "text",
-      "id": "info_title",
-      "label": "Custom Title",
-      "default": "Product Details"
-    },
-    {
-      "type": "richtext",
-      "id": "info_description",
-      "label": "Custom Description",
-      "default": "<p>Add your custom product information here.</p>"
-    },
-    {
-      "type": "header",
-      "content": "FAQ Settings"
+      "id": "default_info_title",
+      "label": "Default Info Title",
+      "default": "Product Details",
+      "info": "Tabhi show hoga jab koi info block nahi ho"
     },
     {
       "type": "text",
-      "id": "empty_message",
+      "id": "empty_info_message",
+      "label": "Empty Info Message",
+      "default": "No additional information added yet. Click \"Add block\" to add information blocks."
+    },
+    {
+      "type": "text",
+      "id": "empty_faq_message",
       "label": "Empty FAQ Message",
       "default": "No FAQ items added yet. Click \"Add block\" to add FAQ items."
     }
   ],
   "blocks": [
+    {
+      "type": "info_block",
+      "name": "Info Block",
+      "settings": [
+        {
+          "type": "text",
+          "id": "info_title",
+          "label": "Title",
+          "default": "Product Details",
+          "info": "Title for this information block"
+        },
+        {
+          "type": "richtext",
+          "id": "info_description",
+          "label": "Description",
+          "default": "<p>Add your custom product information here.</p>",
+          "info": "Rich text editor - you can add paragraphs, lists, bold, italic, etc."
+        }
+      ]
+    },
     {
       "type": "faq_item",
       "name": "FAQ Item",
@@ -314,7 +382,30 @@
   "presets": [
     {
       "name": "Product Tabs Section",
-      "category": "Product"
+      "category": "Product",
+      "blocks": [
+        {
+          "type": "info_block",
+          "settings": {
+            "info_title": "Product Details",
+            "info_description": "<p>This is where you can add detailed product information.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>We offer a 30-day return policy for all products.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>Shipping typically takes 3-5 business days.</p>"
+          }
+        }
+      ]
     }
   ]
 }
