@@ -129,7 +129,6 @@
   {% assign product_show_multi_selectors = false %}
 {% endif %}
 
-
 {% if variant_block.settings.show_variant_selectors == false %}
   {% assign product_show_multi_selectors = false %}
 {% endif %}
@@ -293,7 +292,6 @@
           {% else %}
             {% render 'separator', class: 'margin-top-150 no-margin-bottom show-for-small' %}
           {% endif %}
-
 
           {%- for block in section.blocks -%}
             {%- case block.type -%}
@@ -477,6 +475,205 @@
 
               {%- when 'social-media' -%}
                 {% render 'social-media-buttons' %}
+
+              {%- when 'product-tabs' -%}
+                <div class="product-tabs" data-block-id="{{ block.id }}">
+                  <div class="tabs-wrapper">
+                    <ul class="tabs-nav" role="tablist">
+                      <li class="tab-item active" role="tab" data-tab="additional-info">
+                        {{ block.settings.tab_1_label | default: 'Additional Information' }}
+                      </li>
+                      <li class="tab-item" role="tab" data-tab="faq">
+                        {{ block.settings.tab_2_label | default: 'FAQ' }}
+                      </li>
+                    </ul>
+                    
+                    <div class="tabs-content">
+                      <!-- Tab 1: Additional Information (Description) -->
+                      <div class="tab-panel active" id="additional-info" role="tabpanel">
+                        <div class="description-content">
+                          {{ product.description }}
+                        </div>
+                      </div>
+                      
+                      <!-- Tab 2: FAQ -->
+                      <div class="tab-panel" id="faq" role="tabpanel">
+                        <div class="faq-content">
+                          {% if block.settings.faq_question_1 != blank %}
+                            <div class="faq-item">
+                              <div class="faq-question" data-toggle="collapse">
+                                <span>{{ block.settings.faq_question_1 }}</span>
+                                <span class="faq-toggle">+</span>
+                              </div>
+                              <div class="faq-answer" style="display: none;">
+                                {{ block.settings.faq_answer_1 }}
+                              </div>
+                            </div>
+                          {% endif %}
+                          
+                          {% if block.settings.faq_question_2 != blank %}
+                            <div class="faq-item">
+                              <div class="faq-question" data-toggle="collapse">
+                                <span>{{ block.settings.faq_question_2 }}</span>
+                                <span class="faq-toggle">+</span>
+                              </div>
+                              <div class="faq-answer" style="display: none;">
+                                {{ block.settings.faq_answer_2 }}
+                              </div>
+                            </div>
+                          {% endif %}
+                          
+                          {% if block.settings.faq_question_3 != blank %}
+                            <div class="faq-item">
+                              <div class="faq-question" data-toggle="collapse">
+                                <span>{{ block.settings.faq_question_3 }}</span>
+                                <span class="faq-toggle">+</span>
+                              </div>
+                              <div class="faq-answer" style="display: none;">
+                                {{ block.settings.faq_answer_3 }}
+                              </div>
+                            </div>
+                          {% endif %}
+                          
+                          {% if block.settings.faq_question_4 != blank %}
+                            <div class="faq-item">
+                              <div class="faq-question" data-toggle="collapse">
+                                <span>{{ block.settings.faq_question_4 }}</span>
+                                <span class="faq-toggle">+</span>
+                              </div>
+                              <div class="faq-answer" style="display: none;">
+                                {{ block.settings.faq_answer_4 }}
+                              </div>
+                            </div>
+                          {% endif %}
+                          
+                          {% if block.settings.faq_question_5 != blank %}
+                            <div class="faq-item">
+                              <div class="faq-question" data-toggle="collapse">
+                                <span>{{ block.settings.faq_question_5 }}</span>
+                                <span class="faq-toggle">+</span>
+                              </div>
+                              <div class="faq-answer" style="display: none;">
+                                {{ block.settings.faq_answer_5 }}
+                              </div>
+                            </div>
+                          {% endif %}
+                          
+                          {% if block.settings.faq_question_1 == blank and block.settings.faq_question_2 == blank and block.settings.faq_question_3 == blank and block.settings.faq_question_4 == blank and block.settings.faq_question_5 == blank %}
+                            <p>No FAQ items added yet. Please add them in the theme customizer.</p>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <style>
+                  .product-tabs {
+                    margin: 30px 0;
+                  }
+                  .tabs-nav {
+                    display: flex;
+                    list-style: none;
+                    padding: 0;
+                    margin: 0 0 20px 0;
+                    border-bottom: 2px solid #eaeaea;
+                  }
+                  .tab-item {
+                    padding: 12px 24px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    color: #666;
+                    border-bottom: 3px solid transparent;
+                    margin-bottom: -2px;
+                    transition: all 0.3s ease;
+                  }
+                  .tab-item.active {
+                    color: #000;
+                    border-bottom-color: #000;
+                  }
+                  .tab-item:hover {
+                    color: #000;
+                  }
+                  .tab-panel {
+                    display: none;
+                    padding: 20px 0;
+                  }
+                  .tab-panel.active {
+                    display: block;
+                  }
+                  .faq-item {
+                    border-bottom: 1px solid #eaeaea;
+                    padding: 12px 0;
+                  }
+                  .faq-question {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    cursor: pointer;
+                    font-weight: 500;
+                    font-size: 16px;
+                  }
+                  .faq-question .faq-toggle {
+                    font-size: 20px;
+                    transition: transform 0.3s ease;
+                  }
+                  .faq-question.active .faq-toggle {
+                    transform: rotate(45deg);
+                  }
+                  .faq-answer {
+                    padding-top: 10px;
+                    color: #555;
+                    line-height: 1.6;
+                  }
+                  .faq-answer p {
+                    margin: 5px 0;
+                  }
+                </style>
+
+                <script>
+                  (function() {
+                    const blockId = {{ block.id | json }};
+                    const container = document.querySelector(`[data-block-id="${blockId}"]`);
+                    if (!container) return;
+                    
+                    const tabs = container.querySelectorAll('.tab-item');
+                    const panels = {
+                      'additional-info': container.querySelector('#additional-info'),
+                      'faq': container.querySelector('#faq')
+                    };
+                    
+                    tabs.forEach(tab => {
+                      tab.addEventListener('click', function() {
+                        tabs.forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        const tabId = this.dataset.tab;
+                        Object.keys(panels).forEach(key => {
+                          if (panels[key]) {
+                            panels[key].classList.toggle('active', key === tabId);
+                          }
+                        });
+                      });
+                    });
+                    
+                    // FAQ toggle functionality
+                    const faqQuestions = container.querySelectorAll('.faq-question');
+                    faqQuestions.forEach(question => {
+                      question.addEventListener('click', function() {
+                        this.classList.toggle('active');
+                        const answer = this.nextElementSibling;
+                        if (answer && answer.classList.contains('faq-answer')) {
+                          if (answer.style.display === 'none' || answer.style.display === '') {
+                            answer.style.display = 'block';
+                          } else {
+                            answer.style.display = 'none';
+                          }
+                        }
+                      });
+                    });
+                  })();
+                </script>
 
             {%- endcase -%}
           {%- endfor -%}
@@ -812,6 +1009,83 @@
       "type": "social-media",
       "name": "t:sections.main-product.blocks.social-media.name",
       "limit": 1
+    },
+    {
+      "type": "product-tabs",
+      "name": "Product Tabs (Info & FAQ)",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_1_label",
+          "label": "Tab 1 Label",
+          "default": "Additional Information"
+        },
+        {
+          "type": "text",
+          "id": "tab_2_label",
+          "label": "Tab 2 Label",
+          "default": "FAQ"
+        },
+        {
+          "type": "header",
+          "content": "FAQ Items"
+        },
+        {
+          "type": "text",
+          "id": "faq_question_1",
+          "label": "FAQ Question 1",
+          "default": "What is your return policy?"
+        },
+        {
+          "type": "richtext",
+          "id": "faq_answer_1",
+          "label": "FAQ Answer 1",
+          "default": "<p>We offer a 30-day return policy for all products.</p>"
+        },
+        {
+          "type": "text",
+          "id": "faq_question_2",
+          "label": "FAQ Question 2",
+          "default": "How long does shipping take?"
+        },
+        {
+          "type": "richtext",
+          "id": "faq_answer_2",
+          "label": "FAQ Answer 2",
+          "default": "<p>Shipping typically takes 3-5 business days.</p>"
+        },
+        {
+          "type": "text",
+          "id": "faq_question_3",
+          "label": "FAQ Question 3"
+        },
+        {
+          "type": "richtext",
+          "id": "faq_answer_3",
+          "label": "FAQ Answer 3"
+        },
+        {
+          "type": "text",
+          "id": "faq_question_4",
+          "label": "FAQ Question 4"
+        },
+        {
+          "type": "richtext",
+          "id": "faq_answer_4",
+          "label": "FAQ Answer 4"
+        },
+        {
+          "type": "text",
+          "id": "faq_question_5",
+          "label": "FAQ Question 5"
+        },
+        {
+          "type": "richtext",
+          "id": "faq_answer_5",
+          "label": "FAQ Answer 5"
+        }
+      ]
     }
   ]
 }
