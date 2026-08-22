@@ -27,7 +27,7 @@
                   {% assign has_data = false %}
                   
                   <!-- ======================================== -->
-                  <!-- METHOD 1: DIRECT METAFIELD ACCESS       -->
+                  <!-- ADDITIONAL INFORMATION                   -->
                   <!-- ======================================== -->
                   {% assign additional_info = product.metafields.custom.additional_information %}
                   {% if additional_info != blank %}
@@ -36,19 +36,9 @@
                       <span class="metafield-label">Additional Information:</span>
                       <span class="metafield-value">
                         {% if additional_info.type == 'json' %}
-                          {% comment %} Extract text from rich text JSON {% endcomment %}
-                          {% assign json_str = additional_info.value | json %}
-                          {% if json_str contains 'value' %}
-                            {% assign start = json_str | split: '"value":"' %}
-                            {% if start.size > 1 %}
-                              {% assign end = start[1] | split: '"' %}
-                              {{ end[0] }}
-                            {% else %}
-                              {{ additional_info.value }}
-                            {% endif %}
-                          {% else %}
-                            {{ additional_info.value }}
-                          {% endif %}
+                          {% assign json_data = additional_info.value | json %}
+                          {% assign clean_text = json_data | replace: '{"type"=>"root", "children"=>[{"type"=>"paragraph", "children"=>[{"type"=>"text", "value"=>"', '' | replace: '"}]}]}', '' %}
+                          {{ clean_text }}
                         {% else %}
                           {{ additional_info.value }}
                         {% endif %}
@@ -71,7 +61,7 @@
                   {% endif %}
                   
                   <!-- ======================================== -->
-                  <!-- ALL OTHER METAFIELDS                    -->
+                  <!-- OTHER METAFIELDS                        -->
                   <!-- ======================================== -->
                   {% assign skip_keys = 'faq,additional_information,shipping_carrier' | split: ',' %}
                   {% for field in product.metafields.custom %}
@@ -118,23 +108,23 @@
               {% if faq_metafield != blank %}
                 
                 {% comment %}
-                  METHOD 1: MetaobjectListDrop
+                  METHOD 1: MetaobjectListDrop - Direct access
                 {% endcomment %}
-                {% assign faq_value = faq_metafield.value %}
+                {% assign faq_entries = faq_metafield.value %}
                 
-                {% if faq_value.size > 0 %}
+                {% if faq_entries.size > 0 %}
                   {% assign has_faq = true %}
                   <div class="faq-list">
-                    {% for item in faq_value %}
+                    {% for entry in faq_entries %}
                       <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
                           <span>
-                            {% if item.question != blank %}
-                              {{ item.question }}
-                            {% elsif item.title != blank %}
-                              {{ item.title }}
-                            {% elsif item.name != blank %}
-                              {{ item.name }}
+                            {% if entry.question != blank %}
+                              {{ entry.question }}
+                            {% elsif entry.title != blank %}
+                              {{ entry.title }}
+                            {% elsif entry.name != blank %}
+                              {{ entry.name }}
                             {% else %}
                               Question {{ forloop.index }}
                             {% endif %}
@@ -142,12 +132,12 @@
                           <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer" style="display: none;">
-                          {% if item.answer != blank %}
-                            {{ item.answer }}
-                          {% elsif item.content != blank %}
-                            {{ item.content }}
-                          {% elsif item.description != blank %}
-                            {{ item.description }}
+                          {% if entry.answer != blank %}
+                            {{ entry.answer }}
+                          {% elsif entry.content != blank %}
+                            {{ entry.content }}
+                          {% elsif entry.description != blank %}
+                            {{ entry.description }}
                           {% else %}
                             No answer provided.
                           {% endif %}
