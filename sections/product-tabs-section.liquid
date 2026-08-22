@@ -27,7 +27,7 @@
                   {% assign has_data = false %}
                   
                   <!-- ======================================== -->
-                  <!-- ADDITIONAL INFORMATION - FIXED           -->
+                  <!-- ADDITIONAL INFORMATION                   -->
                   <!-- ======================================== -->
                   {% assign additional_info = product.metafields.custom.additional_information %}
                   {% if additional_info != blank %}
@@ -35,9 +35,7 @@
                     <div class="metafield-item">
                       <span class="metafield-label">Additional Information:</span>
                       <span class="metafield-value">
-                        {% comment %} Extract plain text from Shopify rich text JSON {% endcomment %}
                         {% assign raw = additional_info.value | json %}
-                        {% comment %} Find and extract just the text value {% endcomment %}
                         {% if raw contains '"value"=>"' %}
                           {% assign parts = raw | split: '"value"=>"' %}
                           {% assign text_parts = '' %}
@@ -45,7 +43,7 @@
                             {% if forloop.first == false %}
                               {% assign clean_part = part | split: '"' | first %}
                               {% if clean_part != blank %}
-                                {% assign text_parts = text_parts | append: clean_part %}
+                                                                {% assign text_parts = text_parts | append: clean_part %}
                               {% endif %}
                             {% endif %}
                           {% endfor %}
@@ -108,7 +106,7 @@
           </div>
           
           <!-- ========================================== -->
-          <!-- TAB 2: FAQ - FIXED                         -->
+          <!-- TAB 2: FAQ                                 -->
           <!-- ========================================== -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
@@ -117,14 +115,6 @@
               {% assign faq_metafield = product.metafields.custom.faq %}
               
               {% if faq_metafield != blank %}
-                
-                {% comment %}
-                  CRITICAL FIX: Access metaobject entries directly
-                  MetaobjectListDrop ka structure:
-                  faq_metafield.value[0].question
-                  faq_metafield.value[0].answer
-                {% endcomment %}
-                
                 {% assign faq_entries = faq_metafield.value %}
                 
                 {% if faq_entries.size > 0 %}
@@ -161,7 +151,6 @@
                     {% endfor %}
                   </div>
                 {% endif %}
-                
               {% endif %}
               
               {% unless has_faq %}
@@ -359,7 +348,6 @@
       const container = document.querySelector(`[data-section-id="${sectionId}"]`);
       if (!container) return;
       
-      // Tab switching
       const tabs = container.querySelectorAll('.tab-item');
       const panels = container.querySelectorAll('.tab-panel');
       
@@ -375,7 +363,6 @@
         });
       });
       
-      // FAQ toggle
       const faqQuestions = container.querySelectorAll('.faq-question');
       faqQuestions.forEach(question => {
         question.addEventListener('click', function() {
