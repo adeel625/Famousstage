@@ -14,9 +14,7 @@
         
         <div class="tabs-content">
           
-          <!-- ========================================== -->
-          <!-- TAB 1: ADDITIONAL INFORMATION              -->
-          <!-- ========================================== -->
+          <!-- TAB 1: ADDITIONAL INFORMATION -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
             <div class="additional-info-content">
               
@@ -26,9 +24,9 @@
                   
                   {% assign has_data = false %}
                   
-                  <!-- 1. ADDITIONAL INFORMATION (Multi-line text) -->
+                  <!-- 1. ADDITIONAL INFORMATION -->
                   {% assign additional_info = product.metafields.custom.additional_information %}
-                  {% if additional_info != blank and additional_info.value != blank %}
+                  {% if additional_info != blank %}
                     {% assign has_data = true %}
                     <div class="metafield-item">
                       <span class="metafield-label">Additional Information:</span>
@@ -40,7 +38,7 @@
                   
                   <!-- 2. SHIPPING CARRIER -->
                   {% assign shipping_carrier = product.metafields.custom.shipping_carrier %}
-                  {% if shipping_carrier != blank and shipping_carrier.value != blank %}
+                  {% if shipping_carrier != blank %}
                     {% assign has_data = true %}
                     <div class="metafield-item">
                       <span class="metafield-label">Shipping Carrier:</span>
@@ -61,7 +59,7 @@
                     {% assign metafield_obj = field[1] %}
                     
                     {% unless skip_keys contains key %}
-                      {% if metafield_obj != blank and metafield_obj.value != blank %}
+                      {% if metafield_obj != blank %}
                         {% assign has_data = true %}
                         <div class="metafield-item">
                           <span class="metafield-label">{{ key | replace: '_', ' ' | capitalize }}:</span>
@@ -93,29 +91,32 @@
             </div>
           </div>
           
-          <!-- ========================================== -->
-          <!-- TAB 2: FAQ (JSON TYPE METAFIELD FIX)       -->
-          <!-- ========================================== -->
+          <!-- TAB 2: FAQ -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
               {% assign has_faq = false %}
               {% assign faq_metafield = product.metafields.custom.faq %}
               
-              {% if faq_metafield != blank and faq_metafield.value != blank %}
-                {% assign faq_list = faq_metafield.value %}
+              {% if faq_metafield != blank %}
+                
+                {% comment %} Handle JSON string or Metaobject List {% endcomment %}
+                {% if faq_metafield.type contains 'json' %}
+                  {% assign faq_list = faq_metafield.value | parse_json %}
+                {% else %}
+                  {% assign faq_list = faq_metafield.value %}
+                {% endif %}
                 
                 <div class="faq-list">
                   {% for item in faq_list %}
-                    {% comment %} Extract Question & Answer safely from JSON {% endcomment %}
                     {% assign q_text = item.question | default: item.title | default: item.q %}
                     {% assign a_text = item.answer | default: item.description | default: item.a %}
                     
-                    {% if q_text != blank %}
+                    {% if q_text != blank or item != blank %}
                       {% assign has_faq = true %}
                       <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
-                          <span>{{ q_text }}</span>
+                          <span>{% if q_text != blank %}{{ q_text }}{% else %}{{ item }}{% endif %}</span>
                           <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer" style="display: none;">
