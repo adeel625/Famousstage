@@ -14,7 +14,9 @@
         
         <div class="tabs-content">
           
-          <!-- TAB 1: ADDITIONAL INFORMATION -->
+          <!-- ========================================== -->
+          <!-- TAB 1: ADDITIONAL INFORMATION              -->
+          <!-- ========================================== -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
             <div class="additional-info-content">
               <div class="info-block metafields-block">
@@ -51,7 +53,7 @@
                     </div>
                   {% endif %}
                   
-                  <!-- 3. Dynamic Loop (Excludes FAQ Completely) -->
+                  <!-- 3. Dynamic Loop (Excludes FAQ Completely from Tab 1) -->
                   {% for field in product.metafields.custom %}
                     {% assign key = field[0] %}
                     {% assign metafield_obj = field[1] %}
@@ -87,7 +89,9 @@
             </div>
           </div>
           
-          <!-- TAB 2: FAQ TAB -->
+          <!-- ========================================== -->
+          <!-- TAB 2: FAQ TAB (METAOBJECT LIST FIX)      -->
+          <!-- ========================================== -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
@@ -97,36 +101,31 @@
               {% if faq_metafield != blank and faq_metafield.value != blank %}
                 <div class="faq-list">
                   
-                  {% comment %} Metaobjects List ya Array Loop {% endcomment %}
                   {% for item in faq_metafield.value %}
-                    {% assign question = item.question.value | default: item.question | default: item.title.value | default: item.title | default: item.q %}
-                    {% assign answer = item.answer.value | default: item.answer | default: item.description.value | default: item.description | default: item.a %}
+                    {% comment %} Metaobject fields (question / answer) safely extracts value {% endcomment %}
+                    {% assign q_val = item.question.value | default: item.question | default: item.title.value | default: item.title %}
+                    {% assign a_val = item.answer.value | default: item.answer | default: item.description.value | default: item.description %}
                     
-                    {% if question != blank or answer != blank %}
+                    {% if q_val != blank %}
                       {% assign has_faq_items = true %}
                       <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
-                          <span>{{ question }}</span>
+                          <span>{{ q_val }}</span>
                           <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer" style="display: none;">
-                          {{ answer | newline_to_br }}
+                          {{ a_val | newline_to_br }}
                         </div>
                       </div>
                     {% endif %}
                   {% endfor %}
 
-                  {% comment %} Fallback for Single Text / Multi-line Text {% endcomment %}
-                  {% unless has_faq_items %}
-                    <div class="faq-raw-text">
-                      {{ faq_metafield.value | newline_to_br }}
-                    </div>
-                  {% endunless %}
-
                 </div>
-              {% else %}
-                <p class="faq-placeholder">{{ section.settings.empty_faq_message | default: 'No FAQ items found for this product.' }}</p>
               {% endif %}
+              
+              {% unless has_faq_items %}
+                <p class="faq-placeholder">{{ section.settings.empty_faq_message | default: 'No FAQ items found for this product.' }}</p>
+              {% endunless %}
               
             </div>
           </div>
@@ -156,7 +155,7 @@
     .faq-question { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 600; font-size: 17px; padding: 4px 0; color: #000; }
     .faq-question .faq-toggle { font-size: 26px; font-weight: 300; transition: transform 0.3s ease; color: #888; line-height: 1; }
     .faq-question.active .faq-toggle { transform: rotate(45deg); color: #000; }
-    .faq-answer, .faq-raw-text { padding-top: 16px; color: #555; line-height: 1.8; font-size: 16px; }
+    .faq-answer { padding-top: 16px; color: #555; line-height: 1.8; font-size: 16px; }
     .faq-placeholder { color: #999; font-style: italic; padding: 20px 0; text-align: center; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     @media (max-width: 768px) {
