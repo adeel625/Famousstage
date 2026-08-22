@@ -27,20 +27,26 @@
                   {% assign has_metafields = false %}
                   
                   <!-- ======================================== -->
-                  <!-- 1. ADDITIONAL INFORMATION Metafield      -->
+                  <!-- ADDITIONAL INFORMATION (Rich Text)       -->
                   <!-- ======================================== -->
                   {% assign additional_info = product.metafields.custom.additional_information %}
                   {% if additional_info != blank %}
                     {% assign has_metafields = true %}
                     <div class="metafield-item">
                       <span class="metafield-label">Additional Information:</span>
-                      <span class="metafield-value">{{ additional_info.value }}</span>
+                      <span class="metafield-value">
+                        {% if additional_info.type == 'json' %}
+                          {{ additional_info.value | json | strip_html }}
+                        {% else %}
+                          {{ additional_info.value }}
+                        {% endif %}
+                      </span>
                     </div>
                     <hr class="metafield-divider">
                   {% endif %}
                   
                   <!-- ======================================== -->
-                  <!-- 2. SHIPPING CARRIER Metafield           -->
+                  <!-- SHIPPING CARRIER                        -->
                   <!-- ======================================== -->
                   {% assign shipping_carrier = product.metafields.custom.shipping_carrier %}
                   {% if shipping_carrier != blank %}
@@ -53,7 +59,7 @@
                   {% endif %}
                   
                   <!-- ======================================== -->
-                  <!-- 3. AUTO-DETECT OTHER METAFIELDS         -->
+                  <!-- AUTO-DETECT OTHER METAFIELDS             -->
                   <!-- ======================================== -->
                   {% assign all_metafields = product.metafields.custom %}
                   {% for field in all_metafields %}
@@ -75,7 +81,7 @@
                           {% elsif field_value.type == 'url' %}
                             <a href="{{ field_value.value }}" target="_blank">{{ field_value.value }}</a>
                           {% elsif field_value.type == 'json' %}
-                            {{ field_value.value | json }}
+                            {{ field_value.value | json | strip_html }}
                           {% elsif field_value.type == 'boolean' %}
                             {% if field_value.value == true %}Yes{% else %}No{% endif %}
                           {% elsif field_value.type == 'date' %}
@@ -90,7 +96,7 @@
                   {% endfor %}
                   
                   <!-- ======================================== -->
-                  <!-- 4. PRODUCT DESCRIPTION (Fallback)       -->
+                  <!-- FALLBACK: Product Description           -->
                   <!-- ======================================== -->
                   {% unless has_metafields %}
                     <div class="metafield-item">
@@ -106,7 +112,7 @@
           </div>
           
           <!-- ========================================== -->
-          <!-- TAB 2: FAQ (Dynamic from Metaobject)       -->
+          <!-- TAB 2: FAQ (MetaobjectListDrop)            -->
           <!-- ========================================== -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
@@ -116,53 +122,47 @@
               <!-- ======================================== -->
               <!-- OPTION 1: Metaobject Type FAQ            -->
               <!-- ======================================== -->
-              {% assign metaobject_type = section.settings.metaobject_type | default: 'faq' %}
-              {% assign faq_entries = product.metafields[metaobject_type] %}
+              {% assign faq_entries = product.metafields.custom.faq %}
               
-              {% if faq_entries.value.size > 0 %}
+              {% if faq_entries != blank %}
                 {% assign has_faq = true %}
                 <div class="faq-list">
-                  {% for entry in faq_entries.value %}
-                    <div class="faq-item">
-                      <div class="faq-question" data-toggle="collapse">
-                        <span>
-                          {% if entry.question %}
-                            {{ entry.question }}
-                          {% elsif entry.title %}
-                            {{ entry.title }}
-                          {% elsif entry.name %}
-                            {{ entry.name }}
+                  
+                  {% if faq_entries.type == 'metaobject_list' %}
+                    <!-- MetaobjectListDrop - Loop through entries -->
+                    {% for entry in faq_entries.value %}
+                      <div class="faq-item">
+                        <div class="faq-question" data-toggle="collapse">
+                          <span>
+                            {% if entry.question %}
+                              {{ entry.question }}
+                            {% elsif entry.title %}
+                              {{ entry.title }}
+                            {% elsif entry.name %}
+                              {{ entry.name }}
+                            {% else %}
+                              Question {{ forloop.index }}
+                            {% endif %}
+                          </span>
+                          <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer" style="display: none;">
+                          {% if entry.answer %}
+                            {{ entry.answer }}
+                          {% elsif entry.content %}
+                            {{ entry.content }}
+                          {% elsif entry.description %}
+                            {{ entry.description }}
                           {% else %}
-                            Question {{ forloop.index }}
+                            No answer provided.
                           {% endif %}
-                        </span>
-                        <span class="faq-toggle">+</span>
+                        </div>
                       </div>
-                      <div class="faq-answer" style="display: none;">
-                        {% if entry.answer %}
-                          {{ entry.answer }}
-                        {% elsif entry.content %}
-                          {{ entry.content }}
-                        {% elsif entry.description %}
-                          {{ entry.description }}
-                        {% else %}
-                          No answer provided.
-                        {% endif %}
-                      </div>
-                    </div>
-                  {% endfor %}
-                </div>
-              {% endif %}
-              
-              <!-- ======================================== -->
-              <!-- OPTION 2: FAQ as JSON Metafield         -->
-              <!-- ======================================== -->
-              {% unless has_faq %}
-                {% assign faq_json = product.metafields.custom.faq.value %}
-                {% if faq_json %}
-                  {% assign has_faq = true %}
-                  <div class="faq-list">
-                    {% for item in faq_json %}
+                    {% endfor %}
+                    
+                  {% elsif faq_entries.type == 'json' %}
+                    <!-- JSON Array -->
+                    {% for item in faq_entries.value %}
                       <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
                           <span>{{ item.question }}</span>
@@ -173,30 +173,22 @@
                         </div>
                       </div>
                     {% endfor %}
-                  </div>
-                {% endif %}
-              {% endunless %}
-              
-              <!-- ======================================== -->
-              <!-- OPTION 3: FAQ as Single Text Field      -->
-              <!-- ======================================== -->
-              {% unless has_faq %}
-                {% assign faq_text = product.metafields.custom.faq %}
-                {% if faq_text != blank %}
-                  {% assign has_faq = true %}
-                  <div class="faq-single">
+                    
+                  {% else %}
+                    <!-- Single Text Field -->
                     <div class="faq-item">
                       <div class="faq-question" data-toggle="collapse">
                         <span>Frequently Asked Questions</span>
                         <span class="faq-toggle">+</span>
                       </div>
                       <div class="faq-answer" style="display: none;">
-                        {{ faq_text.value }}
+                        {{ faq_entries.value }}
                       </div>
                     </div>
-                  </div>
-                {% endif %}
-              {% endunless %}
+                  {% endif %}
+                  
+                </div>
+              {% endif %}
               
               <!-- ======================================== -->
               <!-- FALLBACK: No FAQ found                  -->
@@ -370,11 +362,6 @@
       text-align: center;
     }
     
-    /* FAQ Single Text Style */
-    .faq-single .faq-item {
-      border-bottom: none;
-    }
-    
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -488,18 +475,6 @@
       "default": "Product Details"
     },
     {
-      "type": "header",
-      "content": "❓ FAQ (Metaobject)"
-    },
-    {
-      "type": "text",
-      "id": "metaobject_type",
-      "label": "Metaobject Type Handle",
-      "default": "faq",
-      "placeholder": "e.g., faq, product_faq",
-      "info": "The handle of your metaobject definition"
-    },
-    {
       "type": "text",
       "id": "empty_faq_message",
       "label": "Empty FAQ Message",
@@ -512,8 +487,7 @@
       "category": "Product",
       "settings": {
         "tab_1_label": "Additional Information",
-        "tab_2_label": "Frequently Asked Questions",
-        "metaobject_type": "faq"
+        "tab_2_label": "Frequently Asked Questions"
       }
     }
   ]
