@@ -87,68 +87,40 @@
             </div>
           </div>
           
-          <!-- TAB 2: FAQ TAB (AUTO-DETECT METAOBJECT FIELDS) -->
+          <!-- TAB 2: FAQ TAB -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
-              {% assign faq_metafield = product.metafields.custom.faq_frequently_asked_question %}
+              {% assign faq_list = product.metafields.custom.faq_frequently_asked_question.value %}
               {% assign has_faq_items = false %}
               
-              {% if faq_metafield != blank and faq_metafield.value != blank %}
+              {% if faq_list != blank %}
                 <div class="faq-list">
                   
-                  {% for item in faq_metafield.value %}
+                  {% for item in faq_list %}
+                    <!-- Fetch Question & Answer Keys Directly -->
+                    {% assign question = item.question | default: item.title | default: item.q %}
+                    {% assign answer = item.answer | default: item.description | default: item.a %}
                     
-                    {% assign question_text = '' %}
-                    {% assign answer_text = '' %}
-                    
-                    <!-- Direct Smart Check -->
-                    {% if item.question != blank %}
-                      {% assign question_text = item.question.value | default: item.question %}
-                    {% elsif item.title != blank %}
-                      {% assign question_text = item.title.value | default: item.title %}
-                    {% endif %}
-
-                    {% if item.answer != blank %}
-                      {% assign answer_text = item.answer.value | default: item.answer %}
-                    {% elsif item.description != blank %}
-                      {% assign answer_text = item.description.value | default: item.description %}
-                    {% endif %}
-
-                    <!-- Dynamic Metaobject Field Fallback -->
-                    {% if question_text == blank %}
-                      {% for meta_field in item %}
-                        {% assign f_key = meta_field[0] %}
-                        {% assign f_val = meta_field[1] %}
-                        {% if f_key contains 'question' or f_key contains 'title' or f_key contains 'q' %}
-                          {% assign question_text = f_val.value | default: f_val %}
-                        {% elsif f_key contains 'answer' or f_key contains 'desc' or f_key contains 'a' %}
-                          {% assign answer_text = f_val.value | default: f_val %}
-                        {% endif %}
-                      {% endfor %}
-                    {% endif %}
-                    
-                    <!-- Render Block -->
-                    {% if question_text != blank or answer_text != blank %}
+                    {% if question != blank %}
                       {% assign has_faq_items = true %}
                       <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
-                          <span>{{ question_text | default: 'FAQ Item' }}</span>
+                          <span>{{ question }}</span>
                           <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer" style="display: none;">
-                          {{ answer_text | newline_to_br }}
+                          {{ answer | newline_to_br }}
                         </div>
                       </div>
                     {% endif %}
-                    
                   {% endfor %}
 
                 </div>
               {% endif %}
               
               {% unless has_faq_items %}
-                <p class="faq-placeholder">No FAQ items found for this product. Please add entries in Product Metafields.</p>
+                <p class="faq-placeholder">No FAQ items found. Please check if FAQs are selected in the Product admin page.</p>
               {% endunless %}
               
             </div>
