@@ -811,6 +811,11 @@
   <script type="application/json" id="ModelJson-{{ section.id }}">
     {{ product.media | where: 'media_type', 'model' | json }}
   </script>
+  <!-- DEBUG: FAQ Metaobject -->
+{% assign faq = product.metafields.custom.faq %}
+<p><strong>FAQ Type:</strong> {{ faq.type }}</p>
+<p><strong>FAQ Value Type:</strong> {{ faq.value | json }}</p>
+<p><strong>FAQ First Entry:</strong> {{ faq.value[0] | json }}</p>
 {%- endif -%}
 
 {% schema %}
