@@ -51,7 +51,7 @@
                     </div>
                   {% endif %}
                   
-                  <!-- 3. Dynamic Loop (Excludes FAQ Completely from Tab 1) -->
+                  <!-- 3. Dynamic Loop (Excludes FAQ) -->
                   {% for field in product.metafields.custom %}
                     {% assign key = field[0] %}
                     {% assign metafield_obj = field[1] %}
@@ -87,50 +87,37 @@
             </div>
           </div>
           
-          <!-- TAB 2: FAQ TAB (FIXED WITH EXACT FIELDS: questions & answers) -->
+          <!-- TAB 2: FAQ TAB (SINGLE ENTRY PARSER FIX) -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
-              {% assign faq_data = product.metafields.custom.faq.value %}
-              {% assign has_faq_items = false %}
+              {% assign faq_entry = product.metafields.custom.faq.value %}
               
-              {% if faq_data != blank %}
+              {% if faq_entry != blank %}
                 <div class="faq-list">
                   
-                  {% comment %} Handles both List Metaobject & Single Metaobject Entry {% endcomment %}
-                  {% for item in faq_data %}
-                    {% assign q_val = item.questions.value | default: item.questions %}
-                    {% assign a_val = item.answers.value | default: item.answers %}
-                    
-                    {% if q_val == blank %}
-                      {% assign q_val = faq_data.questions.value | default: faq_data.questions %}
-                      {% assign a_val = faq_data.answers.value | default: faq_data.answers %}
-                    {% endif %}
+                  {% comment %} Fetch exact values directly from Single Metaobject {% endcomment %}
+                  {% assign q_val = faq_entry.questions.value | default: faq_entry.questions %}
+                  {% assign a_val = faq_entry.answers.value | default: faq_entry.answers %}
 
-                    {% if q_val != blank %}
-                      {% assign has_faq_items = true %}
-                      <div class="faq-item">
-                        <div class="faq-question" data-toggle="collapse">
-                          <span>{{ q_val }}</span>
-                          <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer" style="display: none;">
-                          {{ a_val | newline_to_br }}
-                        </div>
+                  {% if q_val != blank %}
+                    <div class="faq-item">
+                      <div class="faq-question" data-toggle="collapse">
+                        <span>{{ q_val }}</span>
+                        <span class="faq-toggle">+</span>
                       </div>
-                      {% comment %} Break if single entry matched {% endcomment %}
-                      {% unless item.questions %}
-                        {% break %}
-                      {% endunless %}
-                    {% endif %}
-                  {% endfor %}
+                      <div class="faq-answer" style="display: none;">
+                        {{ a_val | newline_to_br }}
+                      </div>
+                    </div>
+                  {% else %}
+                    <p class="faq-placeholder">Questions field is empty in this Metaobject entry.</p>
+                  {% endif %}
 
                 </div>
+              {% else %}
+                <p class="faq-placeholder">No FAQ metaobject entry assigned to this product in Admin.</p>
               {% endif %}
-              
-              {% unless has_faq_items %}
-                <p class="faq-placeholder">No FAQ items found. Please select an FAQ metaobject in the Product Admin.</p>
-              {% endunless %}
               
             </div>
           </div>
