@@ -22,13 +22,13 @@
                   
                   {% assign has_data = false %}
                   
-                  <!-- 1. ADDITIONAL INFORMATION (RICH TEXT SUPPORTED) -->
+                  <!-- 1. ADDITIONAL INFORMATION (RICH TEXT FIX) -->
                   {% assign additional_info = product.metafields.custom.additional_information %}
                   {% if additional_info != blank and additional_info.value != blank %}
                     {% assign has_data = true %}
                     <div class="metafield-item rich-text-content">
                       <div class="metafield-value">
-                        {{ additional_info.value }}
+                        {{ additional_info | metafield_tag }}
                       </div>
                     </div>
                   {% endif %}
@@ -60,7 +60,9 @@
                         <div class="metafield-item">
                           <span class="metafield-label">{{ key | replace: '_', ' ' | capitalize }}:</span>
                           <span class="metafield-value">
-                            {% if metafield_obj.type contains 'list' %}
+                            {% if metafield_obj.type contains 'richtext' %}
+                              {{ metafield_obj | metafield_tag }}
+                            {% elsif metafield_obj.type contains 'list' %}
                               {% for item in metafield_obj.value %}
                                 {{ item }}{% unless forloop.last %}, {% endunless %}
                               {% endfor %}
@@ -151,7 +153,9 @@
     .metafield-item:last-child { border-bottom: none; }
     .metafield-label { font-weight: 600; min-width: 200px; color: #000; font-size: 16px; flex-shrink: 0; }
     .metafield-value { color: #333; flex: 1; font-size: 16px; line-height: 1.6; }
+    .metafield-value h1, .metafield-value h2, .metafield-value h3, .metafield-value h4 { color: #000; margin: 16px 0 8px 0; font-weight: 700; }
     .metafield-value ul, .metafield-value ol { padding-left: 20px; margin: 10px 0; }
+    .metafield-value p { margin-bottom: 12px; }
     .faq-item { border-bottom: 1px solid #eaeaea; padding: 16px 0; }
     .faq-item:last-child { border-bottom: none; }
     .faq-question { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 600; font-size: 17px; padding: 4px 0; color: #000; }
