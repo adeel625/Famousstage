@@ -27,7 +27,7 @@
                   {% assign has_data = false %}
                   
                   <!-- ======================================== -->
-                  <!-- ADDITIONAL INFORMATION                   -->
+                  <!-- ADDITIONAL INFORMATION - FIXED           -->
                   <!-- ======================================== -->
                   {% assign additional_info = product.metafields.custom.additional_information %}
                   {% if additional_info != blank %}
@@ -35,10 +35,21 @@
                     <div class="metafield-item">
                       <span class="metafield-label">Additional Information:</span>
                       <span class="metafield-value">
-                        {% if additional_info.type == 'json' %}
-                          {% assign json_data = additional_info.value | json %}
-                          {% assign clean_text = json_data | replace: '{"type"=>"root", "children"=>[{"type"=>"paragraph", "children"=>[{"type"=>"text", "value"=>"', '' | replace: '"}]}]}', '' %}
-                          {{ clean_text }}
+                        {% comment %} Extract plain text from Shopify rich text JSON {% endcomment %}
+                        {% assign raw = additional_info.value | json %}
+                        {% comment %} Find and extract just the text value {% endcomment %}
+                        {% if raw contains '"value"=>"' %}
+                          {% assign parts = raw | split: '"value"=>"' %}
+                          {% assign text_parts = '' %}
+                          {% for part in parts %}
+                            {% if forloop.first == false %}
+                              {% assign clean_part = part | split: '"' | first %}
+                              {% if clean_part != blank %}
+                                {% assign text_parts = text_parts | append: clean_part %}
+                              {% endif %}
+                            {% endif %}
+                          {% endfor %}
+                          {{ text_parts }}
                         {% else %}
                           {{ additional_info.value }}
                         {% endif %}
@@ -97,7 +108,7 @@
           </div>
           
           <!-- ========================================== -->
-          <!-- TAB 2: FAQ                                 -->
+          <!-- TAB 2: FAQ - FIXED                         -->
           <!-- ========================================== -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
@@ -108,8 +119,12 @@
               {% if faq_metafield != blank %}
                 
                 {% comment %}
-                  METHOD 1: MetaobjectListDrop - Direct access
+                  CRITICAL FIX: Access metaobject entries directly
+                  MetaobjectListDrop ka structure:
+                  faq_metafield.value[0].question
+                  faq_metafield.value[0].answer
                 {% endcomment %}
+                
                 {% assign faq_entries = faq_metafield.value %}
                 
                 {% if faq_entries.size > 0 %}
@@ -146,47 +161,6 @@
                     {% endfor %}
                   </div>
                 {% endif %}
-                
-                {% comment %}
-                  METHOD 2: JSON Array
-                {% endcomment %}
-                {% unless has_faq %}
-                  {% assign json_data = faq_metafield.value %}
-                  {% if json_data contains 'question' %}
-                    {% assign has_faq = true %}
-                    <div class="faq-list">
-                      {% for item in json_data %}
-                        <div class="faq-item">
-                          <div class="faq-question" data-toggle="collapse">
-                            <span>{{ item.question }}</span>
-                            <span class="faq-toggle">+</span>
-                          </div>
-                          <div class="faq-answer" style="display: none;">
-                            {{ item.answer }}
-                          </div>
-                        </div>
-                      {% endfor %}
-                    </div>
-                  {% endif %}
-                {% endunless %}
-                
-                {% comment %}
-                  METHOD 3: Single Text
-                {% endcomment %}
-                {% unless has_faq %}
-                  {% assign has_faq = true %}
-                  <div class="faq-list">
-                    <div class="faq-item">
-                      <div class="faq-question" data-toggle="collapse">
-                        <span>Frequently Asked Questions</span>
-                        <span class="faq-toggle">+</span>
-                      </div>
-                      <div class="faq-answer" style="display: none;">
-                        {{ faq_metafield.value }}
-                      </div>
-                    </div>
-                  </div>
-                {% endunless %}
                 
               {% endif %}
               
