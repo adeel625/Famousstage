@@ -14,9 +14,7 @@
         
         <div class="tabs-content">
           
-          <!-- ========================================== -->
-          <!-- TAB 1: ADDITIONAL INFORMATION              -->
-          <!-- ========================================== -->
+          <!-- TAB 1: ADDITIONAL INFORMATION -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
             <div class="additional-info-content">
               <div class="info-block metafields-block">
@@ -53,7 +51,7 @@
                     </div>
                   {% endif %}
                   
-                  <!-- 3. Dynamic Loop (Excludes FAQ Completely from Tab 1) -->
+                  <!-- 3. Dynamic Loop (Excludes FAQ Completely) -->
                   {% for field in product.metafields.custom %}
                     {% assign key = field[0] %}
                     {% assign metafield_obj = field[1] %}
@@ -89,9 +87,7 @@
             </div>
           </div>
           
-          <!-- ========================================== -->
-          <!-- TAB 2: FAQ TAB (METAOBJECT LIST FIX)      -->
-          <!-- ========================================== -->
+          <!-- TAB 2: FAQ TAB (AUTO-DETECT METAOBJECT FIELDS) -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
@@ -102,29 +98,57 @@
                 <div class="faq-list">
                   
                   {% for item in faq_metafield.value %}
-                    {% comment %} Metaobject fields (question / answer) safely extracts value {% endcomment %}
-                    {% assign q_val = item.question.value | default: item.question | default: item.title.value | default: item.title %}
-                    {% assign a_val = item.answer.value | default: item.answer | default: item.description.value | default: item.description %}
                     
-                    {% if q_val != blank %}
+                    {% assign question_text = '' %}
+                    {% assign answer_text = '' %}
+                    
+                    <!-- Direct Smart Check -->
+                    {% if item.question != blank %}
+                      {% assign question_text = item.question.value | default: item.question %}
+                    {% elsif item.title != blank %}
+                      {% assign question_text = item.title.value | default: item.title %}
+                    {% endif %}
+
+                    {% if item.answer != blank %}
+                      {% assign answer_text = item.answer.value | default: item.answer %}
+                    {% elsif item.description != blank %}
+                      {% assign answer_text = item.description.value | default: item.description %}
+                    {% endif %}
+
+                    <!-- Dynamic Metaobject Field Fallback -->
+                    {% if question_text == blank %}
+                      {% for meta_field in item %}
+                        {% assign f_key = meta_field[0] %}
+                        {% assign f_val = meta_field[1] %}
+                        {% if f_key contains 'question' or f_key contains 'title' or f_key contains 'q' %}
+                          {% assign question_text = f_val.value | default: f_val %}
+                        {% elsif f_key contains 'answer' or f_key contains 'desc' or f_key contains 'a' %}
+                          {% assign answer_text = f_val.value | default: f_val %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                    
+                    <!-- Render Block -->
+                    {% if question_text != blank or answer_text != blank %}
                       {% assign has_faq_items = true %}
                       <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
-                          <span>{{ q_val }}</span>
+                          <span>{{ question_text | default: 'FAQ Item' }}</span>
                           <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer" style="display: none;">
-                          {{ a_val | newline_to_br }}
+                          {{ answer_text | newline_to_br }}
                         </div>
                       </div>
                     {% endif %}
+                    
                   {% endfor %}
 
                 </div>
               {% endif %}
               
               {% unless has_faq_items %}
-                <p class="faq-placeholder">{{ section.settings.empty_faq_message | default: 'No FAQ items found for this product.' }}</p>
+                <p class="faq-placeholder">No FAQ items found for this product. Please add entries in Product Metafields.</p>
               {% endunless %}
               
             </div>
@@ -232,12 +256,6 @@
       "id": "metafields_title",
       "label": "Section Title",
       "default": "Product Details"
-    },
-    {
-      "type": "text",
-      "id": "empty_faq_message",
-      "label": "Empty FAQ Message",
-      "default": "No FAQ items found for this product."
     }
   ],
   "presets": [
