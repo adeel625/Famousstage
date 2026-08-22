@@ -14,7 +14,9 @@
         
         <div class="tabs-content">
           
-          <!-- TAB 1: ADDITIONAL INFORMATION -->
+          <!-- ========================================== -->
+          <!-- TAB 1: ADDITIONAL INFORMATION              -->
+          <!-- ========================================== -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
             <div class="additional-info-content">
               
@@ -26,7 +28,7 @@
                   
                   <!-- 1. ADDITIONAL INFORMATION -->
                   {% assign additional_info = product.metafields.custom.additional_information %}
-                  {% if additional_info != blank %}
+                  {% if additional_info != blank and additional_info.value != blank %}
                     {% assign has_data = true %}
                     <div class="metafield-item">
                       <span class="metafield-label">Additional Information:</span>
@@ -38,7 +40,7 @@
                   
                   <!-- 2. SHIPPING CARRIER -->
                   {% assign shipping_carrier = product.metafields.custom.shipping_carrier %}
-                  {% if shipping_carrier != blank %}
+                  {% if shipping_carrier != blank and shipping_carrier.value != blank %}
                     {% assign has_data = true %}
                     <div class="metafield-item">
                       <span class="metafield-label">Shipping Carrier:</span>
@@ -52,14 +54,14 @@
                     </div>
                   {% endif %}
                   
-                  <!-- 3. ALL OTHER DYNAMIC METAFIELDS -->
-                  {% assign skip_keys = 'faq,additional_information,shipping_carrier' | split: ',' %}
+                  <!-- 3. ALL OTHER DYNAMIC METAFIELDS (Excluding FAQ explicitly) -->
+                  {% assign skip_keys = 'faq,frequently_asked_questions,additional_information,shipping_carrier' | split: ',' %}
                   {% for field in product.metafields.custom %}
                     {% assign key = field[0] %}
                     {% assign metafield_obj = field[1] %}
                     
                     {% unless skip_keys contains key %}
-                      {% if metafield_obj != blank %}
+                      {% if metafield_obj != blank and metafield_obj.value != blank %}
                         {% assign has_data = true %}
                         <div class="metafield-item">
                           <span class="metafield-label">{{ key | replace: '_', ' ' | capitalize }}:</span>
@@ -91,32 +93,30 @@
             </div>
           </div>
           
-          <!-- TAB 2: FAQ -->
+          <!-- ========================================== -->
+          <!-- TAB 2: FAQ (METAOBJECT & JSON FIX)         -->
+          <!-- ========================================== -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
               {% assign has_faq = false %}
               {% assign faq_metafield = product.metafields.custom.faq %}
               
-              {% if faq_metafield != blank %}
-                
-                {% comment %} Handle JSON string or Metaobject List {% endcomment %}
-                {% if faq_metafield.type contains 'json' %}
-                  {% assign faq_list = faq_metafield.value | parse_json %}
-                {% else %}
-                  {% assign faq_list = faq_metafield.value %}
-                {% endif %}
-                
+              {% if faq_metafield != blank and faq_metafield.value != blank %}
                 <div class="faq-list">
-                  {% for item in faq_list %}
-                    {% assign q_text = item.question | default: item.title | default: item.q %}
-                    {% assign a_text = item.answer | default: item.description | default: item.a %}
+                  
+                  {% comment %} Agar Metafield List hai (Metaobject ya JSON list) {% endcomment %}
+                  {% for item in faq_metafield.value %}
                     
-                    {% if q_text != blank or item != blank %}
+                    {% comment %} Metaobject fields (Question & Answer keys) ko safe parse karein {% endcomment %}
+                    {% assign q_text = item.question.value | default: item.question | default: item.title.value | default: item.title | default: item.q %}
+                    {% assign a_text = item.answer.value | default: item.answer | default: item.description.value | default: item.description | default: item.a %}
+                    
+                    {% if q_text != blank or a_text != blank %}
                       {% assign has_faq = true %}
                       <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
-                          <span>{% if q_text != blank %}{{ q_text }}{% else %}{{ item }}{% endif %}</span>
+                          <span>{{ q_text }}</span>
                           <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer" style="display: none;">
@@ -125,6 +125,7 @@
                       </div>
                     {% endif %}
                   {% endfor %}
+
                 </div>
               {% endif %}
               
