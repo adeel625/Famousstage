@@ -91,36 +91,35 @@
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
-              <!-- Smart Fetching for FAQ Key -->
-              {% assign faq_data = product.metafields.custom.faq.value | default: product.metafields.custom.frequently_asked_questions.value | default: product.metafields.custom['faq'].value %}
+              {% assign faq_metafield = product.metafields.custom.faq_frequently_asked_question %}
               {% assign has_faq_items = false %}
               
-              {% if faq_data != blank %}
+              {% if faq_metafield != blank and faq_metafield.value != blank %}
                 <div class="faq-list">
                   
-                  <!-- Metaobjects List Loop -->
-                  {% for item in faq_data %}
-                    {% assign question = item.question | default: item.title | default: item.q %}
-                    {% assign answer = item.answer | default: item.description | default: item.a %}
+                  {% comment %} Metaobjects List ya Array Loop {% endcomment %}
+                  {% for item in faq_metafield.value %}
+                    {% assign question = item.question.value | default: item.question | default: item.title.value | default: item.title | default: item.q %}
+                    {% assign answer = item.answer.value | default: item.answer | default: item.description.value | default: item.description | default: item.a %}
                     
-                    {% if question != blank %}
+                    {% if question != blank or answer != blank %}
                       {% assign has_faq_items = true %}
                       <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
-                          <span>{{ question.value | default: question }}</span>
+                          <span>{{ question }}</span>
                           <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer" style="display: none;">
-                          {{ answer.value | default: answer | newline_to_br }}
+                          {{ answer | newline_to_br }}
                         </div>
                       </div>
                     {% endif %}
                   {% endfor %}
 
-                  <!-- If it is single line / multi-line text fallback -->
+                  {% comment %} Fallback for Single Text / Multi-line Text {% endcomment %}
                   {% unless has_faq_items %}
                     <div class="faq-raw-text">
-                      {{ faq_data | newline_to_br }}
+                      {{ faq_metafield.value | newline_to_br }}
                     </div>
                   {% endunless %}
 
