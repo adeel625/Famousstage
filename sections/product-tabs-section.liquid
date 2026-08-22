@@ -35,23 +35,21 @@
                     <div class="metafield-item">
                       <span class="metafield-label">Additional Information:</span>
                       <span class="metafield-value">
-                        {% comment %} 
-                          Extract plain text from Shopify rich text JSON 
-                          Example: {"type"=>"root", "children"=>[{"type"=>"paragraph", "children"=>[{"type"=>"text", "value"=>"Hello"}]}]}
-                        {% endcomment %}
-                        {% assign raw = additional_info.value | json %}
-                        {% if raw contains '"value"=>"' %}
-                          {% assign parts = raw | split: '"value"=>"' %}
-                          {% assign text_parts = '' %}
-                          {% for part in parts %}
-                            {% if forloop.first == false %}
-                              {% assign clean_part = part | split: '"' | first %}
-                              {% if clean_part != blank %}
-                                                                {% assign text_parts = text_parts | append: clean_part %}
+                        {% if additional_info.type == 'json' %}
+                          {% assign raw = additional_info.value | json %}
+                          {% if raw contains '"value"=>"' %}
+                            {% assign parts = raw | split: '"value"=>"' %}
+                            {% for part in parts %}
+                              {% if forloop.first == false %}
+                                {% assign clean_part = part | split: '"' | first %}
+                                {% if clean_part != blank %}
+                                  {{ clean_part }}
+                                {% endif %}
                               {% endif %}
-                            {% endif %}
-                          {% endfor %}
-                          {{ text_parts }}
+                            {% endfor %}
+                          {% else %}
+                            {{ additional_info.value }}
+                          {% endif %}
                         {% else %}
                           {{ additional_info.value }}
                         {% endif %}
@@ -86,7 +84,23 @@
                         {% assign has_data = true %}
                         <div class="metafield-item">
                           <span class="metafield-label">{{ key | replace: '_', ' ' | capitalize }}:</span>
-                          <span class="metafield-value">{{ value.value }}</span>
+                          <span class="metafield-value">
+                            {% if value.type == 'json' %}
+                              {% assign raw = value.value | json %}
+                              {% if raw contains '"value"=>"' %}
+                                {% assign parts = raw | split: '"value"=>"' %}
+                                {% for part in parts %}
+                                  {% if forloop.first == false %}
+                                    {{ part | split: '"' | first }}
+                                  {% endif %}
+                                {% endfor %}
+                              {% else %}
+                                {{ value.value }}
+                              {% endif %}
+                            {% else %}
+                              {{ value.value }}
+                            {% endif %}
+                          </span>
                         </div>
                         <hr class="metafield-divider">
                       {% endif %}
@@ -110,73 +124,39 @@
           </div>
           
           <!-- ========================================== -->
-          <!-- TAB 2: FAQ - USING .value ACCESS           -->
+          <!-- TAB 2: FAQ                                 -->
           <!-- ========================================== -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
               {% assign has_faq = false %}
-              
-              <!-- ======================================== -->
-              <!-- STEP 1: Get FAQ Metafield                -->
-              <!-- ======================================== -->
               {% assign faq_metafield = product.metafields.custom.faq %}
               
               {% if faq_metafield != blank %}
                 
-                <!-- ======================================== -->
-                <!-- STEP 2: Access .value (Array of entries) -->
-                <!-- ======================================== -->
-                {% assign faq_entries = faq_metafield.value %}
+                {% comment %}
+                  JSON Format:
+                  [
+                    { "question": "Q1", "answer": "A1" },
+                    { "question": "Q2", "answer": "A2" }
+                  ]
+                {% endcomment %}
+                {% assign faq_data = faq_metafield.value %}
                 
-                <!-- ======================================== -->
-                <!-- STEP 3: Check if entries exist          -->
-                <!-- ======================================== -->
-                {% if faq_entries.size > 0 %}
+                {% if faq_data contains 'question' %}
                   {% assign has_faq = true %}
                   <div class="faq-list">
-                    
-                    <!-- ======================================== -->
-                    <!-- STEP 4: Loop through each entry         -->
-                    <!-- ======================================== -->
-                    {% for entry in faq_entries %}
+                    {% for item in faq_data %}
                       <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
-                          <span>
-                            {% comment %} 
-                              STEP 5: Access entry fields using dot notation
-                              entry.question or entry.title or entry.name
-                            {% endcomment %}
-                            {% if entry.question != blank %}
-                              {{ entry.question }}
-                            {% elsif entry.title != blank %}
-                              {{ entry.title }}
-                            {% elsif entry.name != blank %}
-                              {{ entry.name }}
-                            {% else %}
-                              Question {{ forloop.index }}
-                            {% endif %}
-                          </span>
+                          <span>{{ item.question }}</span>
                           <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer" style="display: none;">
-                          {% comment %}
-                            STEP 6: Access answer field
-                            entry.answer or entry.content or entry.description
-                          {% endcomment %}
-                          {% if entry.answer != blank %}
-                            {{ entry.answer }}
-                          {% elsif entry.content != blank %}
-                            {{ entry.content }}
-                          {% elsif entry.description != blank %}
-                            {{ entry.description }}
-                          {% else %}
-                            No answer provided.
-                          {% endif %}
+                          {{ item.answer }}
                         </div>
                       </div>
                     {% endfor %}
-                    
                   </div>
                 {% endif %}
                 
