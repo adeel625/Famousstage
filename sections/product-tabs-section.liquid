@@ -16,6 +16,13 @@
           
           <!-- TAB 1: ADDITIONAL INFORMATION -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
+            <div class="tab-panel" id="faq" role="tabpanel">
+  <div class="faq-content" style="background:#fff3cd; padding:15px; border:1px solid #ffeeba;">
+    <p><strong>FAQ Data Inspect:</strong></p>
+    {% assign faq_meta = product.metafields.custom.faq.value %}
+    <p>Raw JSON: <code>{{ faq_meta | json }}</code></p>
+  </div>
+</div>
             <div class="additional-info-content">
               <div class="info-block metafields-block">
                 <h3 class="info-title">{{ section.settings.metafields_title | default: 'Product Details' }}</h3>
