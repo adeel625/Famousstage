@@ -24,63 +24,73 @@
                 <h3 class="info-title">{{ section.settings.metafields_title | default: 'Product Details' }}</h3>
                 <div class="metafields-grid">
                   
-                  {% assign has_metafields = false %}
+                  {% assign has_data = false %}
                   
                   <!-- ======================================== -->
-                  <!-- LOOP THROUGH ALL METAFIELDS              -->
+                  <!-- ADDITIONAL INFORMATION (Raw Text)        -->
+                  <!-- ======================================== -->
+                  {% assign additional_info = product.metafields.custom.additional_information %}
+                  {% if additional_info != blank %}
+                    {% assign has_data = true %}
+                    <div class="metafield-item">
+                      <span class="metafield-label">Additional Information:</span>
+                      <span class="metafield-value">
+                        {% comment %} Extract plain text from JSON rich text {% endcomment %}
+                        {% assign raw_value = additional_info.value | json %}
+                        {% if raw_value contains '"value"=>"' %}
+                          {% assign parts = raw_value | split: '"value"=>"' %}
+                          {% for part in parts %}
+                            {% if forloop.first == false %}
+                              {% assign text_part = part | split: '"' | first %}
+                              {% if text_part != blank %}
+                                {{ text_part }}
+                              {% endif %}
+                            {% endif %}
+                          {% endfor %}
+                        {% else %}
+                          {{ additional_info.value }}
+                        {% endif %}
+                      </span>
+                    </div>
+                    <hr class="metafield-divider">
+                  {% endif %}
+                  
+                  <!-- ======================================== -->
+                  <!-- SHIPPING CARRIER                        -->
+                  <!-- ======================================== -->
+                  {% assign shipping_carrier = product.metafields.custom.shipping_carrier %}
+                  {% if shipping_carrier != blank %}
+                    {% assign has_data = true %}
+                    <div class="metafield-item">
+                      <span class="metafield-label">Shipping Carrier:</span>
+                      <span class="metafield-value">{{ shipping_carrier.value }}</span>
+                    </div>
+                    <hr class="metafield-divider">
+                  {% endif %}
+                  
+                  <!-- ======================================== -->
+                  <!-- ALL OTHER METAFIELDS (Except FAQ)       -->
                   <!-- ======================================== -->
                   {% for field in product.metafields.custom %}
-                    {% assign field_key = field[0] %}
-                    {% assign field_value = field[1] %}
+                    {% assign key = field[0] %}
+                    {% assign value = field[1] %}
                     
-                    <!-- Skip FAQ field (it goes to FAQ tab) -->
-                    {% if field_key == 'faq' %}
-                      {% continue %}
-                    {% endif %}
-                    
-                    {% if field_value != blank %}
-                      {% assign has_metafields = true %}
-                      <div class="metafield-item">
-                        <span class="metafield-label">{{ field_key | replace: '_', ' ' | capitalize }}:</span>
-                        <span class="metafield-value">
-                          {% if field_value.type == 'file_reference' %}
-                            <a href="{{ field_value.value }}" target="_blank">📄 View File</a>
-                          {% elsif field_value.type == 'url' %}
-                            <a href="{{ field_value.value }}" target="_blank">{{ field_value.value }}</a>
-                          {% elsif field_value.type == 'json' %}
-                            {% comment %} Extract text from Shopify rich text JSON {% endcomment %}
-                            {% assign json_data = field_value.value %}
-                            {% if json_data contains 'children' %}
-                              {% assign text_parts = json_data | split: '"value"=>"' %}
-                              {% for part in text_parts %}
-                                {% if forloop.first %}{% continue %}{% endif %}
-                                {% assign text = part | split: '"' | first %}
-                                {{ text }}
-                              {% endfor %}
-                            {% else %}
-                              {{ json_data }}
-                            {% endif %}
-                          {% elsif field_value.type == 'boolean' %}
-                            {% if field_value.value == true %}Yes{% else %}No{% endif %}
-                          {% elsif field_value.type == 'date' %}
-                            {{ field_value.value | date: "%B %d, %Y" }}
-                          {% elsif field_value.type == 'number' %}
-                            {{ field_value.value }}
-                          {% elsif field_value.type == 'string' %}
-                            {{ field_value.value }}
-                          {% else %}
-                            {{ field_value.value }}
-                          {% endif %}
-                        </span>
-                      </div>
-                      <hr class="metafield-divider">
+                    {% if key != 'faq' and key != 'additional_information' and key != 'shipping_carrier' %}
+                      {% if value != blank %}
+                        {% assign has_data = true %}
+                        <div class="metafield-item">
+                          <span class="metafield-label">{{ key | replace: '_', ' ' | capitalize }}:</span>
+                          <span class="metafield-value">{{ value.value }}</span>
+                        </div>
+                        <hr class="metafield-divider">
+                      {% endif %}
                     {% endif %}
                   {% endfor %}
                   
                   <!-- ======================================== -->
-                  <!-- FALLBACK: Product Description           -->
+                  <!-- FALLBACK                               -->
                   <!-- ======================================== -->
-                  {% unless has_metafields %}
+                  {% unless has_data %}
                     <div class="metafield-item">
                       <span class="metafield-label">Description:</span>
                       <span class="metafield-value">{{ product.description }}</span>
@@ -94,64 +104,99 @@
           </div>
           
           <!-- ========================================== -->
-          <!-- TAB 2: FAQ (MetaobjectListDrop)            -->
+          <!-- TAB 2: FAQ                                 -->
           <!-- ========================================== -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
               {% assign has_faq = false %}
+              {% assign faq_field = product.metafields.custom.faq %}
               
-              <!-- ======================================== -->
-              <!-- GET FAQ FROM METAFIELD                   -->
-              <!-- ======================================== -->
-              {% assign faq_metafield = product.metafields.custom.faq %}
-              
-              {% if faq_metafield != blank %}
-                {% assign has_faq = true %}
-                <div class="faq-list">
-                  
-                  {% comment %}
-                    Shopify MetaobjectListDrop ka structure:
-                    faq_metafield.value gives an array of metaobjects
-                    Each entry has fields like: question, answer, title, name, etc.
-                  {% endcomment %}
-                  
-                  {% for entry in faq_metafield.value %}
+              {% if faq_field != blank %}
+                
+                {% comment %}
+                  TRY METHOD 1: MetaobjectListDrop
+                {% endcomment %}
+                {% assign faq_entries = faq_field.value %}
+                
+                {% if faq_entries.size > 0 %}
+                  {% assign has_faq = true %}
+                  <div class="faq-list">
+                    {% for entry in faq_entries %}
+                      <div class="faq-item">
+                        <div class="faq-question" data-toggle="collapse">
+                          <span>
+                            {% if entry.question %}
+                              {{ entry.question }}
+                            {% elsif entry.title %}
+                              {{ entry.title }}
+                            {% elsif entry.name %}
+                              {{ entry.name }}
+                            {% else %}
+                              Question {{ forloop.index }}
+                            {% endif %}
+                          </span>
+                          <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer" style="display: none;">
+                          {% if entry.answer %}
+                            {{ entry.answer }}
+                          {% elsif entry.content %}
+                            {{ entry.content }}
+                          {% elsif entry.description %}
+                            {{ entry.description }}
+                          {% else %}
+                            No answer provided.
+                          {% endif %}
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                
+                {% comment %}
+                  TRY METHOD 2: JSON Array
+                {% endcomment %}
+                {% unless has_faq %}
+                  {% assign faq_json = faq_field.value %}
+                  {% if faq_json contains 'question' %}
+                    {% assign has_faq = true %}
+                    <div class="faq-list">
+                      {% for item in faq_json %}
+                        <div class="faq-item">
+                          <div class="faq-question" data-toggle="collapse">
+                            <span>{{ item.question }}</span>
+                            <span class="faq-toggle">+</span>
+                          </div>
+                          <div class="faq-answer" style="display: none;">
+                            {{ item.answer }}
+                          </div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                {% endunless %}
+                
+                {% comment %}
+                  TRY METHOD 3: Single Text
+                {% endcomment %}
+                {% unless has_faq %}
+                  {% assign has_faq = true %}
+                  <div class="faq-list">
                     <div class="faq-item">
                       <div class="faq-question" data-toggle="collapse">
-                        <span>
-                          {% if entry.question %}
-                            {{ entry.question }}
-                          {% elsif entry.title %}
-                            {{ entry.title }}
-                          {% elsif entry.name %}
-                            {{ entry.name }}
-                          {% else %}
-                            Question {{ forloop.index }}
-                          {% endif %}
-                        </span>
+                        <span>Frequently Asked Questions</span>
                         <span class="faq-toggle">+</span>
                       </div>
                       <div class="faq-answer" style="display: none;">
-                        {% if entry.answer %}
-                          {{ entry.answer }}
-                        {% elsif entry.content %}
-                          {{ entry.content }}
-                        {% elsif entry.description %}
-                          {{ entry.description }}
-                        {% else %}
-                          No answer provided.
-                        {% endif %}
+                        {{ faq_field.value }}
                       </div>
                     </div>
-                  {% endfor %}
-                  
-                </div>
+                  </div>
+                {% endunless %}
+                
               {% endif %}
               
-              <!-- ======================================== -->
-              <!-- FALLBACK: No FAQ found                  -->
-              <!-- ======================================== -->
               {% unless has_faq %}
                 <p class="faq-placeholder">{{ section.settings.empty_faq_message | default: 'No FAQ items found for this product.' }}</p>
               {% endunless %}
