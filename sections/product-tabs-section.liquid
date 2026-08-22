@@ -14,37 +14,12 @@
         
         <div class="tabs-content">
           
-          <!-- TAB 2: FAQ TAB (DEBUG MODE) -->
-<div class="tab-panel" id="faq" role="tabpanel">
-  <!-- TAB 2: FAQ TAB (LIST SUPPORTED) -->
-<div class="tab-panel" id="faq" role="tabpanel">
-  <div class="faq-content">
-    {% assign faq_list = product.metafields.custom.faq.value %}
-    
-    {% if faq_list != blank %}
-      <div class="faq-list">
-        {% for item in faq_list %}
-          {% assign q_val = item.questions.value | default: item.questions %}
-          {% assign a_val = item.answers.value | default: item.answers %}
-          
-          {% if q_val != blank %}
-            <div class="faq-item">
-              <div class="faq-question" data-toggle="collapse">
-                <span>{{ q_val }}</span>
-                <span class="faq-toggle">+</span>
-              </div>
-              <div class="faq-answer" style="display: none;">
-                {{ a_val | newline_to_br }}
-              </div>
-            </div>
-          {% endif %}
-        {% endfor %}
-      </div>
-    {% else %}
-      <p class="faq-placeholder">No FAQ items selected in Product Admin.</p>
-    {% endif %}
-  </div>
-</div>
+          <!-- TAB 1: ADDITIONAL INFORMATION -->
+          <div class="tab-panel active" id="additional-info" role="tabpanel">
+            <div class="additional-info-content">
+              <div class="info-block metafields-block">
+                <h3 class="info-title">{{ section.settings.metafields_title | default: 'Product Details' }}</h3>
+                <div class="metafields-grid">
                   
                   {% assign has_data = false %}
                   
@@ -76,7 +51,7 @@
                     </div>
                   {% endif %}
                   
-                  <!-- 3. Dynamic Loop (Excludes FAQ Completely) -->
+                  <!-- 3. Dynamic Loop for Other Metafields (Excludes FAQ Completely) -->
                   {% for field in product.metafields.custom %}
                     {% assign key = field[0] %}
                     {% assign metafield_obj = field[1] %}
@@ -112,38 +87,50 @@
             </div>
           </div>
           
-          <!-- TAB 2: FAQ TAB (EXACT KEYS: questions & answers) -->
+          <!-- TAB 2: FAQ TAB -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
+              {% assign faq_data = product.metafields.custom.faq.value %}
               
-              {% assign faq_obj = product.metafields.custom.faq.value %}
-              
-              {% if faq_obj != blank %}
+              {% if faq_data != blank %}
                 <div class="faq-list">
-                  
-                  {% comment %} Fetch exact values using key: questions and key: answers {% endcomment %}
-                  {% assign q_val = faq_obj.questions.value | default: faq_obj.questions %}
-                  {% assign a_val = faq_obj.answers.value | default: faq_obj.answers %}
-
-                  {% if q_val != blank %}
-                    <div class="faq-item">
-                      <div class="faq-question" data-toggle="collapse">
-                        <span>{{ q_val }}</span>
-                        <span class="faq-toggle">+</span>
-                      </div>
-                      <div class="faq-answer" style="display: none;">
-                        {{ a_val | newline_to_br }}
-                      </div>
-                    </div>
+                  {% if product.metafields.custom.faq.type contains 'list' %}
+                    {% for item in faq_data %}
+                      {% assign q_val = item.questions.value | default: item.questions %}
+                      {% assign a_val = item.answers.value | default: item.answers %}
+                      
+                      {% if q_val != blank %}
+                        <div class="faq-item">
+                          <div class="faq-question">
+                            <span>{{ q_val }}</span>
+                            <span class="faq-toggle">+</span>
+                          </div>
+                          <div class="faq-answer" style="display: none;">
+                            {{ a_val | newline_to_br }}
+                          </div>
+                        </div>
+                      {% endif %}
+                    {% endfor %}
                   {% else %}
-                    <p class="faq-placeholder">Questions field inside this Metaobject entry is empty.</p>
+                    {% assign q_val = faq_data.questions.value | default: faq_data.questions %}
+                    {% assign a_val = faq_data.answers.value | default: faq_data.answers %}
+                    
+                    {% if q_val != blank %}
+                      <div class="faq-item">
+                        <div class="faq-question">
+                          <span>{{ q_val }}</span>
+                          <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer" style="display: none;">
+                          {{ a_val | newline_to_br }}
+                        </div>
+                      </div>
+                    {% endif %}
                   {% endif %}
-
                 </div>
               {% else %}
-                <p class="faq-placeholder">No FAQ selected for this product in Admin.</p>
+                <p class="faq-placeholder">No FAQ available for this product.</p>
               {% endif %}
-              
             </div>
           </div>
           
