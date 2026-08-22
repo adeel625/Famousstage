@@ -27,64 +27,74 @@
                   {% assign has_data = false %}
                   
                   <!-- ======================================== -->
-                  <!-- DISPLAY ALL METAFIELDS DYNAMICALLY       -->
+                  <!-- ADDITIONAL INFORMATION - JSON FIX        -->
                   <!-- ======================================== -->
+                  {% assign additional_info = product.metafields.custom.additional_information %}
+                  {% if additional_info != blank %}
+                    {% assign has_data = true %}
+                    <div class="metafield-item">
+                      <span class="metafield-label">Additional Information:</span>
+                      <span class="metafield-value">
+                        {% comment %} 
+                          Extract plain text from Shopify rich text JSON 
+                          Example: {"type"=>"root", "children"=>[{"type"=>"paragraph", "children"=>[{"type"=>"text", "value"=>"Hello"}]}]}
+                        {% endcomment %}
+                        {% assign raw = additional_info.value | json %}
+                        {% if raw contains '"value"=>"' %}
+                          {% assign parts = raw | split: '"value"=>"' %}
+                          {% assign text_parts = '' %}
+                          {% for part in parts %}
+                            {% if forloop.first == false %}
+                              {% assign clean_part = part | split: '"' | first %}
+                              {% if clean_part != blank %}
+                                                                {% assign text_parts = text_parts | append: clean_part %}
+                              {% endif %}
+                            {% endif %}
+                          {% endfor %}
+                          {{ text_parts }}
+                        {% else %}
+                          {{ additional_info.value }}
+                        {% endif %}
+                      </span>
+                    </div>
+                    <hr class="metafield-divider">
+                  {% endif %}
+                  
+                  <!-- ======================================== -->
+                  <!-- SHIPPING CARRIER                        -->
+                  <!-- ======================================== -->
+                  {% assign shipping_carrier = product.metafields.custom.shipping_carrier %}
+                  {% if shipping_carrier != blank %}
+                    {% assign has_data = true %}
+                    <div class="metafield-item">
+                      <span class="metafield-label">Shipping Carrier:</span>
+                      <span class="metafield-value">{{ shipping_carrier.value }}</span>
+                    </div>
+                    <hr class="metafield-divider">
+                  {% endif %}
+                  
+                  <!-- ======================================== -->
+                  <!-- OTHER METAFIELDS                        -->
+                  <!-- ======================================== -->
+                  {% assign skip_keys = 'faq,additional_information,shipping_carrier' | split: ',' %}
                   {% for field in product.metafields.custom %}
                     {% assign key = field[0] %}
                     {% assign value = field[1] %}
                     
-                    <!-- Skip FAQ - yeh dosre tab mein jayega -->
-                    {% if key == 'faq' %}
-                      {% continue %}
-                    {% endif %}
-                    
-                    {% if value != blank %}
-                      {% assign has_data = true %}
-                      <div class="metafield-item">
-                        <span class="metafield-label">{{ key | replace: '_', ' ' | capitalize }}:</span>
-                        <span class="metafield-value">
-                          {% comment %} Handle different metafield types {% endcomment %}
-                          {% if value.type == 'file_reference' %}
-                            <a href="{{ value.value }}" target="_blank">📄 View File</a>
-                          {% elsif value.type == 'url' %}
-                            <a href="{{ value.value }}" target="_blank">{{ value.value }}</a>
-                          {% elsif value.type == 'json' %}
-                            {% comment %} Extract text from rich text JSON {% endcomment %}
-                            {% assign raw = value.value | json %}
-                            {% if raw contains '"value"=>"' %}
-                              {% assign parts = raw | split: '"value"=>"' %}
-                              {% assign text_parts = '' %}
-                              {% for part in parts %}
-                                {% if forloop.first == false %}
-                                  {% assign clean_part = part | split: '"' | first %}
-                                  {% if clean_part != blank %}
-                                    {% assign text_parts = text_parts | append: clean_part %}
-                                  {% endif %}
-                                {% endif %}
-                              {% endfor %}
-                              {{ text_parts }}
-                            {% else %}
-                              {{ value.value }}
-                            {% endif %}
-                          {% elsif value.type == 'boolean' %}
-                            {% if value.value == true %}Yes{% else %}No{% endif %}
-                          {% elsif value.type == 'date' %}
-                            {{ value.value | date: "%B %d, %Y" }}
-                          {% elsif value.type == 'number' %}
-                            {{ value.value }}
-                          {% elsif value.type == 'string' %}
-                            {{ value.value }}
-                          {% else %}
-                            {{ value.value }}
-                          {% endif %}
-                        </span>
-                      </div>
-                      <hr class="metafield-divider">
-                    {% endif %}
+                    {% unless skip_keys contains key %}
+                      {% if value != blank %}
+                        {% assign has_data = true %}
+                        <div class="metafield-item">
+                          <span class="metafield-label">{{ key | replace: '_', ' ' | capitalize }}:</span>
+                          <span class="metafield-value">{{ value.value }}</span>
+                        </div>
+                        <hr class="metafield-divider">
+                      {% endif %}
+                    {% endunless %}
                   {% endfor %}
                   
                   <!-- ======================================== -->
-                  <!-- FALLBACK: Agar koi metafield nahi hai    -->
+                  <!-- FALLBACK                               -->
                   <!-- ======================================== -->
                   {% unless has_data %}
                     <div class="metafield-item">
@@ -100,38 +110,49 @@
           </div>
           
           <!-- ========================================== -->
-          <!-- TAB 2: FAQ (Dynamic from Metaobject)       -->
+          <!-- TAB 2: FAQ - USING .value ACCESS           -->
           <!-- ========================================== -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
               {% assign has_faq = false %}
+              
+              <!-- ======================================== -->
+              <!-- STEP 1: Get FAQ Metafield                -->
+              <!-- ======================================== -->
               {% assign faq_metafield = product.metafields.custom.faq %}
               
               {% if faq_metafield != blank %}
                 
-                {% comment %}
-                  METAOBJECT LIST - Dynamic FAQ entries
-                  User jo bhi FAQ entries add karega, sab show hongi
-                {% endcomment %}
+                <!-- ======================================== -->
+                <!-- STEP 2: Access .value (Array of entries) -->
+                <!-- ======================================== -->
                 {% assign faq_entries = faq_metafield.value %}
                 
+                <!-- ======================================== -->
+                <!-- STEP 3: Check if entries exist          -->
+                <!-- ======================================== -->
                 {% if faq_entries.size > 0 %}
                   {% assign has_faq = true %}
                   <div class="faq-list">
+                    
+                    <!-- ======================================== -->
+                    <!-- STEP 4: Loop through each entry         -->
+                    <!-- ======================================== -->
                     {% for entry in faq_entries %}
                       <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
                           <span>
-                            {% comment %} Dynamic field detection {% endcomment %}
+                            {% comment %} 
+                              STEP 5: Access entry fields using dot notation
+                              entry.question or entry.title or entry.name
+                            {% endcomment %}
                             {% if entry.question != blank %}
                               {{ entry.question }}
                             {% elsif entry.title != blank %}
                               {{ entry.title }}
                             {% elsif entry.name != blank %}
                               {{ entry.name }}
-                            {% elsif entry.heading != blank %}
-                              {{ entry.heading }}
                             {% else %}
                               Question {{ forloop.index }}
                             {% endif %}
@@ -139,64 +160,25 @@
                           <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer" style="display: none;">
-                          {% comment %} Dynamic field detection for answer {% endcomment %}
+                          {% comment %}
+                            STEP 6: Access answer field
+                            entry.answer or entry.content or entry.description
+                          {% endcomment %}
                           {% if entry.answer != blank %}
                             {{ entry.answer }}
                           {% elsif entry.content != blank %}
                             {{ entry.content }}
                           {% elsif entry.description != blank %}
                             {{ entry.description }}
-                          {% elsif entry.text != blank %}
-                            {{ entry.text }}
                           {% else %}
                             No answer provided.
                           {% endif %}
                         </div>
                       </div>
                     {% endfor %}
+                    
                   </div>
                 {% endif %}
-                
-                {% comment %}
-                  ALTERNATIVE: JSON Array format
-                {% endcomment %}
-                {% unless has_faq %}
-                  {% assign faq_json = faq_metafield.value %}
-                  {% if faq_json contains 'question' %}
-                    {% assign has_faq = true %}
-                    <div class="faq-list">
-                      {% for item in faq_json %}
-                        <div class="faq-item">
-                          <div class="faq-question" data-toggle="collapse">
-                            <span>{{ item.question }}</span>
-                            <span class="faq-toggle">+</span>
-                          </div>
-                          <div class="faq-answer" style="display: none;">
-                            {{ item.answer }}
-                          </div>
-                        </div>
-                      {% endfor %}
-                    </div>
-                  {% endif %}
-                {% endunless %}
-                
-                {% comment %}
-                  ALTERNATIVE: Single Text field
-                {% endcomment %}
-                {% unless has_faq %}
-                  {% assign has_faq = true %}
-                  <div class="faq-list">
-                    <div class="faq-item">
-                      <div class="faq-question" data-toggle="collapse">
-                        <span>Frequently Asked Questions</span>
-                        <span class="faq-toggle">+</span>
-                      </div>
-                      <div class="faq-answer" style="display: none;">
-                        {{ faq_metafield.value }}
-                      </div>
-                    </div>
-                  </div>
-                {% endunless %}
                 
               {% endif %}
               
@@ -397,7 +379,6 @@
       const container = document.querySelector(`[data-section-id="${sectionId}"]`);
       if (!container) return;
       
-      // Tab switching
       const tabs = container.querySelectorAll('.tab-item');
       const panels = container.querySelectorAll('.tab-panel');
       
@@ -413,7 +394,6 @@
         });
       });
       
-      // FAQ toggle
       const faqQuestions = container.querySelectorAll('.faq-question');
       faqQuestions.forEach(question => {
         question.addEventListener('click', function() {
