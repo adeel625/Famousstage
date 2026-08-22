@@ -16,6 +16,24 @@
           
           <!-- TAB 1: ADDITIONAL INFORMATION -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
+            <div class="tab-panel" id="faq" role="tabpanel">
+  <div class="faq-content">
+    {% assign faq_list = product.metafields.custom.faq_frequently_asked_question.value %}
+    
+    {% if faq_list != blank %}
+      {% for item in faq_list %}
+        <div style="background: #f4f4f4; padding: 10px; margin-bottom: 10px; border: 1px dashed #ccc;">
+          <strong>Debug Item {{ forloop.index }}:</strong><br>
+          Question: {{ item.question.value | default: item.question | default: "NOT FOUND" }}<br>
+          Answer: {{ item.answer.value | default: item.answer | default: "NOT FOUND" }}<br>
+          Raw JSON: {{ item | json }}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No Metafield Data Linked to this Product!</p>
+    {% endif %}
+  </div>
+</div>
             <div class="additional-info-content">
               <div class="info-block metafields-block">
                 <h3 class="info-title">{{ section.settings.metafields_title | default: 'Product Details' }}</h3>
