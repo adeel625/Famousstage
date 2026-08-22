@@ -16,32 +16,33 @@
           
           <!-- TAB 2: FAQ TAB (DEBUG MODE) -->
 <div class="tab-panel" id="faq" role="tabpanel">
+  <!-- TAB 2: FAQ TAB (LIST SUPPORTED) -->
+<div class="tab-panel" id="faq" role="tabpanel">
   <div class="faq-content">
+    {% assign faq_list = product.metafields.custom.faq.value %}
     
-    {% assign faq_obj = product.metafields.custom.faq.value %}
-    
-    {% if faq_obj != blank %}
-      <div style="background: #f9f9f9; padding: 15px; border: 1px dashed #ccc; font-family: monospace;">
-        <strong>Metaobject Found! Printing Raw Data:</strong><br><br>
-        
-        <!-- Try 1: Direct Field Keys -->
-        <p><strong>1. Direct 'questions':</strong> {{ faq_obj.questions }}</p>
-        <p><strong>2. Direct 'answers':</strong> {{ faq_obj.answers }}</p>
-        
-        <!-- Try 2: System Keys Loop -->
-        <p><strong>3. All Metaobject Key/Value Pairs:</strong></p>
-        <ul>
-          {% for field in faq_obj %}
-            <li><strong>Key:</strong> {{ field[0] }} | <strong>Value:</strong> {{ field[1] }}</li>
-          {% endfor %}
-        </ul>
+    {% if faq_list != blank %}
+      <div class="faq-list">
+        {% for item in faq_list %}
+          {% assign q_val = item.questions.value | default: item.questions %}
+          {% assign a_val = item.answers.value | default: item.answers %}
+          
+          {% if q_val != blank %}
+            <div class="faq-item">
+              <div class="faq-question" data-toggle="collapse">
+                <span>{{ q_val }}</span>
+                <span class="faq-toggle">+</span>
+              </div>
+              <div class="faq-answer" style="display: none;">
+                {{ a_val | newline_to_br }}
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
       </div>
     {% else %}
-      <p style="color: red; font-weight: bold;">
-        ❌ Metafield Empty! Product admin page par 'FAQ' Metafield select nahi hua hai.
-      </p>
+      <p class="faq-placeholder">No FAQ items selected in Product Admin.</p>
     {% endif %}
-    
   </div>
 </div>
                   
