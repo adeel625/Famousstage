@@ -51,7 +51,7 @@
                     </div>
                   {% endif %}
                   
-                  <!-- 3. Dynamic Loop (Excludes FAQ Completely) -->
+                  <!-- 3. Dynamic Loop (Excludes FAQ Completely from Tab 1) -->
                   {% for field in product.metafields.custom %}
                     {% assign key = field[0] %}
                     {% assign metafield_obj = field[1] %}
@@ -87,29 +87,41 @@
             </div>
           </div>
           
-          <!-- TAB 2: FAQ TAB (SHOPIFY METAOBJECT LIST PARSER) -->
+          <!-- TAB 2: FAQ TAB (SINGLE METAOBJECT FIX FOR custom.faq) -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
-              {% assign faq_list = product.metafields.custom.faq_frequently_asked_question.value %}
+              {% assign faq_obj = product.metafields.custom.faq.value %}
               {% assign has_faq_items = false %}
               
-              {% if faq_list != blank %}
+              {% if faq_obj != blank %}
                 <div class="faq-list">
-                  {% for item in faq_list %}
-                    
-                    {% comment %} Extract values from Metaobject keys {% endcomment %}
-                    {% assign q_val = item.question | default: item.title | default: item.faq_question | default: item.question_title %}
-                    {% assign a_val = item.answer | default: item.description | default: item.faq_answer | default: item.answer_text %}
-                    
-                    {% comment %} Fallback to value property if object is wrapped {% endcomment %}
-                    {% if q_val.value != blank %}
-                      {% assign q_val = q_val.value %}
-                    {% endif %}
-                    {% if a_val.value != blank %}
-                      {% assign a_val = a_val.value %}
-                    {% endif %}
+                  
+                  {% comment %} Case A: If Metaobject contains an array/list inside {% endcomment %}
+                  {% if faq_obj.size > 1 %}
+                    {% for item in faq_obj %}
+                      {% assign q_val = item.question.value | default: item.question | default: item.title.value | default: item.title %}
+                      {% assign a_val = item.answer.value | default: item.answer | default: item.description.value | default: item.description %}
+                      
+                      {% if q_val != blank %}
+                        {% assign has_faq_items = true %}
+                        <div class="faq-item">
+                          <div class="faq-question" data-toggle="collapse">
+                            <span>{{ q_val }}</span>
+                            <span class="faq-toggle">+</span>
+                          </div>
+                          <div class="faq-answer" style="display: none;">
+                            {{ a_val | newline_to_br }}
+                          </div>
+                        </div>
+                      {% endif %}
+                    {% endfor %}
 
+                  {% comment %} Case B: Single Metaobject Entry {% endcomment %}
+                  {% else %}
+                    {% assign q_val = faq_obj.question.value | default: faq_obj.question | default: faq_obj.title.value | default: faq_obj.title %}
+                    {% assign a_val = faq_obj.answer.value | default: faq_obj.answer | default: faq_obj.description.value | default: faq_obj.description %}
+                    
                     {% if q_val != blank %}
                       {% assign has_faq_items = true %}
                       <div class="faq-item">
@@ -122,13 +134,13 @@
                         </div>
                       </div>
                     {% endif %}
+                  {% endif %}
 
-                  {% endfor %}
                 </div>
               {% endif %}
               
               {% unless has_faq_items %}
-                <p class="faq-placeholder">No FAQ items found. Please check if FAQs are selected in the product admin page.</p>
+                <p class="faq-placeholder">No FAQ items found. Please select an FAQ metaobject in the Product Admin.</p>
               {% endunless %}
               
             </div>
