@@ -16,13 +16,6 @@
           
           <!-- TAB 1: ADDITIONAL INFORMATION -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
-            <div class="tab-panel" id="faq" role="tabpanel">
-  <div class="faq-content" style="background:#fff3cd; padding:15px; border:1px solid #ffeeba;">
-    <p><strong>FAQ Data Inspect:</strong></p>
-    {% assign faq_meta = product.metafields.custom.faq.value %}
-    <p>Raw JSON: <code>{{ faq_meta | json }}</code></p>
-  </div>
-</div>
             <div class="additional-info-content">
               <div class="info-block metafields-block">
                 <h3 class="info-title">{{ section.settings.metafields_title | default: 'Product Details' }}</h3>
@@ -94,41 +87,26 @@
             </div>
           </div>
           
-          <!-- TAB 2: FAQ TAB (SINGLE METAOBJECT FIX FOR custom.faq) -->
+          <!-- TAB 2: FAQ TAB (FIXED WITH EXACT FIELDS: questions & answers) -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
-              {% assign faq_obj = product.metafields.custom.faq.value %}
+              {% assign faq_data = product.metafields.custom.faq.value %}
               {% assign has_faq_items = false %}
               
-              {% if faq_obj != blank %}
+              {% if faq_data != blank %}
                 <div class="faq-list">
                   
-                  {% comment %} Case A: If Metaobject contains an array/list inside {% endcomment %}
-                  {% if faq_obj.size > 1 %}
-                    {% for item in faq_obj %}
-                      {% assign q_val = item.question.value | default: item.question | default: item.title.value | default: item.title %}
-                      {% assign a_val = item.answer.value | default: item.answer | default: item.description.value | default: item.description %}
-                      
-                      {% if q_val != blank %}
-                        {% assign has_faq_items = true %}
-                        <div class="faq-item">
-                          <div class="faq-question" data-toggle="collapse">
-                            <span>{{ q_val }}</span>
-                            <span class="faq-toggle">+</span>
-                          </div>
-                          <div class="faq-answer" style="display: none;">
-                            {{ a_val | newline_to_br }}
-                          </div>
-                        </div>
-                      {% endif %}
-                    {% endfor %}
-
-                  {% comment %} Case B: Single Metaobject Entry {% endcomment %}
-                  {% else %}
-                    {% assign q_val = faq_obj.question.value | default: faq_obj.question | default: faq_obj.title.value | default: faq_obj.title %}
-                    {% assign a_val = faq_obj.answer.value | default: faq_obj.answer | default: faq_obj.description.value | default: faq_obj.description %}
+                  {% comment %} Handles both List Metaobject & Single Metaobject Entry {% endcomment %}
+                  {% for item in faq_data %}
+                    {% assign q_val = item.questions.value | default: item.questions %}
+                    {% assign a_val = item.answers.value | default: item.answers %}
                     
+                    {% if q_val == blank %}
+                      {% assign q_val = faq_data.questions.value | default: faq_data.questions %}
+                      {% assign a_val = faq_data.answers.value | default: faq_data.answers %}
+                    {% endif %}
+
                     {% if q_val != blank %}
                       {% assign has_faq_items = true %}
                       <div class="faq-item">
@@ -140,8 +118,12 @@
                           {{ a_val | newline_to_br }}
                         </div>
                       </div>
+                      {% comment %} Break if single entry matched {% endcomment %}
+                      {% unless item.questions %}
+                        {% break %}
+                      {% endunless %}
                     {% endif %}
-                  {% endif %}
+                  {% endfor %}
 
                 </div>
               {% endif %}
