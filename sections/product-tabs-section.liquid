@@ -27,7 +27,7 @@
                   {% assign has_metafields = false %}
                   
                   <!-- ======================================== -->
-                  <!-- ADDITIONAL INFORMATION (Rich Text)       -->
+                  <!-- ADDITIONAL INFORMATION (JSON Rich Text)  -->
                   <!-- ======================================== -->
                   {% assign additional_info = product.metafields.custom.additional_information %}
                   {% if additional_info != blank %}
@@ -36,7 +36,26 @@
                       <span class="metafield-label">Additional Information:</span>
                       <span class="metafield-value">
                         {% if additional_info.type == 'json' %}
-                          {{ additional_info.value | json | strip_html }}
+                          {% assign rich_text = additional_info.value %}
+                          {% if rich_text.children %}
+                            {% for child in rich_text.children %}
+                              {% if child.type == 'paragraph' %}
+                                {% for text_node in child.children %}
+                                  {{ text_node.value }}
+                                {% endfor %}
+                              {% elsif child.type == 'list' %}
+                                <ul>
+                                  {% for item in child.children %}
+                                    <li>{{ item.value }}</li>
+                                  {% endfor %}
+                                </ul>
+                              {% else %}
+                                {{ child.value }}
+                              {% endif %}
+                            {% endfor %}
+                          {% else %}
+                            {{ rich_text }}
+                          {% endif %}
                         {% else %}
                           {{ additional_info.value }}
                         {% endif %}
@@ -81,7 +100,26 @@
                           {% elsif field_value.type == 'url' %}
                             <a href="{{ field_value.value }}" target="_blank">{{ field_value.value }}</a>
                           {% elsif field_value.type == 'json' %}
-                            {{ field_value.value | json | strip_html }}
+                            {% assign rich_text = field_value.value %}
+                            {% if rich_text.children %}
+                              {% for child in rich_text.children %}
+                                {% if child.type == 'paragraph' %}
+                                  {% for text_node in child.children %}
+                                    {{ text_node.value }}
+                                  {% endfor %}
+                                {% elsif child.type == 'list' %}
+                                  <ul>
+                                    {% for item in child.children %}
+                                      <li>{{ item.value }}</li>
+                                    {% endfor %}
+                                  </ul>
+                                {% else %}
+                                  {{ child.value }}
+                                {% endif %}
+                              {% endfor %}
+                            {% else %}
+                              {{ rich_text }}
+                            {% endif %}
                           {% elsif field_value.type == 'boolean' %}
                             {% if field_value.value == true %}Yes{% else %}No{% endif %}
                           {% elsif field_value.type == 'date' %}
@@ -120,7 +158,7 @@
               {% assign has_faq = false %}
               
               <!-- ======================================== -->
-              <!-- OPTION 1: Metaobject Type FAQ            -->
+              <!-- FAQ from MetaobjectListDrop              -->
               <!-- ======================================== -->
               {% assign faq_entries = product.metafields.custom.faq %}
               
@@ -128,8 +166,9 @@
                 {% assign has_faq = true %}
                 <div class="faq-list">
                   
+                  <!-- Check if it's a MetaobjectListDrop -->
                   {% if faq_entries.type == 'metaobject_list' %}
-                    <!-- MetaobjectListDrop - Loop through entries -->
+                    <!-- Loop through metaobject entries -->
                     {% for entry in faq_entries.value %}
                       <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
@@ -160,22 +199,25 @@
                       </div>
                     {% endfor %}
                     
+                  <!-- Check if it's a JSON array -->
                   {% elsif faq_entries.type == 'json' %}
-                    <!-- JSON Array -->
-                    {% for item in faq_entries.value %}
-                      <div class="faq-item">
-                        <div class="faq-question" data-toggle="collapse">
-                          <span>{{ item.question }}</span>
-                          <span class="faq-toggle">+</span>
+                    {% assign faq_json = faq_entries.value %}
+                    {% if faq_json %}
+                      {% for item in faq_json %}
+                        <div class="faq-item">
+                          <div class="faq-question" data-toggle="collapse">
+                            <span>{{ item.question }}</span>
+                            <span class="faq-toggle">+</span>
+                          </div>
+                          <div class="faq-answer" style="display: none;">
+                            {{ item.answer }}
+                          </div>
                         </div>
-                        <div class="faq-answer" style="display: none;">
-                          {{ item.answer }}
-                        </div>
-                      </div>
-                    {% endfor %}
+                      {% endfor %}
+                    {% endif %}
                     
+                  <!-- Single text field -->
                   {% else %}
-                    <!-- Single Text Field -->
                     <div class="faq-item">
                       <div class="faq-question" data-toggle="collapse">
                         <span>Frequently Asked Questions</span>
