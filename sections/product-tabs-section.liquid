@@ -17,7 +17,6 @@
           <!-- TAB 1: ADDITIONAL INFORMATION -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
             <div class="additional-info-content">
-              
               <div class="info-block metafields-block">
                 <h3 class="info-title">{{ section.settings.metafields_title | default: 'Product Details' }}</h3>
                 <div class="metafields-grid">
@@ -57,8 +56,7 @@
                     {% assign key = field[0] %}
                     {% assign metafield_obj = field[1] %}
                     
-                    {% comment %} Exclude faq, additional_information, and shipping_carrier {% endcomment %}
-                    {% unless key == 'faq' or key == 'additional_information' or key == 'shipping_carrier' or key contains 'faq' %}
+                    {% unless key contains 'faq' or key == 'additional_information' or key == 'shipping_carrier' %}
                       {% if metafield_obj != blank and metafield_obj.value != blank %}
                         {% assign has_data = true %}
                         <div class="metafield-item">
@@ -77,7 +75,6 @@
                     {% endunless %}
                   {% endfor %}
                   
-                  <!-- FALLBACK -->
                   {% unless has_data %}
                     <div class="metafield-item">
                       <span class="metafield-label">Description:</span>
@@ -87,7 +84,6 @@
                   
                 </div>
               </div>
-              
             </div>
           </div>
           
@@ -95,55 +91,38 @@
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
-              {% assign faq_metafield = product.metafields.custom.faq %}
+              <!-- Smart Fetching for FAQ Key -->
+              {% assign faq_data = product.metafields.custom.faq.value | default: product.metafields.custom.frequently_asked_questions.value | default: product.metafields.custom['faq'].value %}
+              {% assign has_faq_items = false %}
               
-              {% if faq_metafield != blank and faq_metafield.value != blank %}
+              {% if faq_data != blank %}
                 <div class="faq-list">
                   
-                  {% comment %} Case 1: Metaobject List or Array List {% endcomment %}
-                  {% if faq_metafield.type contains 'list' %}
-                    {% for item in faq_metafield.value %}
+                  <!-- Metaobjects List Loop -->
+                  {% for item in faq_data %}
+                    {% assign question = item.question | default: item.title | default: item.q %}
+                    {% assign answer = item.answer | default: item.description | default: item.a %}
+                    
+                    {% if question != blank %}
+                      {% assign has_faq_items = true %}
                       <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
-                          <span>
-                            {% if item.question != blank %}
-                              {{ item.question.value | default: item.question }}
-                            {% elsif item.title != blank %}
-                              {{ item.title.value | default: item.title }}
-                            {% else %}
-                              {{ item }}
-                            {% endif %}
-                          </span>
+                          <span>{{ question.value | default: question }}</span>
                           <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer" style="display: none;">
-                          {% if item.answer != blank %}
-                            {{ item.answer.value | default: item.answer | newline_to_br }}
-                          {% elsif item.description != blank %}
-                            {{ item.description.value | default: item.description | newline_to_br }}
-                          {% endif %}
+                          {{ answer.value | default: answer | newline_to_br }}
                         </div>
                       </div>
-                    {% endfor %}
+                    {% endif %}
+                  {% endfor %}
 
-                  {% comment %} Case 2: Metaobject Single Reference {% endcomment %}
-                  {% elsif faq_metafield.type contains 'metaobject' %}
-                    <div class="faq-item">
-                      <div class="faq-question" data-toggle="collapse">
-                        <span>{{ faq_metafield.value.question.value | default: faq_metafield.value.question | default: faq_metafield.value.title }}</span>
-                        <span class="faq-toggle">+</span>
-                      </div>
-                      <div class="faq-answer" style="display: none;">
-                        {{ faq_metafield.value.answer.value | default: faq_metafield.value.answer | default: faq_metafield.value.description | newline_to_br }}
-                      </div>
-                    </div>
-
-                  {% comment %} Case 3: Simple Text / Multi-line Text / Rich Text {% endcomment %}
-                  {% else %}
+                  <!-- If it is single line / multi-line text fallback -->
+                  {% unless has_faq_items %}
                     <div class="faq-raw-text">
-                      {{ faq_metafield.value | newline_to_br }}
+                      {{ faq_data | newline_to_br }}
                     </div>
-                  {% endif %}
+                  {% endunless %}
 
                 </div>
               {% else %}
