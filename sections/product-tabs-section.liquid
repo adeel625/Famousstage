@@ -10,11 +10,6 @@
           <li class="tab-item" role="tab" data-tab="faq">
             {{ section.settings.tab_2_label | default: 'Frequently Asked Questions' }}
           </li>
-          {% if section.settings.enable_metaobject_tab %}
-          <li class="tab-item" role="tab" data-tab="metaobject-info">
-            {{ section.settings.tab_3_label | default: 'Product Specifications' }}
-          </li>
-          {% endif %}
         </ul>
         
         <div class="tabs-content">
@@ -25,75 +20,57 @@
           <div class="tab-panel active" id="additional-info" role="tabpanel">
             <div class="additional-info-content">
               
-              {% assign has_info_blocks = false %}
-              {% for block in section.blocks %}
-                {% if block.type == 'info_block' %}
-                  {% assign has_info_blocks = true %}
-                {% endif %}
-              {% endfor %}
-              
-              <!-- INFO BLOCKS from Section (Manual) -->
-              {% if section.blocks.size > 0 %}
-                {% for block in section.blocks %}
-                  {% if block.type == 'info_block' %}
-                    <div class="info-block" {{ block.shopify_attributes }}>
-                      {% if block.settings.info_title != blank %}
-                        <h3 class="info-title">{{ block.settings.info_title }}</h3>
-                      {% endif %}
-                      {% if block.settings.info_description != blank %}
-                        <div class="info-description">
-                          {{ block.settings.info_description }}
-                        </div>
-                      {% endif %}
-                    </div>
-                    {% unless forloop.last %}
-                      <hr class="info-divider">
-                    {% endunless %}
-                  {% endif %}
-                {% endfor %}
-              {% endif %}
-              
-              <!-- ======================================== -->
-              <!-- 🆕 METAFIELDS DISPLAY (Dynamic)         -->
-              <!-- ======================================== -->
-              {% if section.settings.show_product_metafields %}
-                <div class="info-block metafields-block">
-                  <h3 class="info-title">{{ section.settings.metafields_title | default: 'Product Specifications' }}</h3>
-                  <div class="metafields-grid">
-                    
-                    {% assign metafield_namespace = section.settings.metafield_namespace | default: 'custom' %}
-                    
-                    {% assign metafield_keys = section.settings.metafield_keys | split: ',' %}
-                    
+              <!-- DYNAMIC METAFIELDS from Product -->
+              <div class="info-block metafields-block">
+                <h3 class="info-title">{{ section.settings.metafields_title | default: 'Product Details' }}</h3>
+                <div class="metafields-grid">
+                  
+                  {% assign metafield_namespace = section.settings.metafield_namespace | default: 'custom' %}
+                  
+                  <!-- Get metafield keys from settings -->
+                  {% assign metafield_keys_string = section.settings.metafield_keys | strip %}
+                  {% assign metafield_keys = metafield_keys_string | split: ',' %}
+                  {% assign has_metafields = false %}
+                  
+                  <!-- Check if specific keys are provided -->
+                  {% if metafield_keys_string != blank %}
                     {% for key in metafield_keys %}
                       {% assign trimmed_key = key | strip %}
                       {% if trimmed_key != blank %}
                         {% assign metafield_value = product.metafields[metafield_namespace][trimmed_key] %}
                         
                         {% if metafield_value != blank %}
+                          {% assign has_metafields = true %}
                           <div class="metafield-item">
                             <span class="metafield-label">{{ trimmed_key | replace: '_', ' ' | capitalize }}:</span>
                             <span class="metafield-value">
                               {% if metafield_value.type == 'file_reference' %}
-                                {% if metafield_value.value contains '.jpg' or metafield_value.value contains '.png' or metafield_value.value contains '.gif' %}
-                                  <img src="{{ metafield_value.value | img_url: '100x100' }}" alt="{{ trimmed_key }}" style="max-width: 100px; height: auto;">
+                                {% if metafield_value.value contains '.jpg' or metafield_value.value contains '.png' or metafield_value.value contains '.gif' or metafield_value.value contains '.jpeg' or metafield_value.value contains '.webp' %}
+                                  <img src="{{ metafield_value.value | img_url: '200x' }}" alt="{{ trimmed_key }}" style="max-width: 150px; height: auto;">
                                 {% else %}
-                                  <a href="{{ metafield_value.value }}" target="_blank">Download File</a>
+                                  <a href="{{ metafield_value.value }}" target="_blank">📄 Download File</a>
                                 {% endif %}
                               {% elsif metafield_value.type == 'url' %}
                                 <a href="{{ metafield_value.value }}" target="_blank">{{ metafield_value.value }}</a>
                               {% elsif metafield_value.type == 'json' %}
-                                <!-- Handle JSON data -->
                                 {% if metafield_value.value %}
-                                  {% for item in metafield_value.value %}
-                                    <div class="metafield-json-item">
-                                      {% for field in item %}
-                                        <span>{{ field[0] | capitalize }}: {{ field[1] }}</span>
-                                        {% unless forloop.last %}<br>{% endunless %}
-                                      {% endfor %}
-                                    </div>
-                                  {% endfor %}
+                                  <ul class="metafield-json-list">
+                                    {% for item in metafield_value.value %}
+                                      <li>
+                                        {% for field in item %}
+                                          <strong>{{ field[0] | replace: '_', ' ' | capitalize }}:</strong> {{ field[1] }}
+                                          {% unless forloop.last %}<br>{% endunless %}
+                                        {% endfor %}
+                                      </li>
+                                    {% endfor %}
+                                  </ul>
                                 {% endif %}
+                              {% elsif metafield_value.type == 'boolean' %}
+                                {% if metafield_value.value == true %}Yes{% else %}No{% endif %}
+                              {% elsif metafield_value.type == 'number' %}
+                                {{ metafield_value.value }}
+                              {% elsif metafield_value.type == 'date' %}
+                                {{ metafield_value.value | date: "%B %d, %Y" }}
                               {% else %}
                                 {{ metafield_value.value }}
                               {% endif %}
@@ -103,192 +80,117 @@
                         {% endif %}
                       {% endif %}
                     {% endfor %}
-                    
-                    <!-- Fallback: Auto-detect all metafields -->
-                    {% if section.settings.auto_detect_metafields and metafield_keys == blank %}
-                      {% assign all_metafields = product.metafields[metafield_namespace] %}
-                      {% if all_metafields.size > 0 %}
-                        {% for field in all_metafields %}
-                          <div class="metafield-item">
-                            <span class="metafield-label">{{ field[0] | replace: '_', ' ' | capitalize }}:</span>
-                            <span class="metafield-value">
-                              {% if field[1].type == 'file_reference' %}
-                                <a href="{{ field[1].value }}" target="_blank">View File</a>
-                              {% elsif field[1].type == 'url' %}
-                                <a href="{{ field[1].value }}" target="_blank">{{ field[1].value }}</a>
-                              {% elsif field[1].type == 'json' %}
-                                {{ field[1].value | json }}
-                              {% else %}
-                                {{ field[1].value }}
-                              {% endif %}
-                            </span>
-                          </div>
-                          <hr class="metafield-divider">
-                        {% endfor %}
-                      {% endif %}
+                  {% endif %}
+                  
+                  <!-- Auto-detect all metafields if no specific keys provided -->
+                  {% if metafield_keys_string == blank %}
+                    {% assign all_metafields = product.metafields[metafield_namespace] %}
+                    {% if all_metafields.size > 0 %}
+                      {% for field in all_metafields %}
+                        {% assign has_metafields = true %}
+                        <div class="metafield-item">
+                          <span class="metafield-label">{{ field[0] | replace: '_', ' ' | capitalize }}:</span>
+                          <span class="metafield-value">
+                            {% if field[1].type == 'file_reference' %}
+                              <a href="{{ field[1].value }}" target="_blank">📄 View File</a>
+                            {% elsif field[1].type == 'url' %}
+                              <a href="{{ field[1].value }}" target="_blank">{{ field[1].value }}</a>
+                            {% elsif field[1].type == 'json' %}
+                              {{ field[1].value | json }}
+                            {% elsif field[1].type == 'boolean' %}
+                              {% if field[1].value == true %}Yes{% else %}No{% endif %}
+                            {% elsif field[1].type == 'date' %}
+                              {{ field[1].value | date: "%B %d, %Y" }}
+                            {% else %}
+                              {{ field[1].value }}
+                            {% endif %}
+                          </span>
+                        </div>
+                        <hr class="metafield-divider">
+                      {% endfor %}
                     {% endif %}
-                    
-                  </div>
+                  {% endif %}
+                  
+                  <!-- Fallback if no metafields found -->
+                  {% unless has_metafields %}
+                    <p class="info-placeholder">{{ section.settings.empty_metafields_message | default: 'No additional information available for this product.' }}</p>
+                  {% endunless %}
+                  
                 </div>
-              {% endif %}
-              
-              <!-- Fallback: Agar koi info block nahi hai aur metafields bhi nahi hain -->
-              {% unless has_info_blocks or section.settings.show_product_metafields %}
-                <div class="info-block">
-                  <h3 class="info-title">{{ section.settings.default_info_title | default: 'Product Details' }}</h3>
-                  <div class="info-description">
-                    {{ product.description }}
-                  </div>
-                </div>
-                <p class="info-placeholder">{{ section.settings.empty_info_message | default: 'No additional information added yet. Click "Add block" to add information blocks or enable metafields.' }}</p>
-              {% endunless %}
+              </div>
               
             </div>
           </div>
           
           <!-- ========================================== -->
-          <!-- TAB 2: FAQ                                  -->
+          <!-- TAB 2: FAQ (Dynamic from Metaobject)       -->
           <!-- ========================================== -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
-              <!-- FAQ BLOCKS from Section (Manual) -->
-              {% if section.blocks.size > 0 %}
-                {% for block in section.blocks %}
-                  {% if block.type == 'faq_item' %}
-                    <div class="faq-item" {{ block.shopify_attributes }}>
+              {% assign metaobject_type = section.settings.metaobject_type | default: 'faq' %}
+              {% assign faq_entries = product.metafields[metaobject_type] %}
+              
+              {% if faq_entries.value.size > 0 %}
+                <div class="faq-list">
+                  {% for entry in faq_entries.value %}
+                    <div class="faq-item">
                       <div class="faq-question" data-toggle="collapse">
-                        <span>{{ block.settings.question }}</span>
+                        <span>
+                          {% if entry.question %}
+                            {{ entry.question }}
+                          {% elsif entry.title %}
+                            {{ entry.title }}
+                          {% elsif entry.name %}
+                            {{ entry.name }}
+                          {% else %}
+                            Question {{ forloop.index }}
+                          {% endif %}
+                        </span>
                         <span class="faq-toggle">+</span>
                       </div>
                       <div class="faq-answer" style="display: none;">
-                        {{ block.settings.answer }}
+                        {% if entry.answer %}
+                          {{ entry.answer }}
+                        {% elsif entry.content %}
+                          {{ entry.content }}
+                        {% elsif entry.description %}
+                          {{ entry.description }}
+                        {% else %}
+                          No answer provided.
+                        {% endif %}
                       </div>
                     </div>
-                  {% endif %}
-                {% endfor %}
-              {% endif %}
-              
-              <!-- ======================================== -->
-              <!-- 🆕 METAOBJECT FAQ DISPLAY (Dynamic)     -->
-              <!-- ======================================== -->
-              {% if section.settings.show_metaobject_faq %}
-                <div class="faq-metaobject-section">
-                  <h3 class="info-title">{{ section.settings.metaobject_faq_title | default: 'Frequently Asked Questions' }}</h3>
-                  
-                  {% assign metaobject_type = section.settings.metaobject_type | default: 'faq' %}
-                  {% assign faq_entries = product.metafields[metaobject_type] %}
-                  
-                  {% if faq_entries.value.size > 0 %}
-                    {% for entry in faq_entries.value %}
-                      <div class="faq-item metaobject-faq-item">
+                  {% endfor %}
+                </div>
+                
+              {% elsif product.metafields.custom.faq %}
+                <!-- Alternative: Single JSON metafield for FAQ -->
+                {% assign faq_json = product.metafields.custom.faq.value %}
+                {% if faq_json %}
+                  <div class="faq-list">
+                    {% for item in faq_json %}
+                      <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
-                          <span>
-                            {% if entry.question %}
-                              {{ entry.question }}
-                            {% elsif entry.title %}
-                              {{ entry.title }}
-                            {% elsif entry.name %}
-                              {{ entry.name }}
-                            {% else %}
-                              Question {{ forloop.index }}
-                            {% endif %}
-                          </span>
+                          <span>{{ item.question }}</span>
                           <span class="faq-toggle">+</span>
                         </div>
                         <div class="faq-answer" style="display: none;">
-                          {% if entry.answer %}
-                            {{ entry.answer }}
-                          {% elsif entry.content %}
-                            {{ entry.content }}
-                          {% elsif entry.description %}
-                            {{ entry.description }}
-                          {% else %}
-                            No answer provided.
-                          {% endif %}
+                          {{ item.answer }}
                         </div>
                       </div>
                     {% endfor %}
-                  {% elsif product.metafields.custom.faq %}
-                    <!-- Alternative: Single metafield with JSON array -->
-                    {% assign faq_json = product.metafields.custom.faq.value %}
-                    {% if faq_json %}
-                      {% for item in faq_json %}
-                        <div class="faq-item metaobject-faq-item">
-                          <div class="faq-question" data-toggle="collapse">
-                            <span>{{ item.question }}</span>
-                            <span class="faq-toggle">+</span>
-                          </div>
-                          <div class="faq-answer" style="display: none;">
-                            {{ item.answer }}
-                          </div>
-                        </div>
-                      {% endfor %}
-                    {% endif %}
-                  {% else %}
-                    <p class="faq-placeholder">{{ section.settings.empty_metaobject_faq_message | default: 'No FAQ entries found in metaobjects.' }}</p>
-                  {% endif %}
-                </div>
-              {% endif %}
-              
-              {% unless section.blocks.size > 0 or section.settings.show_metaobject_faq %}
-                <p class="faq-placeholder">{{ section.settings.empty_faq_message | default: 'No FAQ items added yet. Click "Add block" to add FAQ items.' }}</p>
-              {% endunless %}
-              
-            </div>
-          </div>
-          
-          <!-- ========================================== -->
-          <!-- TAB 3: METAOBJECT INFO (Optional)           -->
-          <!-- ========================================== -->
-          {% if section.settings.enable_metaobject_tab %}
-          <div class="tab-panel" id="metaobject-info" role="tabpanel">
-            <div class="metaobject-content">
-              
-              {% assign metaobject_handle = section.settings.metaobject_handle %}
-              {% assign metaobject_fields = section.settings.metaobject_fields | split: ',' %}
-              
-              {% if metaobject_handle != blank %}
-                {% assign metaobject = product.metafields.custom[metaobject_handle] %}
-                
-                {% if metaobject.value %}
-                  <div class="metaobject-display">
-                    {% for field in metaobject_fields %}
-                      {% assign trimmed_field = field | strip %}
-                      {% if trimmed_field != blank %}
-                        {% assign field_value = metaobject.value[trimmed_field] %}
-                        {% if field_value != blank %}
-                          <div class="metaobject-field">
-                            <h4 class="metaobject-field-label">{{ trimmed_field | replace: '_', ' ' | capitalize }}</h4>
-                            <div class="metaobject-field-value">
-                              {% if field_value.type == 'file_reference' %}
-                                <img src="{{ field_value.value | img_url: '200x' }}" alt="{{ trimmed_field }}">
-                              {% elsif field_value.type == 'url' %}
-                                <a href="{{ field_value.value }}" target="_blank">{{ field_value.value }}</a>
-                              {% elsif field_value.type == 'json' %}
-                                {% for item in field_value.value %}
-                                  <p>{{ item }}</p>
-                                {% endfor %}
-                              {% else %}
-                                {{ field_value.value }}
-                              {% endif %}
-                            </div>
-                          </div>
-                          <hr class="metaobject-divider">
-                        {% endif %}
-                      {% endif %}
-                    {% endfor %}
                   </div>
                 {% else %}
-                  <p class="info-placeholder">{{ section.settings.empty_metaobject_message | default: 'No metaobject data found for this product.' }}</p>
+                  <p class="faq-placeholder">{{ section.settings.empty_faq_message | default: 'No FAQ items found for this product.' }}</p>
                 {% endif %}
+                
               {% else %}
-                <p class="info-placeholder">Please specify a metaobject handle in the section settings.</p>
+                <p class="faq-placeholder">{{ section.settings.empty_faq_message | default: 'No FAQ items found for this product.' }}</p>
               {% endif %}
               
             </div>
           </div>
-          {% endif %}
           
         </div>
       </div>
@@ -345,30 +247,12 @@
     /* Info Block Styles */
     .additional-info-content .info-block {
       margin-bottom: 25px;
-      padding-bottom: 0;
-    }
-    .additional-info-content .info-block:last-child {
-      margin-bottom: 0;
     }
     .additional-info-content .info-title {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 600;
-      margin-bottom: 12px;
+      margin-bottom: 20px;
       color: #000;
-    }
-    .additional-info-content .info-description {
-      color: #333;
-      line-height: 1.8;
-    }
-    .additional-info-content .info-description p {
-      margin: 0 0 15px 0;
-    }
-    
-    .info-divider, .metafield-divider, .metaobject-divider {
-      border: none;
-      border-top: 2px solid #eaeaea;
-      margin: 25px 0;
-      height: 0;
     }
     
     .info-placeholder {
@@ -382,32 +266,50 @@
     .metafields-grid {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 0;
     }
     .metafield-item {
       display: flex;
-      padding: 8px 0;
+      padding: 12px 0;
+      align-items: flex-start;
     }
     .metafield-label {
       font-weight: 600;
       min-width: 200px;
       color: #000;
+      font-size: 16px;
     }
     .metafield-value {
       color: #333;
       flex: 1;
+      font-size: 16px;
+      line-height: 1.6;
     }
-    .metafield-json-item {
-      background: #f5f5f5;
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 5px;
+    .metafield-value img {
+      max-width: 150px;
+      height: auto;
+      border-radius: 4px;
+      border: 1px solid #eaeaea;
+    }
+    .metafield-json-list {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .metafield-json-list li {
+      margin-bottom: 8px;
+    }
+    
+    .metafield-divider {
+      border: none;
+      border-top: 1px solid #eaeaea;
+      margin: 0;
+      height: 0;
     }
     
     /* FAQ Styles */
     .faq-item {
       border-bottom: 1px solid #eaeaea;
-      padding: 14px 0;
+      padding: 16px 0;
     }
     .faq-item:last-child {
       border-bottom: none;
@@ -417,22 +319,30 @@
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-      font-weight: 500;
+      font-weight: 600;
       font-size: 17px;
       padding: 4px 0;
+      color: #000;
+    }
+    .faq-question:hover {
+      color: #333;
     }
     .faq-question .faq-toggle {
-      font-size: 24px;
+      font-size: 26px;
+      font-weight: 300;
       transition: transform 0.3s ease;
-      color: #333;
+      color: #888;
+      line-height: 1;
     }
     .faq-question.active .faq-toggle {
       transform: rotate(45deg);
+      color: #000;
     }
     .faq-answer {
-      padding-top: 12px;
+      padding-top: 16px;
       color: #555;
       line-height: 1.8;
+      font-size: 16px;
     }
     .faq-answer p {
       margin: 5px 0;
@@ -442,42 +352,6 @@
       font-style: italic;
       padding: 20px 0;
       text-align: center;
-    }
-    
-    /* Metaobject Section */
-    .metaobject-display .metaobject-field {
-      margin-bottom: 20px;
-    }
-    .metaobject-field-label {
-      font-size: 18px;
-      font-weight: 600;
-      color: #000;
-      margin-bottom: 8px;
-    }
-    .metaobject-field-value {
-      color: #333;
-      line-height: 1.8;
-    }
-    .metaobject-field-value img {
-      max-width: 100%;
-      height: auto;
-    }
-    
-    .faq-metaobject-section {
-      margin-top: 20px;
-    }
-    .faq-metaobject-section .info-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: #000;
-    }
-    .metaobject-faq-item {
-      border-bottom: 1px solid #eaeaea;
-      padding: 14px 0;
-    }
-    .metaobject-faq-item:last-child {
-      border-bottom: none;
     }
     
     @keyframes fadeIn {
@@ -500,14 +374,22 @@
         font-size: 15px;
       }
       .additional-info-content .info-title {
-        font-size: 17px;
+        font-size: 18px;
       }
       .metafield-item {
         flex-direction: column;
+        padding: 10px 0;
       }
       .metafield-label {
         min-width: auto;
         margin-bottom: 4px;
+        font-size: 14px;
+      }
+      .metafield-value {
+        font-size: 14px;
+      }
+      .metafield-value img {
+        max-width: 100px;
       }
     }
   </style>
@@ -555,7 +437,7 @@
 
 {% schema %}
 {
-  "name": "Product Tabs with Meta",
+  "name": "Product Dynamic Tabs",
   "class": "shopify-section-product-tabs",
   "settings": [
     {
@@ -565,201 +447,76 @@
     {
       "type": "text",
       "id": "tab_1_label",
-      "label": "Tab 1 Label",
+      "label": "Additional Information Tab Label",
       "default": "Additional Information"
     },
     {
       "type": "text",
       "id": "tab_2_label",
-      "label": "Tab 2 Label",
+      "label": "FAQ Tab Label",
       "default": "Frequently Asked Questions"
     },
     {
       "type": "header",
-      "content": "🔧 Metafields Settings (Dynamic Product Data)"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_product_metafields",
-      "label": "Show Product Metafields",
-      "default": true,
-      "info": "Enable to display product metafields dynamically"
+      "content": "📋 Additional Information (Metafields)"
     },
     {
       "type": "text",
       "id": "metafields_title",
-      "label": "Metafields Section Title",
-      "default": "Product Specifications"
+      "label": "Section Title",
+      "default": "Product Details"
     },
     {
       "type": "text",
       "id": "metafield_namespace",
       "label": "Metafield Namespace",
       "default": "custom",
-      "info": "e.g., 'custom' for product.metafields.custom"
+      "info": "Default is 'custom' (product.metafields.custom)"
     },
     {
       "type": "text",
       "id": "metafield_keys",
       "label": "Metafield Keys (comma-separated)",
-      "default": "material, dimensions, weight, color",
-      "info": "Enter metafield keys you want to display (e.g., material, dimensions, weight)"
-    },
-    {
-      "type": "checkbox",
-      "id": "auto_detect_metafields",
-      "label": "Auto-detect all metafields",
-      "default": false,
-      "info": "If checked and no specific keys provided, all metafields will be shown"
-    },
-    {
-      "type": "header",
-      "content": "❓ Metaobject FAQ Settings"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_metaobject_faq",
-      "label": "Show Metaobject FAQ",
-      "default": false,
-      "info": "Display FAQ entries from metaobjects"
+      "default": "material, dimensions, weight",
+      "placeholder": "e.g., material, dimensions, weight, color",
+      "info": "Leave empty to auto-detect all metafields"
     },
     {
       "type": "text",
-      "id": "metaobject_faq_title",
-      "label": "Metaobject FAQ Title",
-      "default": "Frequently Asked Questions"
+      "id": "empty_metafields_message",
+      "label": "Empty Metafields Message",
+      "default": "No additional information available for this product."
+    },
+    {
+      "type": "header",
+      "content": "❓ FAQ (Metaobject)"
     },
     {
       "type": "text",
       "id": "metaobject_type",
       "label": "Metaobject Type Handle",
       "default": "faq",
-      "info": "e.g., 'faq' - the handle of your metaobject definition"
-    },
-    {
-      "type": "text",
-      "id": "empty_metaobject_faq_message",
-      "label": "Empty Metaobject FAQ Message",
-      "default": "No FAQ entries found in metaobjects."
-    },
-    {
-      "type": "header",
-      "content": "📦 Metaobject Tab (Optional)"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_metaobject_tab",
-      "label": "Enable Metaobject Tab",
-      "default": false,
-      "info": "Adds a third tab for displaying metaobject data"
-    },
-    {
-      "type": "text",
-      "id": "tab_3_label",
-      "label": "Tab 3 Label",
-      "default": "Product Specifications"
-    },
-    {
-      "type": "text",
-      "id": "metaobject_handle",
-      "label": "Metaobject Handle",
-      "default": "specifications",
-      "info": "e.g., 'specifications' - the handle of your metaobject"
-    },
-    {
-      "type": "text",
-      "id": "metaobject_fields",
-      "label": "Fields to Display (comma-separated)",
-      "default": "brand, model, warranty",
-      "info": "Enter field names from the metaobject"
-    },
-    {
-      "type": "text",
-      "id": "empty_metaobject_message",
-      "label": "Empty Metaobject Message",
-      "default": "No metaobject data found for this product."
-    },
-    {
-      "type": "header",
-      "content": "📝 Default Content (Fallback)"
-    },
-    {
-      "type": "text",
-      "id": "default_info_title",
-      "label": "Default Info Title",
-      "default": "Product Details",
-      "info": "Tabhi show hoga jab koi info block nahi ho"
-    },
-    {
-      "type": "text",
-      "id": "empty_info_message",
-      "label": "Empty Info Message",
-      "default": "No additional information added yet. Click \"Add block\" to add information blocks or enable metafields."
+      "placeholder": "e.g., faq, product_faq",
+      "info": "The handle of your metaobject definition"
     },
     {
       "type": "text",
       "id": "empty_faq_message",
       "label": "Empty FAQ Message",
-      "default": "No FAQ items added yet. Click \"Add block\" to add FAQ items."
-    }
-  ],
-  "blocks": [
-    {
-      "type": "info_block",
-      "name": "Info Block (Manual)",
-      "settings": [
-        {
-          "type": "text",
-          "id": "info_title",
-          "label": "Title",
-          "default": "Product Details",
-          "info": "Title for this information block"
-        },
-        {
-          "type": "richtext",
-          "id": "info_description",
-          "label": "Description",
-          "default": "<p>Add your custom product information here.</p>",
-          "info": "Rich text editor - you can add paragraphs, lists, bold, italic, etc."
-        }
-      ]
-    },
-    {
-      "type": "faq_item",
-      "name": "FAQ Item (Manual)",
-      "settings": [
-        {
-          "type": "text",
-          "id": "question",
-          "label": "Question",
-          "default": "What is your return policy?"
-        },
-        {
-          "type": "richtext",
-          "id": "answer",
-          "label": "Answer",
-          "default": "<p>We offer a 30-day return policy for all products.</p>"
-        }
-      ]
+      "default": "No FAQ items found for this product."
     }
   ],
   "presets": [
     {
-      "name": "Product Tabs with Meta",
+      "name": "Product Dynamic Tabs",
       "category": "Product",
       "settings": {
-        "show_product_metafields": true,
-        "metafield_keys": "material, dimensions, weight, color"
-      },
-      "blocks": [
-        {
-          "type": "info_block",
-          "settings": {
-            "info_title": "Product Details",
-            "info_description": "<p>This is where you can add detailed product information.</p>"
-          }
-        }
-      ]
+        "tab_1_label": "Additional Information",
+        "tab_2_label": "Frequently Asked Questions",
+        "metafield_namespace": "custom",
+        "metafield_keys": "material, dimensions, weight",
+        "metaobject_type": "faq"
+      }
     }
   ]
 }
