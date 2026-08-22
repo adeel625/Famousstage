@@ -18,20 +18,18 @@
           <div class="tab-panel active" id="additional-info" role="tabpanel">
             <div class="additional-info-content">
               <div class="info-block metafields-block">
-                <h3 class="info-title">{{ section.settings.metafields_title | default: 'Product Details' }}</h3>
                 <div class="metafields-grid">
                   
                   {% assign has_data = false %}
                   
-                  <!-- 1. ADDITIONAL INFORMATION -->
+                  <!-- 1. ADDITIONAL INFORMATION (RICH TEXT SUPPORTED) -->
                   {% assign additional_info = product.metafields.custom.additional_information %}
                   {% if additional_info != blank and additional_info.value != blank %}
                     {% assign has_data = true %}
-                    <div class="metafield-item">
-                      <span class="metafield-label">Additional Information:</span>
-                      <span class="metafield-value">
-                        {{ additional_info.value | newline_to_br }}
-                      </span>
+                    <div class="metafield-item rich-text-content">
+                      <div class="metafield-value">
+                        {{ additional_info.value }}
+                      </div>
                     </div>
                   {% endif %}
                   
@@ -51,7 +49,7 @@
                     </div>
                   {% endif %}
                   
-                  <!-- 3. Dynamic Loop for Other Metafields (Excludes FAQ Completely) -->
+                  <!-- 3. Dynamic Loop for Other Metafields -->
                   {% for field in product.metafields.custom %}
                     {% assign key = field[0] %}
                     {% assign metafield_obj = field[1] %}
@@ -76,9 +74,8 @@
                   {% endfor %}
                   
                   {% unless has_data %}
-                    <div class="metafield-item">
-                      <span class="metafield-label">Description:</span>
-                      <span class="metafield-value">{{ product.description }}</span>
+                    <div class="metafield-item rich-text-content">
+                      <div class="metafield-value">{{ product.description }}</div>
                     </div>
                   {% endunless %}
                   
@@ -148,12 +145,13 @@
     .tab-item:hover { color: #000; }
     .tab-panel { display: none; padding: 20px 0; animation: fadeIn 0.3s ease; }
     .tab-panel.active { display: block; }
-    .additional-info-content .info-title { font-size: 22px; font-weight: 600; margin-bottom: 20px; color: #000; }
     .metafields-grid { display: flex; flex-direction: column; gap: 0; }
     .metafield-item { display: flex; padding: 12px 0; align-items: flex-start; border-bottom: 1px solid #f0f0f0; }
+    .metafield-item.rich-text-content { border-bottom: none; padding: 0; }
     .metafield-item:last-child { border-bottom: none; }
     .metafield-label { font-weight: 600; min-width: 200px; color: #000; font-size: 16px; flex-shrink: 0; }
     .metafield-value { color: #333; flex: 1; font-size: 16px; line-height: 1.6; }
+    .metafield-value ul, .metafield-value ol { padding-left: 20px; margin: 10px 0; }
     .faq-item { border-bottom: 1px solid #eaeaea; padding: 16px 0; }
     .faq-item:last-child { border-bottom: none; }
     .faq-question { display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 600; font-size: 17px; padding: 4px 0; color: #000; }
@@ -226,16 +224,6 @@
       "id": "tab_2_label",
       "label": "FAQ Tab Label",
       "default": "Frequently Asked Questions"
-    },
-    {
-      "type": "header",
-      "content": "📋 Additional Information (Metafields)"
-    },
-    {
-      "type": "text",
-      "id": "metafields_title",
-      "label": "Section Title",
-      "default": "Product Details"
     }
   ],
   "presets": [
