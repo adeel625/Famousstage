@@ -27,7 +27,7 @@
                   {% assign has_metafields = false %}
                   
                   <!-- ======================================== -->
-                  <!-- ADDITIONAL INFORMATION (JSON Rich Text)  -->
+                  <!-- ADDITIONAL INFORMATION                   -->
                   <!-- ======================================== -->
                   {% assign additional_info = product.metafields.custom.additional_information %}
                   {% if additional_info != blank %}
@@ -35,29 +35,18 @@
                     <div class="metafield-item">
                       <span class="metafield-label">Additional Information:</span>
                       <span class="metafield-value">
-                        {% if additional_info.type == 'json' %}
-                          {% assign rich_text = additional_info.value %}
-                          {% if rich_text.children %}
-                            {% for child in rich_text.children %}
-                              {% if child.type == 'paragraph' %}
-                                {% for text_node in child.children %}
-                                  {{ text_node.value }}
-                                {% endfor %}
-                              {% elsif child.type == 'list' %}
-                                <ul>
-                                  {% for item in child.children %}
-                                    <li>{{ item.value }}</li>
-                                  {% endfor %}
-                                </ul>
-                              {% else %}
-                                {{ child.value }}
-                              {% endif %}
-                            {% endfor %}
-                          {% else %}
-                            {{ rich_text }}
-                          {% endif %}
+                        {% comment %} Try to extract text from JSON rich text {% endcomment %}
+                        {% assign info_value = additional_info.value %}
+                        {% if info_value contains 'children' %}
+                          {% comment %} It's a rich text JSON {% endcomment %}
+                          {% assign text_parts = info_value | split: '"value"=>"' %}
+                          {% for part in text_parts %}
+                            {% if forloop.first %}{% continue %}{% endif %}
+                            {% assign text = part | split: '"' | first %}
+                            {{ text }}
+                          {% endfor %}
                         {% else %}
-                          {{ additional_info.value }}
+                          {{ info_value }}
                         {% endif %}
                       </span>
                     </div>
@@ -78,63 +67,27 @@
                   {% endif %}
                   
                   <!-- ======================================== -->
-                  <!-- AUTO-DETECT OTHER METAFIELDS             -->
+                  <!-- OTHER METAFIELDS                        -->
                   <!-- ======================================== -->
-                  {% assign all_metafields = product.metafields.custom %}
-                  {% for field in all_metafields %}
+                  {% assign metafield_keys = "additional_information,shipping_carrier,faq" | split: ',' %}
+                  {% for field in product.metafields.custom %}
                     {% assign field_key = field[0] %}
                     {% assign field_value = field[1] %}
                     
-                    <!-- Skip fields that are already shown above -->
-                    {% if field_key == 'additional_information' or field_key == 'shipping_carrier' or field_key == 'faq' %}
-                      {% continue %}
-                    {% endif %}
-                    
-                    {% if field_value != blank %}
-                      {% assign has_metafields = true %}
-                      <div class="metafield-item">
-                        <span class="metafield-label">{{ field_key | replace: '_', ' ' | capitalize }}:</span>
-                        <span class="metafield-value">
-                          {% if field_value.type == 'file_reference' %}
-                            <a href="{{ field_value.value }}" target="_blank">📄 View File</a>
-                          {% elsif field_value.type == 'url' %}
-                            <a href="{{ field_value.value }}" target="_blank">{{ field_value.value }}</a>
-                          {% elsif field_value.type == 'json' %}
-                            {% assign rich_text = field_value.value %}
-                            {% if rich_text.children %}
-                              {% for child in rich_text.children %}
-                                {% if child.type == 'paragraph' %}
-                                  {% for text_node in child.children %}
-                                    {{ text_node.value }}
-                                  {% endfor %}
-                                {% elsif child.type == 'list' %}
-                                  <ul>
-                                    {% for item in child.children %}
-                                      <li>{{ item.value }}</li>
-                                    {% endfor %}
-                                  </ul>
-                                {% else %}
-                                  {{ child.value }}
-                                {% endif %}
-                              {% endfor %}
-                            {% else %}
-                              {{ rich_text }}
-                            {% endif %}
-                          {% elsif field_value.type == 'boolean' %}
-                            {% if field_value.value == true %}Yes{% else %}No{% endif %}
-                          {% elsif field_value.type == 'date' %}
-                            {{ field_value.value | date: "%B %d, %Y" }}
-                          {% else %}
-                            {{ field_value.value }}
-                          {% endif %}
-                        </span>
-                      </div>
-                      <hr class="metafield-divider">
-                    {% endif %}
+                    {% unless metafield_keys contains field_key %}
+                      {% if field_value != blank %}
+                        {% assign has_metafields = true %}
+                        <div class="metafield-item">
+                          <span class="metafield-label">{{ field_key | replace: '_', ' ' | capitalize }}:</span>
+                          <span class="metafield-value">{{ field_value.value }}</span>
+                        </div>
+                        <hr class="metafield-divider">
+                      {% endif %}
+                    {% endunless %}
                   {% endfor %}
                   
                   <!-- ======================================== -->
-                  <!-- FALLBACK: Product Description           -->
+                  <!-- FALLBACK                               -->
                   <!-- ======================================== -->
                   {% unless has_metafields %}
                     <div class="metafield-item">
@@ -150,26 +103,23 @@
           </div>
           
           <!-- ========================================== -->
-          <!-- TAB 2: FAQ (MetaobjectListDrop)            -->
+          <!-- TAB 2: FAQ                                 -->
           <!-- ========================================== -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
               {% assign has_faq = false %}
-              
-              <!-- ======================================== -->
-              <!-- FAQ from MetaobjectListDrop              -->
-              <!-- ======================================== -->
               {% assign faq_entries = product.metafields.custom.faq %}
               
               {% if faq_entries != blank %}
                 {% assign has_faq = true %}
                 <div class="faq-list">
                   
-                  <!-- Check if it's a MetaobjectListDrop -->
-                  {% if faq_entries.type == 'metaobject_list' %}
-                    <!-- Loop through metaobject entries -->
-                    {% for entry in faq_entries.value %}
+                  {% comment %} Try to extract FAQ data from metaobject list {% endcomment %}
+                  {% assign faq_data = faq_entries.value %}
+                  
+                  {% if faq_data.size > 0 %}
+                    {% for entry in faq_data %}
                       <div class="faq-item">
                         <div class="faq-question" data-toggle="collapse">
                           <span>
@@ -198,26 +148,8 @@
                         </div>
                       </div>
                     {% endfor %}
-                    
-                  <!-- Check if it's a JSON array -->
-                  {% elsif faq_entries.type == 'json' %}
-                    {% assign faq_json = faq_entries.value %}
-                    {% if faq_json %}
-                      {% for item in faq_json %}
-                        <div class="faq-item">
-                          <div class="faq-question" data-toggle="collapse">
-                            <span>{{ item.question }}</span>
-                            <span class="faq-toggle">+</span>
-                          </div>
-                          <div class="faq-answer" style="display: none;">
-                            {{ item.answer }}
-                          </div>
-                        </div>
-                      {% endfor %}
-                    {% endif %}
-                    
-                  <!-- Single text field -->
                   {% else %}
+                    {% comment %} Try as plain text {% endcomment %}
                     <div class="faq-item">
                       <div class="faq-question" data-toggle="collapse">
                         <span>Frequently Asked Questions</span>
@@ -232,9 +164,6 @@
                 </div>
               {% endif %}
               
-              <!-- ======================================== -->
-              <!-- FALLBACK: No FAQ found                  -->
-              <!-- ======================================== -->
               {% unless has_faq %}
                 <p class="faq-placeholder">{{ section.settings.empty_faq_message | default: 'No FAQ items found for this product.' }}</p>
               {% endunless %}
@@ -257,7 +186,6 @@
       margin: 0 auto;
     }
     
-    /* Tabs Navigation */
     .tabs-nav {
       display: flex;
       list-style: none;
@@ -294,7 +222,6 @@
       display: block;
     }
     
-    /* Info Block Styles */
     .additional-info-content .info-block {
       margin-bottom: 25px;
     }
@@ -305,14 +232,6 @@
       color: #000;
     }
     
-    .info-placeholder {
-      color: #999;
-      font-style: italic;
-      padding: 20px 0;
-      text-align: center;
-    }
-    
-    /* Metafields Grid */
     .metafields-grid {
       display: flex;
       flex-direction: column;
@@ -341,13 +260,6 @@
       border-radius: 4px;
       border: 1px solid #eaeaea;
     }
-    .metafield-json-list {
-      margin: 0;
-      padding-left: 20px;
-    }
-    .metafield-json-list li {
-      margin-bottom: 8px;
-    }
     
     .metafield-divider {
       border: none;
@@ -356,7 +268,6 @@
       height: 0;
     }
     
-    /* FAQ Styles */
     .faq-item {
       border-bottom: 1px solid #eaeaea;
       padding: 16px 0;
@@ -397,6 +308,7 @@
     .faq-answer p {
       margin: 5px 0;
     }
+    
     .faq-placeholder {
       color: #999;
       font-style: italic;
@@ -438,9 +350,6 @@
       .metafield-value {
         font-size: 14px;
       }
-      .metafield-value img {
-        max-width: 100px;
-      }
     }
   </style>
 
@@ -450,7 +359,6 @@
       const container = document.querySelector(`[data-section-id="${sectionId}"]`);
       if (!container) return;
       
-      // Tab switching
       const tabs = container.querySelectorAll('.tab-item');
       const panels = container.querySelectorAll('.tab-panel');
       
@@ -466,7 +374,6 @@
         });
       });
       
-      // FAQ toggle
       const faqQuestions = container.querySelectorAll('.faq-question');
       faqQuestions.forEach(question => {
         question.addEventListener('click', function() {
