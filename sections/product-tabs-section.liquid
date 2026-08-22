@@ -14,7 +14,9 @@
         
         <div class="tabs-content">
           
-          <!-- TAB 1: ADDITIONAL INFORMATION -->
+          <!-- ========================================== -->
+          <!-- TAB 1: ADDITIONAL INFORMATION              -->
+          <!-- ========================================== -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
             <div class="additional-info-content">
               
@@ -24,32 +26,26 @@
                   
                   {% assign has_data = false %}
                   
-                  <!-- ADDITIONAL INFORMATION -->
+                  <!-- 1. ADDITIONAL INFORMATION (Multi-line text) -->
                   {% assign additional_info = product.metafields.custom.additional_information %}
-                  {% if additional_info != blank %}
+                  {% if additional_info != blank and additional_info.value != blank %}
                     {% assign has_data = true %}
                     <div class="metafield-item">
                       <span class="metafield-label">Additional Information:</span>
                       <span class="metafield-value">
-                        {% if additional_info.type contains 'list.' %}
-                          {% for item in additional_info.value %}
-                            {{ item }}{% unless forloop.last %}, {% endunless %}
-                          {% endfor %}
-                        {% else %}
-                          {{ additional_info.value }}
-                        {% endif %}
+                        {{ additional_info.value | newline_to_br }}
                       </span>
                     </div>
                   {% endif %}
                   
-                  <!-- SHIPPING CARRIER -->
+                  <!-- 2. SHIPPING CARRIER -->
                   {% assign shipping_carrier = product.metafields.custom.shipping_carrier %}
-                  {% if shipping_carrier != blank %}
+                  {% if shipping_carrier != blank and shipping_carrier.value != blank %}
                     {% assign has_data = true %}
                     <div class="metafield-item">
                       <span class="metafield-label">Shipping Carrier:</span>
                       <span class="metafield-value">
-                        {% if shipping_carrier.value.name %}
+                        {% if shipping_carrier.value.name != blank %}
                           {{ shipping_carrier.value.name }}
                         {% else %}
                           {{ shipping_carrier.value }}
@@ -58,7 +54,7 @@
                     </div>
                   {% endif %}
                   
-                  <!-- DYNAMIC OTHER METAFIELDS & METAOBJECTS -->
+                  <!-- 3. ALL OTHER DYNAMIC METAFIELDS -->
                   {% assign skip_keys = 'faq,additional_information,shipping_carrier' | split: ',' %}
                   {% for field in product.metafields.custom %}
                     {% assign key = field[0] %}
@@ -70,23 +66,12 @@
                         <div class="metafield-item">
                           <span class="metafield-label">{{ key | replace: '_', ' ' | capitalize }}:</span>
                           <span class="metafield-value">
-                            {% comment %} Handling Lists / Metaobjects Dynamic Rendering {% endcomment %}
-                            {% if metafield_obj.type contains 'metaobject' or metafield_obj.type contains 'list' %}
-                              {% if metafield_obj.type contains 'list' %}
-                                {% for item in metafield_obj.value %}
-                                  {% if item.system.handle %}
-                                    {{ item.title.value | default: item.name.value | default: item.label.value | default: item.system.handle }}
-                                  {% else %}
-                                    {{ item }}
-                                  {% endif %}
-                                  {% unless forloop.last %}, {% endunless %}
-                                {% endfor %}
-                              {% else %}
-                                {% assign mo = metafield_obj.value %}
-                                {{ mo.title.value | default: mo.name.value | default: mo.label.value | default: mo.system.handle }}
-                              {% endif %}
+                            {% if metafield_obj.type contains 'list' %}
+                              {% for item in metafield_obj.value %}
+                                {{ item }}{% unless forloop.last %}, {% endunless %}
+                              {% endfor %}
                             {% else %}
-                              {{ metafield_obj.value }}
+                              {{ metafield_obj.value | newline_to_br }}
                             {% endif %}
                           </span>
                         </div>
@@ -108,7 +93,9 @@
             </div>
           </div>
           
-          <!-- TAB 2: FAQ METAOBJECT / LIST HANDLER -->
+          <!-- ========================================== -->
+          <!-- TAB 2: FAQ (JSON TYPE METAFIELD FIX)       -->
+          <!-- ========================================== -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
@@ -116,33 +103,26 @@
               {% assign faq_metafield = product.metafields.custom.faq %}
               
               {% if faq_metafield != blank and faq_metafield.value != blank %}
-                {% assign faq_data = faq_metafield.value %}
-                {% assign has_faq = true %}
+                {% assign faq_list = faq_metafield.value %}
                 
                 <div class="faq-list">
-                  {% comment %} Handles Metaobject List or Custom JSON List {% endcomment %}
-                  {% for item in faq_data %}
-                    <div class="faq-item">
-                      <div class="faq-question" data-toggle="collapse">
-                        <span>
-                          {% if item.question != blank %}
-                            {{ item.question.value | default: item.question }}
-                          {% elsif item.title != blank %}
-                            {{ item.title.value | default: item.title }}
-                          {% else %}
-                            {{ item }}
-                          {% endif %}
-                        </span>
-                        <span class="faq-toggle">+</span>
+                  {% for item in faq_list %}
+                    {% comment %} Extract Question & Answer safely from JSON {% endcomment %}
+                    {% assign q_text = item.question | default: item.title | default: item.q %}
+                    {% assign a_text = item.answer | default: item.description | default: item.a %}
+                    
+                    {% if q_text != blank %}
+                      {% assign has_faq = true %}
+                      <div class="faq-item">
+                        <div class="faq-question" data-toggle="collapse">
+                          <span>{{ q_text }}</span>
+                          <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer" style="display: none;">
+                          {{ a_text | newline_to_br }}
+                        </div>
                       </div>
-                      <div class="faq-answer" style="display: none;">
-                        {% if item.answer != blank %}
-                          {{ item.answer.value | default: item.answer }}
-                        {% elsif item.description != blank %}
-                          {{ item.description.value | default: item.description }}
-                        {% endif %}
-                      </div>
-                    </div>
+                    {% endif %}
                   {% endfor %}
                 </div>
               {% endif %}
