@@ -14,12 +14,36 @@
         
         <div class="tabs-content">
           
-          <!-- TAB 1: ADDITIONAL INFORMATION -->
-          <div class="tab-panel active" id="additional-info" role="tabpanel">
-            <div class="additional-info-content">
-              <div class="info-block metafields-block">
-                <h3 class="info-title">{{ section.settings.metafields_title | default: 'Product Details' }}</h3>
-                <div class="metafields-grid">
+          <!-- TAB 2: FAQ TAB (DEBUG MODE) -->
+<div class="tab-panel" id="faq" role="tabpanel">
+  <div class="faq-content">
+    
+    {% assign faq_obj = product.metafields.custom.faq.value %}
+    
+    {% if faq_obj != blank %}
+      <div style="background: #f9f9f9; padding: 15px; border: 1px dashed #ccc; font-family: monospace;">
+        <strong>Metaobject Found! Printing Raw Data:</strong><br><br>
+        
+        <!-- Try 1: Direct Field Keys -->
+        <p><strong>1. Direct 'questions':</strong> {{ faq_obj.questions }}</p>
+        <p><strong>2. Direct 'answers':</strong> {{ faq_obj.answers }}</p>
+        
+        <!-- Try 2: System Keys Loop -->
+        <p><strong>3. All Metaobject Key/Value Pairs:</strong></p>
+        <ul>
+          {% for field in faq_obj %}
+            <li><strong>Key:</strong> {{ field[0] }} | <strong>Value:</strong> {{ field[1] }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% else %}
+      <p style="color: red; font-weight: bold;">
+        ❌ Metafield Empty! Product admin page par 'FAQ' Metafield select nahi hua hai.
+      </p>
+    {% endif %}
+    
+  </div>
+</div>
                   
                   {% assign has_data = false %}
                   
