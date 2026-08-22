@@ -14,9 +14,7 @@
         
         <div class="tabs-content">
           
-          <!-- ========================================== -->
-          <!-- TAB 1: ADDITIONAL INFORMATION               -->
-          <!-- ========================================== -->
+          <!-- TAB 1: ADDITIONAL INFORMATION -->
           <div class="tab-panel active" id="additional-info" role="tabpanel">
             <div class="additional-info-content">
               
@@ -26,90 +24,77 @@
                   
                   {% assign has_data = false %}
                   
-                  <!-- ======================================== -->
-                  <!-- ADDITIONAL INFORMATION - JSON FIX        -->
-                  <!-- ======================================== -->
+                  <!-- ADDITIONAL INFORMATION -->
                   {% assign additional_info = product.metafields.custom.additional_information %}
                   {% if additional_info != blank %}
                     {% assign has_data = true %}
                     <div class="metafield-item">
                       <span class="metafield-label">Additional Information:</span>
                       <span class="metafield-value">
-                        {% if additional_info.type == 'json' %}
-                          {% assign raw = additional_info.value | json %}
-                          {% if raw contains '"value"=>"' %}
-                            {% assign parts = raw | split: '"value"=>"' %}
-                            {% for part in parts %}
-                              {% if forloop.first == false %}
-                                {% assign clean_part = part | split: '"' | first %}
-                                {% if clean_part != blank %}
-                                  {{ clean_part }}
-                                {% endif %}
-                              {% endif %}
-                            {% endfor %}
-                          {% else %}
-                            {{ additional_info.value }}
-                          {% endif %}
+                        {% if additional_info.type contains 'list.' %}
+                          {% for item in additional_info.value %}
+                            {{ item }}{% unless forloop.last %}, {% endunless %}
+                          {% endfor %}
                         {% else %}
                           {{ additional_info.value }}
                         {% endif %}
                       </span>
                     </div>
-                    <hr class="metafield-divider">
                   {% endif %}
                   
-                  <!-- ======================================== -->
-                  <!-- SHIPPING CARRIER                        -->
-                  <!-- ======================================== -->
+                  <!-- SHIPPING CARRIER -->
                   {% assign shipping_carrier = product.metafields.custom.shipping_carrier %}
                   {% if shipping_carrier != blank %}
                     {% assign has_data = true %}
                     <div class="metafield-item">
                       <span class="metafield-label">Shipping Carrier:</span>
-                      <span class="metafield-value">{{ shipping_carrier.value }}</span>
+                      <span class="metafield-value">
+                        {% if shipping_carrier.value.name %}
+                          {{ shipping_carrier.value.name }}
+                        {% else %}
+                          {{ shipping_carrier.value }}
+                        {% endif %}
+                      </span>
                     </div>
-                    <hr class="metafield-divider">
                   {% endif %}
                   
-                  <!-- ======================================== -->
-                  <!-- OTHER METAFIELDS                        -->
-                  <!-- ======================================== -->
+                  <!-- DYNAMIC OTHER METAFIELDS & METAOBJECTS -->
                   {% assign skip_keys = 'faq,additional_information,shipping_carrier' | split: ',' %}
                   {% for field in product.metafields.custom %}
                     {% assign key = field[0] %}
-                    {% assign value = field[1] %}
+                    {% assign metafield_obj = field[1] %}
                     
                     {% unless skip_keys contains key %}
-                      {% if value != blank %}
+                      {% if metafield_obj != blank and metafield_obj.value != blank %}
                         {% assign has_data = true %}
                         <div class="metafield-item">
                           <span class="metafield-label">{{ key | replace: '_', ' ' | capitalize }}:</span>
                           <span class="metafield-value">
-                            {% if value.type == 'json' %}
-                              {% assign raw = value.value | json %}
-                              {% if raw contains '"value"=>"' %}
-                                {% assign parts = raw | split: '"value"=>"' %}
-                                {% for part in parts %}
-                                  {% if forloop.first == false %}
-                                    {{ part | split: '"' | first }}
+                            {% comment %} Handling Lists / Metaobjects Dynamic Rendering {% endcomment %}
+                            {% if metafield_obj.type contains 'metaobject' or metafield_obj.type contains 'list' %}
+                              {% if metafield_obj.type contains 'list' %}
+                                {% for item in metafield_obj.value %}
+                                  {% if item.system.handle %}
+                                    {{ item.title.value | default: item.name.value | default: item.label.value | default: item.system.handle }}
+                                  {% else %}
+                                    {{ item }}
                                   {% endif %}
+                                  {% unless forloop.last %}, {% endunless %}
                                 {% endfor %}
                               {% else %}
-                                {{ value.value }}
+                                {% assign mo = metafield_obj.value %}
+                                {{ mo.title.value | default: mo.name.value | default: mo.label.value | default: mo.system.handle }}
                               {% endif %}
                             {% else %}
-                              {{ value.value }}
+                              {{ metafield_obj.value }}
                             {% endif %}
                           </span>
                         </div>
-                        <hr class="metafield-divider">
                       {% endif %}
                     {% endunless %}
                   {% endfor %}
                   
-                  <!-- ======================================== -->
-                  <!-- FALLBACK                               -->
-                  <!-- ======================================== -->
+                  <!-- FALLBACK -->
                   {% unless has_data %}
                     <div class="metafield-item">
                       <span class="metafield-label">Description:</span>
@@ -123,43 +108,43 @@
             </div>
           </div>
           
-          <!-- ========================================== -->
-          <!-- TAB 2: FAQ                                 -->
-          <!-- ========================================== -->
+          <!-- TAB 2: FAQ METAOBJECT / LIST HANDLER -->
           <div class="tab-panel" id="faq" role="tabpanel">
             <div class="faq-content">
               
               {% assign has_faq = false %}
               {% assign faq_metafield = product.metafields.custom.faq %}
               
-              {% if faq_metafield != blank %}
-                
-                {% comment %}
-                  JSON Format:
-                  [
-                    { "question": "Q1", "answer": "A1" },
-                    { "question": "Q2", "answer": "A2" }
-                  ]
-                {% endcomment %}
+              {% if faq_metafield != blank and faq_metafield.value != blank %}
                 {% assign faq_data = faq_metafield.value %}
+                {% assign has_faq = true %}
                 
-                {% if faq_data contains 'question' %}
-                  {% assign has_faq = true %}
-                  <div class="faq-list">
-                    {% for item in faq_data %}
-                      <div class="faq-item">
-                        <div class="faq-question" data-toggle="collapse">
-                          <span>{{ item.question }}</span>
-                          <span class="faq-toggle">+</span>
-                        </div>
-                        <div class="faq-answer" style="display: none;">
-                          {{ item.answer }}
-                        </div>
+                <div class="faq-list">
+                  {% comment %} Handles Metaobject List or Custom JSON List {% endcomment %}
+                  {% for item in faq_data %}
+                    <div class="faq-item">
+                      <div class="faq-question" data-toggle="collapse">
+                        <span>
+                          {% if item.question != blank %}
+                            {{ item.question.value | default: item.question }}
+                          {% elsif item.title != blank %}
+                            {{ item.title.value | default: item.title }}
+                          {% else %}
+                            {{ item }}
+                          {% endif %}
+                        </span>
+                        <span class="faq-toggle">+</span>
                       </div>
-                    {% endfor %}
-                  </div>
-                {% endif %}
-                
+                      <div class="faq-answer" style="display: none;">
+                        {% if item.answer != blank %}
+                          {{ item.answer.value | default: item.answer }}
+                        {% elsif item.description != blank %}
+                          {{ item.description.value | default: item.description }}
+                        {% endif %}
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
               {% endif %}
               
               {% unless has_faq %}
@@ -183,7 +168,6 @@
       max-width: 1200px;
       margin: 0 auto;
     }
-    
     .tabs-nav {
       display: flex;
       list-style: none;
@@ -210,7 +194,6 @@
     .tab-item:hover {
       color: #000;
     }
-    
     .tab-panel {
       display: none;
       padding: 20px 0;
@@ -219,7 +202,6 @@
     .tab-panel.active {
       display: block;
     }
-    
     .additional-info-content .info-block {
       margin-bottom: 25px;
     }
@@ -229,7 +211,6 @@
       margin-bottom: 20px;
       color: #000;
     }
-    
     .metafields-grid {
       display: flex;
       flex-direction: column;
@@ -257,17 +238,6 @@
       font-size: 16px;
       line-height: 1.6;
     }
-    .metafield-value img {
-      max-width: 150px;
-      height: auto;
-      border-radius: 4px;
-      border: 1px solid #eaeaea;
-    }
-    
-    .metafield-divider {
-      display: none;
-    }
-    
     .faq-item {
       border-bottom: 1px solid #eaeaea;
       padding: 16px 0;
@@ -284,9 +254,6 @@
       font-size: 17px;
       padding: 4px 0;
       color: #000;
-    }
-    .faq-question:hover {
-      color: #333;
     }
     .faq-question .faq-toggle {
       font-size: 26px;
@@ -305,22 +272,16 @@
       line-height: 1.8;
       font-size: 16px;
     }
-    .faq-answer p {
-      margin: 5px 0;
-    }
-    
     .faq-placeholder {
       color: #999;
       font-style: italic;
       padding: 20px 0;
       text-align: center;
     }
-    
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
     @media (max-width: 768px) {
       .tab-item {
         padding: 12px 18px;
@@ -331,12 +292,6 @@
       .product-tabs-section {
         margin: 20px 0;
         padding: 0 12px;
-      }
-      .faq-question {
-        font-size: 15px;
-      }
-      .additional-info-content .info-title {
-        font-size: 18px;
       }
       .metafield-item {
         flex-direction: column;
@@ -380,11 +335,7 @@
           this.classList.toggle('active');
           const answer = this.nextElementSibling;
           if (answer && answer.classList.contains('faq-answer')) {
-            if (answer.style.display === 'none' || answer.style.display === '') {
-              answer.style.display = 'block';
-            } else {
-              answer.style.display = 'none';
-            }
+            answer.style.display = (answer.style.display === 'none' || answer.style.display === '') ? 'block' : 'none';
           }
         });
       });
